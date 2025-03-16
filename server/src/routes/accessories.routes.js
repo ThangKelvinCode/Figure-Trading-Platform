@@ -5,50 +5,196 @@ import { productValidator } from '../middlewares/product.middlewares.js'
 //tạo Router
 const accessoriesRouter = Router()
 
-/*
-    description: Post a new Accessories
-    path: /postAccessories
-    method: POST
-    body: {
-        type: accessories_categories,
-        name: string,
-        description: String,
-        price: double,
-        photo: string,
-        status: string,
-        date_added: string (ISO8601 format),
-        owner: user
+accessoriesRouter.post('/postAccessories', /*  #swagger.tags = ['Accessories']
+    #swagger.summary = 'Post a new accessory'
+    #swagger.description = 'Creates a new accessory listing'
+    #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    required: ["name", "description", "type", "price", "photo", "owner"],
+                    properties: {
+                        name: { type: "string", example: "1000% bag" },
+                        description: { type: "string", example: "Big bag for 1000%" },
+                        type: { type: "string", example: "67c91d9583ff104caa240546" },
+                        price: { type: "number", example: 59.99 },
+                        photo: { type: "string", format: "url", example: "https://example3.com" },
+                        status: { type: "string", example: "" },
+                        date_added: { type: "string", format: "date-time", example: "" },
+                        owner: { type: "string", example: "67bca3f6207e4b98d3665a9f" }
+                    }
+                }
+            }
+        }
     }
- */
-accessoriesRouter.post('/postAccessories', productValidator.AccessoriesValidator,
-    wrapAsync(accessoriesController.postAccessories))
-
-/*
-    description: create new categories
-    path: /newCategory
-    method: POST
-    body: {
-        type: string,
-        description: string
+    #swagger.responses[201] = {
+        description: "Accessory posted successfully"
+    }
+    #swagger.responses[400] = {
+        description: "Invalid request"
     }
 */
-accessoriesRouter.post('/newCategory', productValidator.CategoriesValidator,
-    wrapAsync(accessoriesController.newCategory))
+    productValidator.AccessoriesValidator,
+    wrapAsync(accessoriesController.postAccessories)
+)
 
-accessoriesRouter.get('/allAccessories', wrapAsync(accessoriesController.getAllAccessories))   
+// accessoriesRouter.post('/newCategory', productValidator.CategoriesValidator,
+//     wrapAsync(accessoriesController.newCategory))
+//     // {
+//     //     "type": "hangbag",
+//     //     "description": "bag to hang the dolls with various sizes"
+//     //   }
 
-accessoriesRouter.get('/allCategories', wrapAsync(accessoriesController.getAllCategories))   
+// accessoriesRouter.get('/allAccessories', wrapAsync(accessoriesController.getAllAccessories))
 
-accessoriesRouter.get('/:id', wrapAsync(accessoriesController.getAccessory))
+// accessoriesRouter.get('/allCategories', wrapAsync(accessoriesController.getAllCategories))
 
-accessoriesRouter.get('/categories/:id', wrapAsync(accessoriesController.getCategory))
+// accessoriesRouter.get('/:id', wrapAsync(accessoriesController.getAccessory))
 
-accessoriesRouter.delete('/:id', wrapAsync(accessoriesController.deleteAccessory))
+// accessoriesRouter.get('/categories/:id', wrapAsync(accessoriesController.getCategory))
 
-accessoriesRouter.get('/:id/reviews', wrapAsync(accessoriesController.getAllReview))
+// accessoriesRouter.delete('/:id', wrapAsync(accessoriesController.deleteAccessory))
 
-accessoriesRouter.post('/:id/purchase', wrapAsync(accessoriesController.buyAccessory))
+// accessoriesRouter.get('/:id/reviews', wrapAsync(accessoriesController.getAllReview))
 
-accessoriesRouter.post('/:id/newReview', wrapAsync(accessoriesController.writeReview))
+// accessoriesRouter.post('/:id/purchase', wrapAsync(accessoriesController.buyAccessory))
+
+// accessoriesRouter.post('/:id/newReview', wrapAsync(accessoriesController.writeReview))
+
+
+// Create a new accessory category
+accessoriesRouter.post('/newCategory', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Create a new category'
+        #swagger.description = 'Creates a new accessory category'
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["type", "description"],
+                        properties: {
+                            type: { type: "string", example: "handbag" },
+                            description: { type: "string", example: "Bag to hang the dolls with various sizes" }
+                        }
+                    }
+                }
+            }
+        }
+        #swagger.responses[201] = { description: "Category created successfully" }
+        #swagger.responses[400] = { description: "Invalid request" }
+    */
+    productValidator.CategoriesValidator, 
+    wrapAsync(accessoriesController.newCategory)
+)
+
+// Get all accessories
+accessoriesRouter.get('/allAccessories', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Get all accessories'
+        #swagger.description = 'Retrieves a list of all available accessories'
+        #swagger.responses[200] = { description: "List of accessories retrieved successfully" }
+    */
+    wrapAsync(accessoriesController.getAllAccessories)
+)
+
+// Get all categories
+accessoriesRouter.get('/allCategories', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Get all categories'
+        #swagger.description = 'Retrieves a list of all accessory categories'
+        #swagger.responses[200] = { description: "List of categories retrieved successfully" }
+    */
+    wrapAsync(accessoriesController.getAllCategories)
+)
+
+// Get a specific accessory by ID
+accessoriesRouter.get('/:id', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Get an accessory by ID'
+        #swagger.description = 'Retrieves details of a specific accessory'
+        #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67c91dad83ff104caa240547" }
+        #swagger.responses[200] = { description: "Accessory details retrieved successfully" }
+        #swagger.responses[404] = { description: "Accessory not found" }
+    */
+    wrapAsync(accessoriesController.getAccessory)
+)
+
+// Get a category by ID
+accessoriesRouter.get('/categories/:id', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Get a category by ID'
+        #swagger.description = 'Retrieves details of a specific accessory category'
+        #swagger.parameters['id'] = { description: "Category ID", type: "string", required: true, example: "67c91d9583ff104caa240546" }
+        #swagger.responses[200] = { description: "Category details retrieved successfully" }
+        #swagger.responses[404] = { description: "Category not found" }
+    */
+    wrapAsync(accessoriesController.getCategory)
+)
+
+// Delete an accessory by ID
+accessoriesRouter.delete('/:id', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Delete an accessory'
+        #swagger.description = 'Deletes a specific accessory by its ID'
+        #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67bca3f6207e4b98d3665a9f" }
+        #swagger.responses[200] = { description: "Accessory deleted successfully" }
+        #swagger.responses[404] = { description: "Accessory not found" }
+    */
+    wrapAsync(accessoriesController.deleteAccessory)
+)
+
+// Get all reviews for an accessory
+accessoriesRouter.get('/:id/reviews', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Get all reviews for an accessory'
+        #swagger.description = 'Retrieves all reviews for a specific accessory'
+        #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67bca3f6207e4b98d3665a9f" }
+        #swagger.responses[200] = { description: "Reviews retrieved successfully" }
+    */
+    wrapAsync(accessoriesController.getAllReview)
+)
+
+// Purchase an accessory
+accessoriesRouter.post('/:id/purchase', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Purchase an accessory'
+        #swagger.description = 'Handles the purchase of an accessory'
+        #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67bca3f6207e4b98d3665a9f" }
+        #swagger.responses[200] = { description: "Accessory purchased successfully" }
+        #swagger.responses[400] = { description: "Invalid purchase request" }
+    */
+    wrapAsync(accessoriesController.buyAccessory)
+)
+
+// Write a new review for an accessory
+accessoriesRouter.post('/:id/newReview', 
+    /*  #swagger.tags = ['Accessories']
+        #swagger.summary = 'Write a review for an accessory'
+        #swagger.description = 'Allows a user to submit a review for an accessory'
+        #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67bca3f6207e4b98d3665a9f" }
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["rating", "comment"],
+                        properties: {
+                            rating: { type: "number", example: 5 },
+                            comment: { type: "string", example: "Great accessory! Highly recommended." }
+                        }
+                    }
+                }
+            }
+        }
+        #swagger.responses[201] = { description: "Review submitted successfully" }
+        #swagger.responses[400] = { description: "Invalid review submission" }
+    */
+    wrapAsync(accessoriesController.writeReview)
+)
 
 export default accessoriesRouter

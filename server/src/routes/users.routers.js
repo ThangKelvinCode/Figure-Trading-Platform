@@ -33,11 +33,6 @@ usersRouter.post('/register',
 
 usersRouter.post('/login', loginValidator, wrapAsync(userController.login))
 
-/*
-    description: view profile
-    path: /:id
-    method: GET
-*/
 usersRouter.get('/:id', wrapAsync(userController.getUserProfile))
 
 export default usersRouter

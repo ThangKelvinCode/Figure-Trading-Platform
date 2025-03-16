@@ -44,7 +44,7 @@ const getAllCategories = async (req, res) => {
 }
 
 const getCategory = async (req, res) => {
-    const category = await productServices.getAllCategories(req.params.id)
+    const category = await productServices.getCategory(req.params.id)
     res.status(HTTP_STATUS.OK).json(category)
 }
 
