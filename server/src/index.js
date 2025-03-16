@@ -87,9 +87,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 // Setup routes
 app.use('/user', usersRouter)
 app.use('/accessories', accessoriesRouter)
-app.use('/trade_requests', tradeRequestsRouter)
 app.use('/offer', offersRouter)
+app.use('/trade_requests', tradeRequestsRouter);
 app.use('/messages', messagesRouter);
+
 
 app.use((req, res, next) => {
   console.log(`Received ${req.method} request at ${req.url}`);

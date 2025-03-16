@@ -45,17 +45,17 @@ export class TokenType {
   }
 }
 
-export class TradeRequestStatus {
-  static _Ended = 0
-  static _Pending = 1
+// export class TradeRequestStatus {
+//   static _Ended = 0
+//   static _Pending = 1
 
-  static get Ended() {
-    return this._Ended
-  }
-  static get Pending() {
-    return this._Pending
-  }
-}
+//   static get Ended() {
+//     return this._Ended
+//   }
+//   static get Pending() {
+//     return this._Pending
+//   }
+// }
 
 export class MediaType {
   static _Image = 0
@@ -87,4 +87,14 @@ export class OfferStatus {
   static get Completed() {
     return this._Completed;
   }
+}
+
+export class TradeRequestStatus {
+  static _Pending = 'Pending';
+  static _InProcess = 'In-process';
+  static _Completed = 'Completed';
+
+  static get Pending() { return this._Pending; }
+  static get InProcess() { return this._InProcess; }
+  static get Completed() { return this._Completed; }
 }

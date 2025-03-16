@@ -27,6 +27,11 @@ import offerRepo from '../repositories/offers.repo.js'
 // };
 
 const createOffer = async (payload) => {
+  const existingOffers = await offerRepo.getAllByRequestId(payload.requestId);
+  const offersByUser = existingOffers.filter(offer => offer.userId.toString() === payload.userId);
+  if (offersByUser.length > 0) {
+    throw new Error('Only one offer per request is allowed per user');
+  } {
   try {
     console.log('Received payload:', payload)
 
@@ -56,6 +61,7 @@ const createOffer = async (payload) => {
     console.error('Error creating offer:', error)
     throw error
   }
+}
 }
 
 const getAllOffersByRequestId = async (requestId) => {

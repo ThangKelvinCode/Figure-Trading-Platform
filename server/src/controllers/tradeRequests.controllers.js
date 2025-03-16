@@ -1,45 +1,131 @@
-import { USER_ROLE } from '../constants/enums.js'
-import HTTP_STATUS from '../constants/httpStatus.js'
-import { TRADE_REQUESTS_MESSAGES, USERS_MESSAGES } from '../constants/messages.js'
-import { ErrorWithStatus } from '../models/Errors.js'
-import mediasServices from '../services/medias.sevices.js'
-import { tradeRequestServices } from '../services/tradeRequests.services.js'
-import { usersServices } from '../services/users.services.js'
-import { handleUploadImage } from '../utils/file.js'
+import { tradeRequestsServices } from '../services/tradeRequests.services.js';
+import HTTP_STATUS from '../constants/httpStatus.js';
+import { TRADE_REQUESTS_MESSAGES } from '../constants/messages.js';
 
-//
-const getAllRequests = async (req, res) => {
-  const result = await tradeRequestServices.getAllRequests()
-  res.status(HTTP_STATUS.OK).json({
-    message: TRADE_REQUESTS_MESSAGES.GET_TRADE_REQUESTS_SUCCESS,
-    result
-  })
-}
+const createTradeRequest = async (req, res) => {
+  try {
+    const result = await tradeRequestsServices.createTradeRequest(req.body);
+    res.status(HTTP_STATUS.CREATED).json({
+      message: TRADE_REQUESTS_MESSAGES.CREATE_REQUEST_SUCCESSFULLY,
+      result,
+    });
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
 
-const createRequest = async (req, res) => {
-  // kiểm tra userid có tồn tại ko, đúng role ko
-  const { user_id } = req.body
-  // const user = await usersServices.findUserById(user_id)
-  // const isAdmin = user.role == USER_ROLE.Admin // admin thì đúng, dúng thì trả lỗi
-  // if (isAdmin) {
-  //   throw new ErrorWithStatus({
-  //     status: HTTP_STATUS.NOT_FOUND,
-  //     message: USERS_MESSAGES.USER_ROLE_IS_NOT_SUITABLE
-  //   })
-  // }
-  // lọc file image, xử lí và trả ra URL để lưu
-  // const url = await mediasServices.handleUploadImage(req)
-  // insert thông tin mới
-  // req.body.image = url
-  const result = await tradeRequestServices.createRequest(req.body)
-  // trả ra thông tin
-  res.status(HTTP_STATUS.OK).json({
-    message: TRADE_REQUESTS_MESSAGES.CREATE_REQUEST_SUCCESSFULLY,
-    result
-  })
-}
+const getAllTradeRequests = async (req, res) => {
+  try {
+    const tradeRequests = await tradeRequestsServices.getAllTradeRequests();
+    res.status(HTTP_STATUS.OK).json(tradeRequests);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const getTradeRequestsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const tradeRequests = await tradeRequestsServices.getTradeRequestsByUserId(userId);
+    res.status(HTTP_STATUS.OK).json(tradeRequests);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const getTradeRequestById = async (req, res) => {
+  try {
+    const requestId = req.params.requestId;
+    const tradeRequest = await tradeRequestsServices.getTradeRequestById(requestId);
+    if (!tradeRequest) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Trade request not found' });
+    }
+    res.status(HTTP_STATUS.OK).json(tradeRequest);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const updateTradeRequest = async (req, res) => {
+  try {
+    const requestId = req.params.requestId;
+    const updates = req.body;
+    const updatedTradeRequest = await tradeRequestsServices.updateTradeRequest(requestId, updates);
+    if (!updatedTradeRequest) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Trade request not found' });
+    }
+    res.status(HTTP_STATUS.OK).json(updatedTradeRequest);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const deleteTradeRequest = async (req, res) => {
+  try {
+    const requestId = req.params.requestId;
+    const result = await tradeRequestsServices.deleteTradeRequest(requestId);
+    if (result.deletedCount === 0) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Trade request not found' });
+    }
+    res.status(HTTP_STATUS.OK).json({ message: 'Trade request deleted successfully' });
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const selectOffer = async (req, res) => {
+  try {
+    const { requestId, offerId } = req.params;
+    const userId = req.body.userId; // Giả sử userId được gửi từ client (sau này cần xác thực)
+    const result = await tradeRequestsServices.selectOffer(requestId, offerId, userId);
+    res.status(HTTP_STATUS.OK).json(result);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const confirmFinishTrade = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { userId } = req.body; // Giả sử userId được gửi từ client (sau này cần xác thực)
+    const result = await tradeRequestsServices.confirmFinishTrade(requestId, userId);
+    res.status(HTTP_STATUS.OK).json(result);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const cancelTrade = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { userId } = req.body; // Giả sử userId được gửi từ client
+    const result = await tradeRequestsServices.cancelTrade(requestId, userId);
+    res.status(HTTP_STATUS.OK).json(result);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const declineOffer = async (req, res) => {
+  try {
+    const { requestId, offerId } = req.params;
+    const { userId } = req.body; // Giả sử userId được gửi từ client
+    const result = await tradeRequestsServices.declineOffer(requestId, offerId, userId);
+    res.status(HTTP_STATUS.OK).json(result);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
 
 export const tradeRequestsController = {
-  getAllRequests,
-  createRequest
-}
+  createTradeRequest,
+  getAllTradeRequests,
+  getTradeRequestsByUserId,
+  getTradeRequestById,
+  updateTradeRequest,
+  deleteTradeRequest,
+  selectOffer,
+  confirmFinishTrade, 
+  cancelTrade, 
+  declineOffer, 
+};
