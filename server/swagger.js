@@ -2,15 +2,31 @@ import swaggerAutogen from 'swagger-autogen';
 
 const doc = {
   info: {
-    title: 'My API',
-    description: 'A sample API for demonstration',
     version: '1.0.0',
+    title: 'Accessories Buying And Blindbox Trading',
+    description: 'API documentation for the Accessories Buying and Blindbox Trading Platform',
   },
-  host: 'localhost:3000',
-  schemes: ['http'],
+  servers: [
+    {
+      url: 'http://localhost:3000',
+      description: 'SP25_SWD_SWAGGER',
+    },
+  ],
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
 };
 
 const outputFile = './swagger-output.json';
-const routes = ['./index.js', './src/routes/users.routers.js', './src/routes/accessories.routes.js'];
+const routes = ['./src/index.js'];
 
-swaggerAutogen(outputFile, routes, doc);
+/* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
+root file where the route starts, such as index.js, app.js, routes.js, etc ... */
+
+swaggerAutogen({openapi: '3.0.0'})(outputFile, routes, doc);

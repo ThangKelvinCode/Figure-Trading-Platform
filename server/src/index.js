@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors' // Import cors
 import { createServer } from 'http'; // Để tạo server HTTP
-import { Server } from 'socket.io'; // Socket.IO server
+
 import usersRouter from './routes/users.routers.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/error.middlewares.js'
@@ -17,37 +17,39 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import messagesRouter from './routes/messages.routes.js';
 import { messagesServices } from './services/messages.services.js';
+import bodyParser from 'body-parser';
+import swaggerFile from '../swagger-output.json' assert { type: "json" }
+import { Server } from 'socket.io';
 // import path from 'path'
 
 
 // const file  = fs.readFileSync(path.resolve('swd-swagger.yaml'), 'utf8')
 
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Accessories Buying And Blindbox Trading',
-      version: '1.0.0',
-    },
+// const options = {
+//   definition: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'Accessories Buying And Blindbox Trading',
+//       version: '1.0.0',
+//     },
 
-    // components: {
-    //   securitySchemes: {
-    //     BearerAuth: {
-    //       type: 'http',
-    //       scheme: 'bearer',
-    //       bearerFormat: 'JWT'
-    //     }
-    //   }
-    // }
-  },
-  // apis: ['./src/routes/*.routers.js', './src/models/schemas/*.schema.js'], // files containing annotations as above
-  // apis: ['./swd-swagger.yaml'], // files containing annotations as above
-  apis: ['./openapi/*.yaml'], // files containing annotations as above
-};
-const openapiSpecification = swaggerJsdoc(options);
+//     // components: {
+//     //   securitySchemes: {
+//     //     BearerAuth: {
+//     //       type: 'http',
+//     //       scheme: 'bearer',
+//     //       bearerFormat: 'JWT'
+//     //     }
+//     //   }
+//     // }
+//   },
+//   // apis: ['./src/routes/*.routers.js', './src/models/schemas/*.schema.js'], // files containing annotations as above
+//   // apis: ['./swd-swagger.yaml'], // files containing annotations as above
+//   apis: ['./openapi/*.yaml'], // files containing annotations as above
+// };
+// const openapiSpecification = swaggerJsdoc(options);
 
 // const swaggerDocument = YAML.parse(file)
-
 
 
 const app = express()
@@ -76,13 +78,16 @@ app.use(cors({
 
 // Enable JSON middleware
 app.use(express.json())
+app.use(bodyParser.json())
 
 // const openapiSpecification = './swagger-output.json';
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 // Serve Swagger UI
 // const swaggerDocument = require('./swagger-output.json'); // Đường dẫn đến tệp JSON
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+// app.use('/doc', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 // Setup routes
 app.use('/user', usersRouter)
