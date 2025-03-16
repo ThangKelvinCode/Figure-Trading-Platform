@@ -29,14 +29,14 @@ const requestImageSchema = {
   },
 };
 
-const userIdSchema = {
-  notEmpty: {
-    errorMessage: 'User ID is required',
-  },
-  isMongoId: {
-    errorMessage: 'User ID is invalid',
-  },
-};
+// const userIdSchema = {
+//   notEmpty: {
+//     errorMessage: 'User ID is required',
+//   },
+//   isMongoId: {
+//     errorMessage: 'User ID is invalid',
+//   },
+// };
 
 export const createTradeRequestValidator = validate(
   checkSchema(
@@ -44,7 +44,7 @@ export const createTradeRequestValidator = validate(
       requestItem: requestItemSchema,
       requestDescription: requestDescriptionSchema,
       requestImage: requestImageSchema,
-      userId: userIdSchema,
+      // userId: userIdSchema,
     },
     ['body']
   )

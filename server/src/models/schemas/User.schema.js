@@ -1,52 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { USER_ROLE, UserVerifyStatus } from '../../constants/enums.js'
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     LoginBody:
- *       type: object
- *       properties:
- *         email:
- *           type: string
- *           example: example@gmail.com
- *         password:
- *           type: string
- *           example: 123456
- * 
- *     SuccessAuthentication:
- *       type: object
- *       properties:
- *         access_token:
- *           type: string
- *           example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
- *         refresh_token:
- *           type: string
- *           example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
- * 
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           format: MongoId
- *           example: "67c556ff00a7db27ac1ce54b"
- *         name:
- *           type: string
- *           example: "Bá Thắng"
- *         email:
- *           type: string
- *           format: email
- *           example: "bathangzed@gmail.com"
- *         date_of_birth:
- *           type: string
- *           format: date-time
- *           example: "2004-03-17T17:00:00.000Z"
- * 
- */
-
-
 //tạo ra class User để mô tả 1 user sẽ có các thuộc tính gì
 export default class User {
   constructor(user) {

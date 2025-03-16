@@ -105,6 +105,11 @@ app.use(defaultErrorHandler)
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
+  // socket.on('join_user_room', (userId) => {
+  //   socket.join(userId);
+  //   console.log(`User ${socket.id} joined room ${userId}`);
+  // });
+
   // Trader tham gia vào một phòng chat (dựa trên tradeId)
   socket.on('join_trade', (tradeId) => {
     socket.join(tradeId);

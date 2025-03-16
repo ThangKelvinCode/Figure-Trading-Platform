@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { loginValidator, registerValidator } from '../middlewares/users.middlewares.js'
 import { userController } from '../controllers/users.controllers.js'
 import { wrapAsync } from '../utils/handler.js'
+import { verifyToken } from '../middlewares/auth.middlewares.js'
 //tạo Router
 const usersRouter = Router()
 
@@ -38,6 +39,7 @@ usersRouter.post('/login', loginValidator, wrapAsync(userController.login))
     path: /:id
     method: GET
 */
-usersRouter.get('/:id', wrapAsync(userController.getUserProfile))
+// usersRouter.get('/:id', wrapAsync(userController.getUserProfile))
+usersRouter.get('/:id', verifyToken, wrapAsync(userController.getUserProfile));
 
 export default usersRouter

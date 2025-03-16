@@ -4,9 +4,9 @@ import tradeRequestRepo from '../repositories/tradeRequests.repo.js';
 import offerRepo from '../repositories/offers.repo.js'; // Để kiểm tra offer
 import { OfferStatus, TradeRequestStatus } from '../constants/enums.js';
 
-const createTradeRequest = async (payload) => {
+const createTradeRequest = async (payload, userId) => {
   try {
-    if (!ObjectId.isValid(payload.userId)) {
+    if (!ObjectId.isValid(userId)) {
       throw new Error('Invalid User ID format');
     }
 
@@ -15,7 +15,7 @@ const createTradeRequest = async (payload) => {
       requestItem: payload.requestItem,
       requestDescription: payload.requestDescription,
       requestImage: payload.requestImage,
-      userId: new ObjectId(payload.userId),
+      userId: new ObjectId(userId),
       requestStatus: TradeRequestStatus.Pending,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -83,31 +83,26 @@ const deleteTradeRequest = async (requestId) => {
 const selectOffer = async (requestId, offerId, userId) => {
   try {
     const tradeRequest = await tradeRequestRepo.getByRequestId(requestId);
-    if (!tradeRequest || tradeRequest.userId.toString() !== userId.toString()) {
+    if (!tradeRequest || tradeRequest.userId.toString() !== userId) {
       throw new Error('Unauthorized or trade request not found');
     }
-
-    // Kiểm tra số lượng offer hiện tại cho request
+    
     const existingOffers = await offerRepo.getAllByRequestId(requestId);
     if (existingOffers.length === 0) {
       throw new Error('No offers available');
     }
 
-    // Kiểm tra xem đã có offer nào được Accepted chưa
     const acceptedOffer = existingOffers.find(offer => offer.offerStatus === OfferStatus.Accepted);
     if (acceptedOffer) {
       throw new Error('An offer has already been accepted for this request');
     }
 
-    // Cập nhật status của trade request thành In-process
     await tradeRequestRepo.updateByRequestId(requestId, {
       requestStatus: TradeRequestStatus.InProcess,
     });
 
-    // Cập nhật offer được chọn thành Accepted
     await offerRepo.updateByOfferId(offerId, { offerStatus: OfferStatus.Accepted });
 
-    // Hủy các offer khác
     for (const offer of existingOffers) {
       if (offer._id.toString() !== offerId) {
         await offerRepo.updateByOfferId(offer._id.toString(), { offerStatus: OfferStatus.Declined });
@@ -229,7 +224,6 @@ const declineOffer = async (requestId, offerId, userId) => {
       throw new Error('Trade request not found');
     }
 
-    // Kiểm tra quyền từ chối (chỉ trader gửi yêu cầu mới có quyền)
     if (tradeRequest.userId.toString() !== userId) {
       throw new Error('Unauthorized: Only the requester can decline offers');
     }
@@ -239,7 +233,6 @@ const declineOffer = async (requestId, offerId, userId) => {
       throw new Error('Offer not found or does not belong to this request');
     }
 
-    // Cập nhật status của Offer thành Declined
     await offerRepo.updateByOfferId(offerId, {
       offerStatus: OfferStatus.Declined,
     });

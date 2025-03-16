@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb'
 import Offer from '../models/schemas/Offers.schema.js'
 import databaseServices from './database.services.js'
 import offerRepo from '../repositories/offers.repo.js'
+import { OfferStatus } from '../constants/enums.js'
 
 // const createOffer = async (payload) => {
 //   let offerId = new ObjectId()
@@ -37,7 +38,7 @@ const createOffer = async (payload) => {
 
     // Ensure that requesterId and requestId are valid ObjectId
     if (!ObjectId.isValid(payload.userId) || !ObjectId.isValid(payload.requestId)) {
-      throw new Error('Invalid ObjectId format for userId or requestId')
+      throw new Error('Invalid User ID or Request ID format');
     }
 
     const newOffer = {
@@ -45,21 +46,21 @@ const createOffer = async (payload) => {
       offerItem: payload.offerItem,
       offerDescription: payload.offerDescription,
       offerImage: payload.offerImage,
-      userId: new ObjectId(payload.userId), // Use userId
+      userId: new ObjectId(payload.userId),
       requestId: new ObjectId(payload.requestId),
-      offerStatus: 'Pending',
+      offerStatus: OfferStatus.Pending,
       createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    };
 
     console.log('Prepared Offer Object:', newOffer)
 
     // const result = await databaseServices.offers.insertOne(newOffer);
-    const result = await offerRepo.insert(newOffer)
-    return result
+    const result = await offerRepo.insert(newOffer);
+    return newOffer;
   } catch (error) {
-    console.error('Error creating offer:', error)
-    throw error
+    console.error('Error creating offer:', error);
+    throw error;
   }
 }
 }

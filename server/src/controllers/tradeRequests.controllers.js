@@ -4,7 +4,7 @@ import { TRADE_REQUESTS_MESSAGES } from '../constants/messages.js';
 
 const createTradeRequest = async (req, res) => {
   try {
-    const result = await tradeRequestsServices.createTradeRequest(req.body);
+    const result = await tradeRequestsServices.createTradeRequest(req.body, req.user.user_id);
     res.status(HTTP_STATUS.CREATED).json({
       message: TRADE_REQUESTS_MESSAGES.CREATE_REQUEST_SUCCESSFULLY,
       result,
@@ -25,8 +25,7 @@ const getAllTradeRequests = async (req, res) => {
 
 const getTradeRequestsByUserId = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const tradeRequests = await tradeRequestsServices.getTradeRequestsByUserId(userId);
+    const tradeRequests = await tradeRequestsServices.getTradeRequestsByUserId(req.user.user_id);
     res.status(HTTP_STATUS.OK).json(tradeRequests);
   } catch (error) {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -35,26 +34,21 @@ const getTradeRequestsByUserId = async (req, res) => {
 
 const getTradeRequestById = async (req, res) => {
   try {
-    const requestId = req.params.requestId;
-    const tradeRequest = await tradeRequestsServices.getTradeRequestById(requestId);
-    if (!tradeRequest) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Trade request not found' });
-    }
+    const tradeRequest = await tradeRequestsServices.getTradeRequestById(req.params.requestId);
     res.status(HTTP_STATUS.OK).json(tradeRequest);
   } catch (error) {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
+
 const updateTradeRequest = async (req, res) => {
   try {
-    const requestId = req.params.requestId;
-    const updates = req.body;
-    const updatedTradeRequest = await tradeRequestsServices.updateTradeRequest(requestId, updates);
-    if (!updatedTradeRequest) {
+    const result = await tradeRequestsServices.updateTradeRequest(req.params.requestId, req.body);
+    if (!result) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Trade request not found' });
     }
-    res.status(HTTP_STATUS.OK).json(updatedTradeRequest);
+    res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
@@ -62,8 +56,7 @@ const updateTradeRequest = async (req, res) => {
 
 const deleteTradeRequest = async (req, res) => {
   try {
-    const requestId = req.params.requestId;
-    const result = await tradeRequestsServices.deleteTradeRequest(requestId);
+    const result = await tradeRequestsServices.deleteTradeRequest(req.params.requestId);
     if (result.deletedCount === 0) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Trade request not found' });
     }
@@ -76,7 +69,7 @@ const deleteTradeRequest = async (req, res) => {
 const selectOffer = async (req, res) => {
   try {
     const { requestId, offerId } = req.params;
-    const userId = req.body.userId; // Giả sử userId được gửi từ client (sau này cần xác thực)
+    const userId = req.user.user_id;
     const result = await tradeRequestsServices.selectOffer(requestId, offerId, userId);
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
@@ -87,7 +80,7 @@ const selectOffer = async (req, res) => {
 const confirmFinishTrade = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const { userId } = req.body; // Giả sử userId được gửi từ client (sau này cần xác thực)
+    const userId = req.user.user_id;
     const result = await tradeRequestsServices.confirmFinishTrade(requestId, userId);
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
@@ -98,7 +91,7 @@ const confirmFinishTrade = async (req, res) => {
 const cancelTrade = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const { userId } = req.body; // Giả sử userId được gửi từ client
+    const userId = req.user.user_id;
     const result = await tradeRequestsServices.cancelTrade(requestId, userId);
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
@@ -109,10 +102,11 @@ const cancelTrade = async (req, res) => {
 const declineOffer = async (req, res) => {
   try {
     const { requestId, offerId } = req.params;
-    const { userId } = req.body; // Giả sử userId được gửi từ client
-    const result = await tradeRequestsServices.declineOffer(requestId, offerId, userId);
+    const userId = req.user.user_id;
+    const result = await tradeRequestsServices.declineOffer(requestId, offerId, userId); // Loại bỏ req.io
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
+    console.error('Error declining offer:', error);
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };

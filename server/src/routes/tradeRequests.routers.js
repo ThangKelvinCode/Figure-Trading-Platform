@@ -3,8 +3,11 @@ import { Router } from 'express';
 import { tradeRequestsController } from '../controllers/tradeRequests.controllers.js';
 import { wrapAsync } from '../utils/handler.js';
 import { createTradeRequestValidator, updateTradeRequestValidator } from '../middlewares/tradeRequests.middlewares.js';
+import { USER_ROLE } from '../constants/enums.js';
+import { restrictTo, verifyToken } from '../middlewares/auth.middlewares.js';
 
 const tradeRequestsRouter = Router();
+tradeRequestsRouter.use(verifyToken, restrictTo(USER_ROLE.User));
 
 tradeRequestsRouter.post('/', createTradeRequestValidator, wrapAsync(tradeRequestsController.createTradeRequest));
 tradeRequestsRouter.get('/', wrapAsync(tradeRequestsController.getAllTradeRequests));
@@ -19,5 +22,5 @@ tradeRequestsRouter.post(
   tradeRequestsRouter.post('/:requestId/finish-trade', wrapAsync(tradeRequestsController.confirmFinishTrade));
   tradeRequestsRouter.post('/:requestId/cancel-trade', wrapAsync(tradeRequestsController.cancelTrade));
   tradeRequestsRouter.post('/:requestId/decline-offer/:offerId', wrapAsync(tradeRequestsController.declineOffer));
-  
+
   export default tradeRequestsRouter;

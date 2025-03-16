@@ -3,8 +3,10 @@ import { Router } from 'express';
 import { offersController } from '../controllers/offers.controllers.js';
 import { wrapAsync } from '../utils/handler.js';
 import { createOfferValidator } from '../middlewares/offers.middlewares.js';
+import { verifyToken } from '../middlewares/auth.middlewares.js';
 
 const offersRouter = Router();
+offersRouter.use(verifyToken);
 
 offersRouter.post('/', createOfferValidator, wrapAsync(offersController.createOffer));
 offersRouter.get('/request/:requestId', wrapAsync(offersController.getAllOffersByRequestId)); // Changed route
