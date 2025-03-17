@@ -43,7 +43,9 @@ function Login() {
             placeholder="Password"
           />
           <div>
-            <Link to="/register">Don't have account yet?</Link>
+            <Link className="navi_regi" to="/register">
+              Don't have account yet?
+            </Link>
           </div>
           <button type="submit">Sign in</button>
         </form>

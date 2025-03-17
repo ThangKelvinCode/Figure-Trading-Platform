@@ -22,10 +22,9 @@ function Register() {
     }
 
     try {
-      // Call the register function from auth context
       const success = await register(username, email, password);
       if (success) {
-        navigate("/"); // Redirect to home page on success
+        navigate("/");
       }
     } catch (err) {
       setError(err.message || "Registration failed");
@@ -78,7 +77,9 @@ function Register() {
             />
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
-          <Link to="/login">Already have an account?</Link>
+          <Link className="navi_login" to="/login">
+            Already have an account?
+          </Link>
           <button type="submit">Register</button>
         </form>
       </div>
