@@ -65,15 +65,18 @@ export const USERS_MESSAGES = {
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
   REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully',
   //Product and others
-  EMPTY_DESCRIPTION : 'Please fill in description',
+  EMPTY_DESCRIPTION: 'Please fill in description',
   EMPTY_PRICE: 'Please fill in price',
   EMPTY_PHOTO: 'Please upload product photos'
 }
 
 export const TRADE_REQUESTS_MESSAGES = {
-  GET_TRADE_REQUESTS_SUCCESS: 'Get trade request success',
-  ITEM_MUST_HAVE_NAME: 'Item must have name',
-  CREATE_REQUEST_SUCCESSFULLY: 'Create request successfully'
+  GET_TRADE_REQUESTS_SUCCESSFULLY: 'Get trade request success',
+  ITEM_IS_REQUIRED: 'Item must have name',
+  ITEM_MUST_BE_STRING: 'Item must be string',
+  ITEM_LENGTH_MUST_BE_FROM_1_TO_100: 'Item length must be from 1 to 100',
+  CREATE_REQUEST_SUCCESSFULLY: 'Create request successfully',
+  UPDATE_REQUEST_SUCCESSFULLY: 'Update Request Successfully'
 }
 
 //Blindbox message

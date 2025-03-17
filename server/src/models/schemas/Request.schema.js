@@ -10,5 +10,7 @@ export default class TradeRequest {
     this.description = tradeRequest.description || ''
     this.image = tradeRequest.image || ''
     this.status = tradeRequest.status || TradeRequestStatus.Pending //đăng request thì để pending
+    this.createdAt = tradeRequest.createdAt || new Date()
+    this.updatedAt = tradeRequest.updatedAt || new Date()
   }
 }

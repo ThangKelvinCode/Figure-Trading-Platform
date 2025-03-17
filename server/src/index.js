@@ -3,13 +3,13 @@ import cors from 'cors' // Import cors
 import { createServer } from 'http'; // Để tạo server HTTP
 
 import usersRouter from './routes/users.routers.js'
-import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/error.middlewares.js'
 import accessoriesRouter from './routes/accessories.routes.js'
 import offersRouter from './routes/offers.routers.js'
 import tradeRequestsRouter from './routes/tradeRequests.routers.js'
 import { initFolder } from './utils/file.js'
 import database from './configs/database.js'
+
 
 import YAML from 'yaml'
 // import fs from 'fs'
@@ -52,6 +52,7 @@ import { Server } from 'socket.io';
 // const swaggerDocument = YAML.parse(file)
 
 
+//dựng server
 const app = express()
 const port = 3000
 
@@ -61,7 +62,9 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:5173', // URL frontend React của bạn (thay đổi nếu cần)
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: 'Content-Type,Authorization',
+    credentials: true // Nếu dùng cookie hoặc token trong request
   },
 });
 
@@ -69,12 +72,17 @@ const io = new Server(server, {
 database.connect()
 initFolder()
 
+app.use(express.json()) //cho server xài middleware biến đổi json
+//cho server kết nối các Router
+// app.use('/', console.log('Hello World'))
+
 // Enable CORS
 app.use(cors({
   origin: '*', // Allow all origins (for testing). Change this to your frontend URL in production.
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type,Authorization'
 }))
+
 
 // Enable JSON middleware
 app.use(express.json())
