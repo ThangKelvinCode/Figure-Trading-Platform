@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb'
-import databaseServices from '../services/database.services.js'
+import userRepo from '../repositories/users.repo.js'
 
 const getUserProfile = async (userId) => {
   try {
-    return databaseServices.users.findOne({ _id: new ObjectId(userId) })
+    return userRepo.findById({ _id: new ObjectId(userId) })
   } catch (error) {
     throw new Error(error)
   }

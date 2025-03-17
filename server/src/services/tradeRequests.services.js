@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb'
-import databaseServices from './database.services.js'
 import TradeRequest from '../models/schemas/Request.schema.js'
 import mediasServices from './medias.sevices.js'
 import requestRepo from '../repositories/requests.repo.js'

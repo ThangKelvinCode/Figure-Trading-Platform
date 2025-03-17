@@ -1,69 +1,95 @@
 import { Router } from 'express'
 import QueryString from 'qs'
 import crypto from 'crypto'
-import config from '../config'
 import dateFormat from 'dateformat'
 
 const paymentRouter = Router()
 
-paymentRouter.post('/create_payment_url', function (req, res, next) {
+paymentRouter.post('/create_payment', async (req, res, next) => {
   var ipAddr =
     req.headers['x-forwarded-for'] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress
 
-  //   var config = require('config')
-  //   var dateFormat = require('dateformat')
+  // var tmnCode = process.env.VNP_TMNCODE
+  // var secretKey = process.env.VNP_HASHSECRET
+  // var vnpUrl = process.env.VNP_URL
+  // var returnUrl = process.env.VNP_RETURNURL
+  // var date = new Date()
+  // var createDate = dateFormat(date, 'yyyymmddHHmmss')
+  // var orderId = req.orderId
+  // var amount = req.body.amount
+  // var bankCode = req.body.bankCode
+  // var orderInfo = req.body.orderDescription
+  // var orderType = req.body.orderType
+  // var locale = req.body.language
+  // if (locale === null || locale === '') {
+  //   locale = 'vn'
+  // }
+  // var currCode = 'VND'
+  // var vnp_Params = {}
+  // vnp_Params['vnp_Version'] = '2.1.0'
+  // vnp_Params['vnp_Command'] = 'pay'
+  // vnp_Params['vnp_TmnCode'] = tmnCode.toString()
+  // // vnp_Params['vnp_Merchant'] = ''
+  // vnp_Params['vnp_Locale'] = locale
+  // vnp_Params['vnp_CurrCode'] = currCode
+  // vnp_Params['vnp_TxnRef'] = orderId
+  // vnp_Params['vnp_OrderInfo'] = orderInfo
+  // vnp_Params['vnp_OrderType'] = orderType
+  // vnp_Params['vnp_Amount'] = amount * 100
+  // vnp_Params['vnp_ReturnUrl'] = returnUrl.toString()
+  // vnp_Params['vnp_IpAddr'] = ipAddr
+  // vnp_Params['vnp_CreateDate'] = createDate
+  // if (bankCode !== null && bankCode !== '') {
+  //   vnp_Params['vnp_BankCode'] = bankCode
+  // }
+  // vnp_Params = sortObject(vnp_Params)
+  // //   var querystring = require('qs')
+  // var signData = QueryString.stringify(vnp_Params, { encode: false })
+  // //   var crypto = require('crypto')
+  // var hmac = crypto.createHmac('sha512', secretKey.toString())
+  // var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
+  // vnp_Params['vnp_SecureHash'] = signed
+  // vnpUrl = vnpUrl.toString() + '?' + QueryString.stringify(vnp_Params, { encode: false })
+  // res.redirect(vnpUrl)
 
-  var tmnCode = config.get('vnp_TmnCode')
-  var secretKey = config.get('vnp_HashSecret')
-  var vnpUrl = config.get('vnp_Url')
-  var returnUrl = config.get('vnp_ReturnUrl')
+  const { amount, orderId } = req.body
+  const locale = req.body.language && req.body.language.trim() !== '' ? req.body.language : 'vn'
+  var date = Date.now()
+  const createDate = dateFormat(date, 'yyyymmddHHmmss')
+  const expireDate = (Number(createDate) + 15000).toString()
+  const orderInfo = 'Thanh toan mua hang'.split(' ').join('+')
+  // if (locale === null || locale === '') {
+  //   locale = 'vn'
+  // }
 
-  var date = new Date()
-
-  var createDate = dateFormat(date, 'yyyymmddHHmmss')
-  var orderId = req.orderId
-  var amount = req.body.amount
-  var bankCode = req.body.bankCode
-
-  var orderInfo = req.body.orderDescription
-  var orderType = req.body.orderType
-  var locale = req.body.language
-  if (locale === null || locale === '') {
-    locale = 'vn'
+  let vnp_Params = {
+    vnp_Version: '2.1.0',
+    vnp_Command: 'pay',
+    vnp_TmnCode: process.env.VNP_TMNCODE.trim(),
+    vnp_Amount: amount * 100,
+    vnp_CurrCode: 'VND',
+    vnp_TxnRef: orderId,
+    vnp_OrderInfo: orderInfo + orderId,
+    vnp_OrderType: 'other',
+    vnp_Locale: locale,
+    vnp_ReturnUrl: process.env.VNP_RETURNURL,
+    vnp_IpAddr: ipAddr,
+    vnp_CreateDate: createDate
+    // vnp_ExpireDate: expireDate
   }
-  var currCode = 'VND'
-  var vnp_Params = {}
-  vnp_Params['vnp_Version'] = '2.1.0'
-  vnp_Params['vnp_Command'] = 'pay'
-  vnp_Params['vnp_TmnCode'] = tmnCode
-  // vnp_Params['vnp_Merchant'] = ''
-  vnp_Params['vnp_Locale'] = locale
-  vnp_Params['vnp_CurrCode'] = currCode
-  vnp_Params['vnp_TxnRef'] = orderId
-  vnp_Params['vnp_OrderInfo'] = orderInfo
-  vnp_Params['vnp_OrderType'] = orderType
-  vnp_Params['vnp_Amount'] = amount * 100
-  vnp_Params['vnp_ReturnUrl'] = returnUrl
-  vnp_Params['vnp_IpAddr'] = ipAddr
-  vnp_Params['vnp_CreateDate'] = createDate
-  if (bankCode !== null && bankCode !== '') {
-    vnp_Params['vnp_BankCode'] = bankCode
-  }
-
+  // Sort parameters
   vnp_Params = sortObject(vnp_Params)
-
-  //   var querystring = require('qs')
-  var signData = QueryString.stringify(vnp_Params, { encode: false })
-  //   var crypto = require('crypto')
-  var hmac = crypto.createHmac('sha512', secretKey)
-  var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
+  // Create secure hash
+  const signData = QueryString.stringify(vnp_Params, { encode: false })
+  const hmac = crypto.createHmac('SHA256', process.env.VNP_HASHSECRET)
+  const signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
   vnp_Params['vnp_SecureHash'] = signed
-  vnpUrl += '?' + QueryString.stringify(vnp_Params, { encode: false })
-
-  res.redirect(vnpUrl)
+  // Generate URL properly
+  const vnpUrl = `${process.env.VNP_URL.trim()}?${QueryString.stringify(vnp_Params, { encode: false })}`
+  res.json({ paymentUrl: vnpUrl })
 })
 // Vui lòng tham khảo thêm tại code demo
 
@@ -75,8 +101,7 @@ paymentRouter.get('/vnpay_ipn', function (req, res, next) {
   delete vnp_Params['vnp_SecureHashType']
 
   vnp_Params = sortObject(vnp_Params)
-  // var config = require('config');
-  var secretKey = config.get('vnp_HashSecret')
+  var secretKey = process.env.VNP_HASHSECRET
   // var querystring = require('qs');
   var signData = QueryString.stringify(vnp_Params, { encode: false })
   // var crypto = require("crypto");
@@ -93,7 +118,7 @@ paymentRouter.get('/vnpay_ipn', function (req, res, next) {
   }
 })
 
-paymentRouter.get('/vnpay_return', function (req, res, next) {
+paymentRouter.get('/vnpay_return', async (req, res, next) => {
   var vnp_Params = req.query
 
   var secureHash = vnp_Params['vnp_SecureHash']
@@ -103,9 +128,8 @@ paymentRouter.get('/vnpay_return', function (req, res, next) {
 
   vnp_Params = sortObject(vnp_Params)
 
-  // var config = require('config');
-  var tmnCode = config.get('vnp_TmnCode')
-  var secretKey = config.get('vnp_HashSecret')
+  var tmnCode = process.env.VNP_TMNCODE
+  var secretKey = process.env.VNP_HASHSECRET
 
   // var querystring = require('qs');
   var signData = QueryString.stringify(vnp_Params, { encode: false })
@@ -113,13 +137,40 @@ paymentRouter.get('/vnpay_return', function (req, res, next) {
   var hmac = crypto.createHmac('sha512', secretKey)
   var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
 
-  if (secureHash === signed) {
-    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+  // if (secureHash === signed) {
+  //   //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
 
-    res.render('success', { code: vnp_Params['vnp_ResponseCode'] })
+  //   res.render('success', { code: vnp_Params['vnp_ResponseCode'] })
+  // } else {
+  //   res.render('success', { code: '97' })
+  // }
+
+  // const vnp_Params = req.query
+  // const secureHash = vnp_Params['vnp_SecureHash']
+  // delete vnp_Params['vnp_SecureHash']
+  // delete vnp_Params['vnp_SecureHashType']
+
+  // vnp_Params = sortObject(vnp_Params)
+  // const signData = QueryString.stringify(vnp_Params, { encode: false })
+  // const hmac = crypto.createHmac('sha512', process.env.VNP_HASHSECRET)
+  // const signed = hmac.update(signData).digest('hex')
+
+  if (secureHash === signed) {
+    const paymentStatus = vnp_Params['vnp_ResponseCode'] === '00' ? 'Success' : 'Failed'
+    res.redirect('http://localhost:5173/' + '/payment-status?status=' + paymentStatus)
   } else {
-    res.render('success', { code: '97' })
+    res.status(400).json({ message: 'Invalid signature' })
   }
 })
+
+function sortObject(obj) {
+  let sorted = {}
+  Object.keys(obj)
+    .sort()
+    .forEach((key) => {
+      sorted[key] = obj[key]
+    })
+  return sorted
+}
 
 export default paymentRouter

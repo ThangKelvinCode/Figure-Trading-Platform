@@ -3,7 +3,6 @@ import { Router } from 'express'
 import { accessoriesController } from '../controllers/accessories.controller.js'
 import { wrapAsync } from '../utils/handler.js'
 import { productValidator } from '../middlewares/product.middlewares.js'
-import databaseServices from '../services/database.services.js'
 //tạo Router
 const accessoriesRouter = Router()
 
@@ -22,8 +21,11 @@ const accessoriesRouter = Router()
         owner: user
     }
  */
-accessoriesRouter.post('/postAccessories', productValidator.AccessoriesValidator,
-    wrapAsync(accessoriesController.postAccessories))
+accessoriesRouter.post(
+  '/postAccessories',
+  productValidator.AccessoriesValidator,
+  wrapAsync(accessoriesController.postAccessories)
+)
 
 /*
     description: create new categories
@@ -34,12 +36,15 @@ accessoriesRouter.post('/postAccessories', productValidator.AccessoriesValidator
         description: string
     }
 */
-accessoriesRouter.post('/newCategory', productValidator.CategoriesValidator,
-    wrapAsync(accessoriesController.newCategory))
+accessoriesRouter.post(
+  '/newCategory',
+  productValidator.CategoriesValidator,
+  wrapAsync(accessoriesController.newCategory)
+)
 
-accessoriesRouter.get('/allAccessories', wrapAsync(accessoriesController.getAllAccessories))   
+accessoriesRouter.get('/allAccessories', wrapAsync(accessoriesController.getAllAccessories))
 
-accessoriesRouter.get('/allCategories', wrapAsync(accessoriesController.getAllCategories))   
+accessoriesRouter.get('/allCategories', wrapAsync(accessoriesController.getAllCategories))
 
 accessoriesRouter.get('/:id', accessoriesController.getAccessory)
 

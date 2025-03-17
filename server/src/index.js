@@ -8,6 +8,8 @@ import { initFolder } from './utils/file.js'
 import database from './configs/database.js'
 import paymentRouter from './routes/payments.routers.js'
 
+console.log(Date.now().toString())
+// console.log(new Date().toISOString())
 //dựng server
 const app = express()
 const port = 3000
