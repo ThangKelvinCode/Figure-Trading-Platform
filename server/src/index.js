@@ -1,5 +1,6 @@
-
 import express from 'express'
+import cors from 'cors'
+import { corsOptions } from './configs/cors.js'
 import usersRouter from './routes/users.routers.js'
 import { defaultErrorHandler } from './middlewares/error.middlewares.js'
 import accessoriesRouter from './routes/accessories.routes.js'
@@ -14,6 +15,10 @@ import bodyParser from 'body-parser'
 
 //dựng server
 const app = express()
+
+//cors
+app.use(cors(corsOptions))
+
 const port = 3000
 //call server mongo chạy
 database.connect()
