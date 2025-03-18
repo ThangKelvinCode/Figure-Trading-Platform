@@ -18,13 +18,15 @@ function App() {
 
   return (
     <div className="App">
+      {/* Only show Navbar if the path is not login or register */}
       {location.pathname !== "/login" && location.pathname !== "/register" && <Navbar />}
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/tradelist" element={<Tradelist />} />
         <Route path="/accessory" element={<Accessory />} />
-        <Route path="/accessory/:id" element={<AccessoryDetail />} /> 
+        <Route path="/accessory/:id" element={<AccessoryDetail />} /> {/* Fixed path to handle accessory ID */}
         <Route path="/login" element={<Login hideNavBar={true} />} />
         <Route path="/register" element={<Register hideNavBar={true} />} />
         <Route path="/user_management" element={<UserManagement />} />

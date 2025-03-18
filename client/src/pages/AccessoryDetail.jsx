@@ -1,67 +1,109 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
-import { Container, Row, Col, Button, Form } from "react-bootstrap";
-
-const mockAccessories = [
-  {
-    id: "1",
-    name: "POP MART Mini Display Container (Yellow)",
-    sku: "PM-YELLOW-001",
-    brand: "POP MART",
-    price: 390000,
-    status: "Còn hàng",
-    image: "https://example.com/popmart-container-yellow.jpg",
-    thumbnails: [
-      "https://example.com/popmart-container-thumbnail1.jpg",
-      "https://example.com/popmart-container-thumbnail2.jpg",
-      "https://example.com/popmart-container-thumbnail3.jpg",
-    ],
-  },
-];
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button, Form, Alert } from "react-bootstrap";
 
 const AccessoryDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate(); // Hook điều hướng
+  const { id } = useParams(); // Lấy 'id' từ URL
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const foundProduct = mockAccessories.find((item) => item.id === id);
-    setProduct(foundProduct);
+    console.log("🔍 ID từ useParams:", id); // Debug giá trị id
+
+    // Kiểm tra nếu ID không hợp lệ
+    if (!id || id === "undefined") {
+      setError("⚠️ Lỗi: ID sản phẩm không hợp lệ.");
+      setLoading(false);
+      return;
+    }
+
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        console.log("📡 Gửi request đến API với ID:", id);
+
+        const response = await fetch(`http://localhost:3000/accessories/${id}`);
+        
+        if (!response.ok) {
+          throw new Error("⚠️ Sản phẩm không tồn tại hoặc lỗi server.");
+        }
+
+        const data = await response.json();
+
+        // Kiểm tra nếu API trả về `accessory: null`
+        if (!data.accessory) {
+          throw new Error("⚠️ API không tìm thấy sản phẩm này!");
+        }
+
+        setProduct(data.accessory);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
-  if (!product) {
+  const handleBuyNow = () => {
+    if (!product) return;
+    navigate(`/checkout?productId=${id}&quantity=${quantity}`);
+  };
+
+  const handleQuantityChange = (value) => {
+    setQuantity((prevQuantity) => Math.max(1, prevQuantity + value)); // Không cho số lượng <1
+  };
+
+  if (loading) {
     return (
       <Container className="text-center mt-5">
-        <p>Không tìm thấy sản phẩm!</p>
+        <p>⏳ Đang tải sản phẩm...</p>
       </Container>
     );
   }
 
-  // Xử lý điều hướng khi nhấn nút MUA NGAY
-  const handleBuyNow = () => {
-    navigate(`/checkout`); // Điều hướng đến trang thanh toán
-  };
+  if (error) {
+    return (
+      <Container className="text-center mt-5">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container className="mt-5">
       <Row>
         <Col md={5}>
-          <img src={product.image} alt={product.name} className="img-fluid" />
+          {product?.photo ? (
+            <img src={product.photo} alt={product.name} className="img-fluid" />
+          ) : (
+            <p>❌ Không có hình ảnh</p>
+          )}
         </Col>
         <Col md={7}>
-          <h2>{product.name}</h2>
-          <h4 className="text-danger">{product.price.toLocaleString()}đ</h4>
+          <h2>{product?.name || "🔍 Tên sản phẩm không có"}</h2>
+          <h4 className="text-danger">
+            {product?.price ? product.price.toLocaleString() : "0"}đ
+          </h4>
           <Form className="d-flex align-items-center">
             <strong className="me-3">Số lượng:</strong>
-            <Button variant="outline-secondary" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-            <Form.Control type="text" value={quantity} readOnly className="text-center mx-2" style={{ width: "50px" }} />
-            <Button variant="outline-secondary" onClick={() => setQuantity(quantity + 1)}>+</Button>
+            <Button variant="outline-secondary" onClick={() => handleQuantityChange(-1)}>-</Button>
+            <Form.Control
+              type="text"
+              value={quantity}
+              readOnly
+              className="text-center mx-2"
+              style={{ width: "50px" }}
+            />
+            <Button variant="outline-secondary" onClick={() => handleQuantityChange(1)}>+</Button>
           </Form>
-
-          {/* Nút MUA NGAY điều hướng đến trang thanh toán */}
           <Button className="mt-3 w-100 bg-black text-white" onClick={handleBuyNow}>
-            MUA NGAY VỚI GIÁ {product.price.toLocaleString()}đ
+            🛒 MUA NGAY VỚI GIÁ {product?.price ? product.price.toLocaleString() : "0"}đ
           </Button>
         </Col>
       </Row>

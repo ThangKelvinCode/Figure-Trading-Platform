@@ -61,7 +61,7 @@ const AccessoryManagement = () => {
   const handleDeleteAccessory = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
       try {
-        const response = await fetch(`http://localhost:3000/accessories/${id}`, {
+        const response = await fetch(`http://localhost:3000/accessories/${_id}`, {
           method: "DELETE",
         });
   
@@ -149,7 +149,7 @@ const AccessoryManagement = () => {
                 <Card.Title>{item.name}</Card.Title>
                 <Card.Text>
                   <strong>Price:</strong> ${item.price} <br />
-                  <small>{item.description}</small>
+                  <strong>Type ID:</strong> {item.type} <br/>
                 </Card.Text>
                 <Button variant="outline-primary" size="sm">View Details</Button>
                 <Button
