@@ -60,7 +60,7 @@ const checkEmailExist = async (email) => {
 
 const findUserById = async (user_id) => {
   // const user = await databaseServices.users.findOne({ _id: new ObjectId(user_id) })
-  const user = await userRepo.findById(userId)
+  const user = await userRepo.findById(user_id)
   if (!user) {
     throw new ErrorWithStatus({
       status: HTTP_STATUS.NOT_FOUND,
