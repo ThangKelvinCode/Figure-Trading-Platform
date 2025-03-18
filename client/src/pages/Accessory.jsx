@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -19,26 +18,25 @@ const Accessory = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`https://67cff34d823da0212a83ef35.mockapi.io/Accessory?page=${currentPage}&limit=10`)
+    fetch(`https://67cff34d823da0212a83ef35.mockapi.io/Accessory?page=${currentPage}&limit=10`)
       .then((response) => {
-        setProducts(response.data);
-        const totalCount = parseInt(response.headers['x-total-count'], 10);
-        if (!isNaN(totalCount)) {
-          setTotalPages(Math.ceil(totalCount / 10));
-        } else {
-          setTotalPages(1);
+        if (!response.ok) {
+          throw new Error("Lỗi khi tải dữ liệu!");
         }
+        return response.json().then((data) => ({ data, totalCount: response.headers.get("x-total-count") }));
+      })
+      .then(({ data, totalCount }) => {
+        setProducts(data);
+        setTotalPages(totalCount ? Math.ceil(Number(totalCount) / 10) : 1);
         setLoading(false);
       })
-      .catch(() => {
-        setError("Lỗi khi tải dữ liệu!");
+      .catch((error) => {
+        setError(error.message);
         setLoading(false);
       });
   }, [currentPage]);
 
   useEffect(() => {
-    // Extract unique categories, types, and brands from products
     const uniqueCategories = [...new Set(products.map(product => product.category))];
     const uniqueTypes = [...new Set(products.map(product => product.type))];
     const uniqueBrands = [...new Set(products.map(product => product.brand))];
@@ -68,40 +66,22 @@ const Accessory = () => {
           <div className="d-flex justify-content-between">
             <h5>Accessories</h5>
             <div className="d-flex">
-              <select
-                className="form-select me-2"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
+              <select className="form-select me-2" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
                 <option value="">All Categories</option>
                 {categories.map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
-                  </option>
+                  <option key={index} value={category}>{category}</option>
                 ))}
               </select>
-              <select
-                className="form-select me-2"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-              >
+              <select className="form-select me-2" value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
                 <option value="">All Types</option>
                 {types.map((type, index) => (
-                  <option key={index} value={type}>
-                    {type}
-                  </option>
+                  <option key={index} value={type}>{type}</option>
                 ))}
               </select>
-              <select
-                className="form-select"
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-              >
+              <select className="form-select" value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)}>
                 <option value="">All Brands</option>
                 {brands.map((brand, index) => (
-                  <option key={index} value={brand}>
-                    {brand}
-                  </option>
+                  <option key={index} value={brand}>{brand}</option>
                 ))}
               </select>
             </div>
@@ -118,18 +98,9 @@ const Accessory = () => {
               !error &&
               filteredProducts.map((product) => (
                 <div key={product.id} className="col-md-4 mb-4">
-                  <div
-                    className="card"
-                    onClick={() => navigate(`/accessory/${product.id}`)}
-                    style={{ cursor: "pointer" }}
-                  >
+                  <div className="card" onClick={() => navigate(`/accessory/${product.id}`)} style={{ cursor: "pointer" }}>
                     <div className="d-flex justify-content-center align-items-center" style={{ height: "200px", overflow: "hidden" }}>
-                      <img
-                        src={product.image}
-                        className="img-fluid"
-                        alt={product.name}
-                        style={{ maxHeight: "100%", maxWidth: "100%" }}
-                      />
+                      <img src={product.image} className="img-fluid" alt={product.name} style={{ maxHeight: "100%", maxWidth: "100%" }} />
                     </div>
                     <div className="card-body text-center">
                       <p className="mb-0">{product.name}</p>
