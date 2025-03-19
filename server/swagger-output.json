@@ -1,0 +1,531 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "REST API",
+    "description": ""
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "SP25_SWD_SWAGGER"
+    }
+  ],
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Register a new user",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "confirmed_password",
+                  "date_of_birth"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "mailx2"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "mai12435@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "1234@Mai"
+                  },
+                  "confirmed_password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "1234@Mai"
+                  },
+                  "date_of_birth": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-03-15T11:58:32Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accessories/postAccessories": {
+      "post": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Post a new accessory",
+        "description": "Creates a new accessory listing",
+        "responses": {
+          "201": {
+            "description": "Accessory posted successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "description",
+                  "type",
+                  "price",
+                  "photo",
+                  "owner"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "1000% bag"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Big bag for 1000%"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "67c91d9583ff104caa240546"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 59.99
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "url",
+                    "example": "https://example3.com"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "date_added": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": ""
+                  },
+                  "owner": {
+                    "type": "string",
+                    "example": "67bca3f6207e4b98d3665a9f"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accessories/newCategory": {
+      "post": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Create a new category",
+        "description": "Creates a new accessory category",
+        "responses": {
+          "201": {
+            "description": "Category created successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "description"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "handbag"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Bag to hang the dolls with various sizes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accessories/allAccessories": {
+      "get": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get all accessories",
+        "description": "Retrieves a list of all available accessories",
+        "responses": {
+          "200": {
+            "description": "List of accessories retrieved successfully"
+          }
+        }
+      }
+    },
+    "/accessories/allCategories": {
+      "get": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get all categories",
+        "description": "Retrieves a list of all accessory categories",
+        "responses": {
+          "200": {
+            "description": "List of categories retrieved successfully"
+          }
+        }
+      }
+    },
+    "/accessories/{id}": {
+      "get": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get an accessory by ID",
+        "description": "Retrieves details of a specific accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accessory details retrieved successfully"
+          },
+          "404": {
+            "description": "Accessory not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Delete an accessory",
+        "description": "Deletes a specific accessory by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accessory deleted successfully"
+          },
+          "404": {
+            "description": "Accessory not found"
+          }
+        }
+      }
+    },
+    "/accessories/categories/{id}": {
+      "get": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get a category by ID",
+        "description": "Retrieves details of a specific accessory category",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Category ID",
+            "example": "67c91d9583ff104caa240546"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category details retrieved successfully"
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        }
+      }
+    },
+    "/accessories/{id}/reviews": {
+      "get": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get all reviews for an accessory",
+        "description": "Retrieves all reviews for a specific accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reviews retrieved successfully"
+          }
+        }
+      }
+    },
+    "/accessories/{id}/purchase": {
+      "post": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Purchase an accessory",
+        "description": "Handles the purchase of an accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accessory purchased successfully"
+          },
+          "400": {
+            "description": "Invalid purchase request"
+          }
+        }
+      }
+    },
+    "/accessories/{id}/newReview": {
+      "post": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Write a review for an accessory",
+        "description": "Allows a user to submit a review for an accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Review submitted successfully"
+          },
+          "400": {
+            "description": "Invalid review submission"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rating",
+                  "comment"
+                ],
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "example": 5
+                  },
+                  "comment": {
+                    "type": "string",
+                    "example": "Great accessory! Highly recommended."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trade_requests/list": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/trade_requests/create": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/offers/": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/offers/listRequest/{requestId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/offers/{offerId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  }
+}

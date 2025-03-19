@@ -1,7 +1,5 @@
 import User from '../models/schemas/User.schema.js'
-import databaseServices from './database.services.js'
 import { hashPassword } from '../utils/crypto.js'
-import { userModel } from '../models/userModel.js'
 import { signToken } from '../utils/jwt.js'
 import { ErrorWithStatus } from '../models/Errors.js'
 import { USERS_MESSAGES } from '../constants/messages.js'
@@ -59,9 +57,14 @@ const checkEmailExist = async (email) => {
   return Boolean(user) //có true, k false
 }
 
+const checkAdmin = async (id) => {
+  const user = await userRepo.findById(id)
+  return user.role === USER_ROLE.Admin //true = is an Admin
+}
+
 const findUserById = async (user_id) => {
   // const user = await databaseServices.users.findOne({ _id: new ObjectId(user_id) })
-  const user = await userRepo.findById(userId)
+  const user = await userRepo.findById(user_id)
   if (!user) {
     throw new ErrorWithStatus({
       status: HTTP_STATUS.NOT_FOUND,
@@ -126,7 +129,7 @@ const login = async (email, password) => {
   }
 
   //nếu có user -> tạo ac và rf token
-  const user_id = user._id.toString()
+  // const user_id = user._id.toString()
   // const [access_token, refresh_token] = await Promise.all([
   //   signAccessToken(user_id), //
   //   signRefreshToken(user_id)
@@ -134,7 +137,7 @@ const login = async (email, password) => {
   // const [access_token, refresh_token] = await signAccessAndRefreshToken(user_id)
 
   // return { access_token, refresh_token }
-  return user_id
+  return user
 }
 
 const getUserProfile = async (userId) => {
@@ -158,5 +161,6 @@ export const usersServices = {
   register,
   login,
   getUserProfile,
-  findUserById
+  findUserById,
+  checkAdmin
 }
