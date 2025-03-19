@@ -12,6 +12,7 @@ import Tradelist from "./pages/Tradelist";
 import UserManagement from "./pages/user_management";
 import Checkout from "./pages/Checkout";
 import UploadImage from "./pages/UploadImage";
+import PaymentResult from "./components/PaymentResult";
 
 function App() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function App() {
         <Route path="/accessory_management" element={<AccessoryManagement />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/uploaditem" element={<UploadImage />} />
+        <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>
     </div>
   );

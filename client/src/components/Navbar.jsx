@@ -83,6 +83,14 @@ export const Navbar = () => {
                 Upload Item
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/checkout"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Checkout
+              </NavLink>
+            </li>
           </>
         )}
 

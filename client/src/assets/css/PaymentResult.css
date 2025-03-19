@@ -1,0 +1,104 @@
+.payment-result-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-result-container h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+  }
+  
+  .bill-details {
+    padding: 20px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .bill-details h2 {
+    color: #444;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    text-align: center;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 10px;
+  }
+  
+  .bill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Vertically align items */
+    margin: 15px 0;
+    font-size: 1.1rem;
+  }
+  
+  .bill-item .label {
+    color: #666;
+    font-weight: 500;
+    flex: 1; /* Allow label to take up space */
+    text-align: left;
+  }
+  
+  .bill-item .value {
+    color: #333;
+    font-weight: 600;
+    flex: 2; /* Give value more space */
+    text-align: right;
+  }
+  
+  .pay-button-container {
+    display: flex;
+    justify-content: center; /* Center the button horizontally */
+    margin-top: 20px;
+  }
+  
+  .pay-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #ff4d4f; /* MoMo red */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .pay-button:hover {
+    background-color: #e63946;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .payment-result-container {
+      margin: 20px;
+      padding: 15px;
+    }
+  
+    .bill-details {
+      padding: 15px;
+    }
+  
+    .bill-item {
+      font-size: 1rem;
+      flex-direction: column; /* Stack items on small screens */
+      align-items: flex-start;
+    }
+  
+    .bill-item .label,
+    .bill-item .value {
+      text-align: left;
+      width: 100%;
+      margin: 5px 0;
+    }
+  
+    .pay-button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+  }
