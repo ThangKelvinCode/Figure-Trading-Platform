@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function PaymentSuccess() {
+function PaymentFailure() {
   const navigate = useNavigate();
 
   const handleReturnHome = () => {
@@ -23,11 +23,11 @@ function PaymentSuccess() {
       <div
         style={{
           fontSize: "8rem",
-          color: "#4caf50", // Green color for checkmark
+          color: "#f44336", // Red color for X
           marginBottom: "20px",
         }}
       >
-        ✔
+        ✘
       </div>
       <h1
         style={{
@@ -37,7 +37,7 @@ function PaymentSuccess() {
           textAlign: "center",
         }}
       >
-        You have successfully purchased.
+        Your purchase has encountered an unexpected error.
       </h1>
       <button
         onClick={handleReturnHome}
@@ -60,4 +60,4 @@ function PaymentSuccess() {
   );
 }
 
-export default PaymentSuccess;
+export default PaymentFailure;

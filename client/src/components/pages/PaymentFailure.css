@@ -1,4 +1,4 @@
-.payment-success-container {
+.payment-failure-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,13 +8,13 @@
     font-family: Arial, sans-serif;
   }
   
-  .checkmark {
+  .failure-icon {
     font-size: 8rem;
-    color: #4caf50;
+    color: #f44336; /* Red for failure */
     margin-bottom: 20px;
   }
   
-  .success-message {
+  .error-message {
     font-size: 2.5rem;
     color: #333;
     margin-bottom: 30px;
