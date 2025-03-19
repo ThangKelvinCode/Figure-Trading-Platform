@@ -129,7 +129,7 @@ const login = async (email, password) => {
   }
 
   //nếu có user -> tạo ac và rf token
-  const user_id = user._id.toString()
+  // const user_id = user._id.toString()
   // const [access_token, refresh_token] = await Promise.all([
   //   signAccessToken(user_id), //
   //   signRefreshToken(user_id)
@@ -137,7 +137,7 @@ const login = async (email, password) => {
   // const [access_token, refresh_token] = await signAccessAndRefreshToken(user_id)
 
   // return { access_token, refresh_token }
-  return user_id
+  return user
 }
 
 const getUserProfile = async (userId) => {

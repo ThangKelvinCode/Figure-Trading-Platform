@@ -35,10 +35,10 @@ const login = async (req, res) => {
   //nếu có thì tạo access và refresh token
   const { email, password } = req.body
   //usersService.login là hàm nhận vào email và password, rồi vào database tìm user và tạo access token và refresh token trả ra ngoài
-  const id = await usersServices.login(email, password)
+  const result = await usersServices.login(email, password)
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
-    id: id
+    result
   })
 }
 
