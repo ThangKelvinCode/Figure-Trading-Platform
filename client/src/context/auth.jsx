@@ -10,11 +10,11 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const loggedIn = sessionStorage.getItem("SWD392_isLoggedIn") === "true";
     setIsLoggedIn(loggedIn);
     if (loggedIn) {
-      const storedUsername = localStorage.getItem("username") || "";
-      const storedRole = localStorage.getItem("role");
+      const storedUsername = sessionStorage.getItem("SWD392_username") || "";
+      const storedRole = sessionStorage.getItem("SWD392_role");
       const roleToSet = storedRole ? storedRole.toLowerCase().trim() : "user";
       setUsername(storedUsername);
       setRole(roleToSet);
@@ -45,9 +45,9 @@ export const AuthProvider = ({ children }) => {
           ? user.role.toLowerCase().trim()
           : "user";
         console.log("Logged in user:", user);
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("username", user.username);
-        localStorage.setItem("role", normalizedRole);
+        sessionStorage.setItem("SWD392_isLoggedIn", "true");
+        sessionStorage.setItem("SWD392_username", user.username);
+        sessionStorage.setItem("SWD392_role", normalizedRole);
         setIsLoggedIn(true);
         setUsername(user.username);
         setRole(normalizedRole);
@@ -69,9 +69,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
+    sessionStorage.removeItem("SWD392_isLoggedIn");
+    sessionStorage.removeItem("SWD392_username");
+    sessionStorage.removeItem("SWD392_role");
     setIsLoggedIn(false);
     setUsername("");
     setRole("user");
@@ -106,8 +106,8 @@ export const AuthProvider = ({ children }) => {
       }
 
       const createdUser = await response.json();
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", createdUser.username);
+      sessionStorage.setItem("SWD392_isLoggedIn", "true");
+      sessionStorage.setItem("SWD392_username", createdUser.username);
       setIsLoggedIn(true);
       setUsername(createdUser.username);
       return true;
@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateTrades = (currentUser) => {
-    const allTrades = JSON.parse(localStorage.getItem("trades") || "[]");
+    const allTrades = JSON.parse(localStorage.getItem("SWD392_trades") || "[]");
     return allTrades.filter((trade) => trade.owner === currentUser);
   };
 
@@ -131,9 +131,11 @@ export const AuthProvider = ({ children }) => {
       owner,
       status: "pending",
     };
-    const existingTrades = JSON.parse(localStorage.getItem("trades") || "[]");
+    const existingTrades = JSON.parse(
+      sessionStorage.getItem("SWD392_trades") || "[]"
+    );
     const updatedTrades = [...existingTrades, tradeRequest];
-    localStorage.setItem("trades", JSON.stringify(updatedTrades));
+    sessionStorage.setItem("SWD392_trades", JSON.stringify(updatedTrades));
     return tradeRequest;
   };
 
