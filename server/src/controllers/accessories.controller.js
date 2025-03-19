@@ -1,7 +1,7 @@
 import { productServices } from "../services/product.services.js"
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { usersServices } from "../services/users.services.js"
-import { ORDER_MESSAGE } from "../constants/messages.js"
+import { ORDER_MESSAGE, PRODUCT_MESSAGE } from "../constants/messages.js"
 import { reviewService } from "../services/reviews.services.js"
 
 const postAccessories = async (req, res) => {
@@ -41,6 +41,11 @@ const getAccessory = async (req, res) => {
 
 const deleteAccessory = async (req, res) => {
     const del = await productServices.deleteAccessory(req.params.id)
+    if(del.deletedCount === 0){
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+            message: PRODUCT_MESSAGE.DELETE_FAILED
+        })
+    }
     res.status(HTTP_STATUS.OK).json({
         message: ORDER_MESSAGE.DELETE_SUCCESS,
         del

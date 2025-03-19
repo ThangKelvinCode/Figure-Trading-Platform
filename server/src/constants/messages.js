@@ -75,7 +75,8 @@ export const PRODUCT_MESSAGE = {
   INVALID_PRICE: 'Price must be a number',
   EMPTY_PHOTO: 'Photo is required',
   EMPTY_OWNER: 'Owner is required',
-  NOT_FOUND: 'Accessory not found!'
+  NOT_FOUND: 'Accessory not found!',
+  DELETE_FAILED: 'Please check again, the delete failed'
 }
 
 export const ORDER_MESSAGE = {
