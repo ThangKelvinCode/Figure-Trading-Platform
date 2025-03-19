@@ -10,14 +10,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Generate Swagger 
+RUN npm run swagger
+
 # Copy application files
 COPY . .
 
 # Expose the application port
 # EXPOSE 3000
-
-# Generate Swagger 
-RUN npm run swagger
 
 # Command to run the API
 CMD ["npm", "run", "dev"]
