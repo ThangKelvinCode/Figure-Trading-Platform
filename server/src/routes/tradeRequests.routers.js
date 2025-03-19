@@ -57,7 +57,7 @@ tradeRequestsRouter.post(
         #swagger.responses[201] = { description: "Request created successfully" }
         #swagger.responses[400] = { description: "Invalid request" }
     */
-  //createTradeRequestsValidate,
+  createTradeRequestsValidate,
   wrapAsync(tradeRequestsController.createRequest)
 )
 
@@ -74,7 +74,35 @@ tradeRequestsRouter.post(
         status
     }
 */
-tradeRequestsRouter.put('/update/:reqId', updateTradeRequestsValidate, wrapAsync(tradeRequestsController.updateRequest))
+tradeRequestsRouter.put(
+  '/update/:reqId',
+  /*  
+        #swagger.tags = ['Requests']
+        #swagger.summary = 'Update Request'
+        #swagger.description = 'Update Request by reqId'
+        #swagger.parameters['reqId'] = { description: "Request ID", type: "string", required: true, example: "67c91dad83ff104caa240547" } 
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["type", "description"],
+                        properties: {
+                            offer_id : { type: "string", example: "67af6d45efd963779dfa5f84" }
+                            user_id : { type: "string", example: "67af6d45efd963779dfa5f84" }
+                            request_item : { type: "string", example: "Name" }
+                            description : { type: "string", example: "Item ..." }
+                            image : { type: "string", example: "" }
+                        }
+                    }
+                }
+            }
+        }
+    */
+  updateTradeRequestsValidate,
+  wrapAsync(tradeRequestsController.updateRequest)
+)
 
 /*
     description: update a trade request status
@@ -84,5 +112,28 @@ tradeRequestsRouter.put('/update/:reqId', updateTradeRequestsValidate, wrapAsync
         status
     }
 */
-tradeRequestsRouter.patch('/update/:reqId/status', wrapAsync(tradeRequestsController.updateStatus))
+tradeRequestsRouter.patch(
+  '/update/:reqId/status',
+  /*  
+        #swagger.tags = ['Requests']
+        #swagger.summary = 'Update Request Status'
+        #swagger.description = 'Update Request Status by reqId'
+        #swagger.parameters['reqId'] = { description: "Request ID", type: "string", required: true, example: "67c91dad83ff104caa240547" } 
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["type", "description"],
+                        properties: {
+                            status : { type: "int", example: "0" }
+                        }
+                    }
+                }
+            }
+        }
+    */
+  wrapAsync(tradeRequestsController.updateStatus)
+)
 export default tradeRequestsRouter

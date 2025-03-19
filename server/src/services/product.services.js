@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { ObjectId } from 'mongodb'
 import { ORDER_MESSAGE, PRODUCT_MESSAGE } from '../constants/messages.js'
 import accessoriesRepo from '../repositories/accessories.repo.js'
@@ -9,6 +10,10 @@ import accessories from '../models/schemas/Accessories.schema.js'
 import orders from '../models/schemas/Orders.schema.js'
 import order_details from '../models/schemas/Order_Details.schema.js'
 import category from '../models/schemas/AccessoriesCategory.schema.js'
+=======
+// import { productModel } from '../models/productModel.js'
+import productModel from '../models/productModel.js'
+>>>>>>> vnpay
 
 const postAccessories = async (reqBody) => {
   try {
@@ -19,8 +24,15 @@ const postAccessories = async (reqBody) => {
     }
     const newProduct = new accessories(newProductData)
     // call model layer to save into DB
+<<<<<<< HEAD
     return await accessoriesRepo.postAccessories(newProduct)
   } catch (error) { throw error }
+=======
+    return await productModel.postAccessories(newProduct)
+  } catch (error) {
+    throw error
+  }
+>>>>>>> vnpay
 }
 
 const getAccessory = async (ID) => {
@@ -53,18 +65,34 @@ const createCategories = async (reqBody) => {
   try {
     // process logic base on each project
     const { type } = reqBody
+<<<<<<< HEAD
     const exist = await categoriesRepo.checkCatExistByType(type)
     if (exist) {
       throw new Error('Category already exists');
     } else { //no category exist
+=======
+    const exist = await productModel.checkCatExistByType(type)
+    if (exist) {
+      throw new Error('Category already exists')
+    } else {
+      //no category exist
+>>>>>>> vnpay
       const newCat = {
         ...reqBody
       }
       // call model layer to save into DB
+<<<<<<< HEAD
       const cat = new category(newCat)
       return await categoriesRepo.createCategories(cat)
     }
   } catch (error) { throw error }
+=======
+      return await productModel.createCategories(newCat)
+    }
+  } catch (error) {
+    throw error
+  }
+>>>>>>> vnpay
 }
 
 const getCategory = async (ID) => {
@@ -149,7 +177,12 @@ export const productServices = {
   getCategory,
   getAllAccessories,
   getAllCategories,
+<<<<<<< HEAD
   deleteAccessory,
   getAllReview,
   buyAccessory
 }
+=======
+  deleteAccessory
+}
+>>>>>>> vnpay

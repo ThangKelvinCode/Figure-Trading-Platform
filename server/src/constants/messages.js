@@ -151,3 +151,7 @@ export const OFFER_MESSAGES = {
   UPDATE_OFFER_SUCCESS: 'Offer updated successfully',
   DELETE_OFFER_SUCCESS: 'Offer deleted successfully'
 }
+
+export const PAYMENT_MESSAGES = {
+  PAYMENT_ERROR: 'Payment is error'
+}
