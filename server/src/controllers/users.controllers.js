@@ -23,7 +23,7 @@ const register = async (req, res) => {
 
   const result = await usersServices.register(req.body)
   // console.log(result)
-  res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: USERS_MESSAGES.REGISTER_SUCCESS, //chỉnh lại thông báo
     id: result
   })

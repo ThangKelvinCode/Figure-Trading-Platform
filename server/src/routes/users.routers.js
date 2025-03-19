@@ -31,7 +31,26 @@ usersRouter.post('/register',
     registerValidator, wrapAsync(userController.register)
   )
 
-usersRouter.post('/login', loginValidator, wrapAsync(userController.login))
+usersRouter.post('/login',
+  /*  #swagger.tags = ['Users']
+        #swagger.description = 'User login'
+        #swagger.requestBody = {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "password"],
+                properties: {
+                  email: { type: "string", format: "email", example: "mai12435@gmail.com" },
+                  password: { type: "string", format: "password", example: "1234@Mai" },
+                }
+              }
+            }
+          }
+        }
+    */
+  loginValidator, wrapAsync(userController.login))
 
 usersRouter.get('/:id', wrapAsync(userController.getUserProfile))
 

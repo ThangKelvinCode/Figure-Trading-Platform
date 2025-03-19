@@ -33,7 +33,7 @@ const createRequest = async (req, res) => {
   // req.body.image = url
   const result = await tradeRequestServices.createRequest(req.body)
   // trả ra thông tin
-  res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: TRADE_REQUESTS_MESSAGES.CREATE_REQUEST_SUCCESSFULLY,
     result
   })

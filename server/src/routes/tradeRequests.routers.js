@@ -11,7 +11,15 @@ const tradeRequestsRouter = Router()
     path: /trades
     method: GET
 */
-tradeRequestsRouter.get('/list', wrapAsync(tradeRequestsController.getAllRequests))
+tradeRequestsRouter.get(
+  '/list',
+  /*  #swagger.tags = ['Requests']
+        #swagger.summary = 'Get all requests'
+        #swagger.description = 'Retrieves a list of all available request'
+        #swagger.responses[200] = { description: "List of requests retrieved successfully" }
+    */
+  wrapAsync(tradeRequestsController.getAllRequests)
+)
 
 /*
     description: create a trade request
@@ -26,6 +34,29 @@ tradeRequestsRouter.get('/list', wrapAsync(tradeRequestsController.getAllRequest
 */
 tradeRequestsRouter.post(
   '/create',
+  /*  #swagger.tags = ['Requests']
+        #swagger.summary = 'Create a new Request'
+        #swagger.description = 'Creates a new Request
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["type", "description"],
+                        properties: {
+                            user_id: { type: "string", example: "67af6d45efd963779dfa5f84" }
+                            request_item: { type: "string", example: "abcd" }
+                            description: { type: "string", example: "This item is ..." }
+                            image: { type: "string", example: "" }
+                        }
+                    }
+                }
+            }
+        }
+        #swagger.responses[201] = { description: "Request created successfully" }
+        #swagger.responses[400] = { description: "Invalid request" }
+    */
   //createTradeRequestsValidate,
   wrapAsync(tradeRequestsController.createRequest)
 )
