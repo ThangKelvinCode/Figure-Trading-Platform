@@ -5,9 +5,18 @@ import { ORDER_MESSAGE } from "../constants/messages.js"
 import { reviewService } from "../services/reviews.services.js"
 
 const postAccessories = async (req, res) => {
-    const posted = await productServices.postAccessories(req.body)
-    res.status(HTTP_STATUS.CREATED).json(posted)
-}
+        try {
+        const posted = await productServices.postAccessories(req.body)
+        res.status(HTTP_STATUS.CREATED).json(posted)
+        console.log("reqbody in controller: ", req.body)
+        // res.status(HTTP_STATUS.CREATED).json({links: req.body})
+            // {
+            //     linkURLs: [ ...]
+            // }
+        } catch (error) {
+          res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ Error: error.message})
+        }
+      }
 
 const newCategory = async (req, res) => {
     const newCategory = await productServices.createCategories(req.body)
@@ -59,18 +68,6 @@ const getAllReview = async (req, res) => {
         return res.status(HTTP_STATUS.SERVER_ERROR).json({ error: error.message })
     }
 }
-
-// const buyAccessory = async (req, res) => {
-//     try {
-//         const newOrder = await productServices.buyAccessory(req.body, req.params.id)
-//         return res.status(HTTP_STATUS.CREATED).json({
-//             message: ORDER_MESSAGE.CREATED,
-//             newOrder
-//         })
-//     } catch (error) {
-//         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message })
-//     }
-// }
 
 const buyAccessory = async (req, res) => {
     try {

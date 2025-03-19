@@ -14,7 +14,8 @@ const postAccessories = async (reqBody) => {
   try {
     // process logic base on each project
     const newProductData = {
-      ...reqBody
+      ...reqBody,
+      photo: Array.isArray(reqBody.photo) ? reqBody.photo : [] ,// (condition ? value_if_true : value_if_false)
     }
     const newProduct = new accessories(newProductData)
     // call model layer to save into DB

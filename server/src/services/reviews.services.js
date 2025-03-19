@@ -1,4 +1,5 @@
 import { ORDER_MESSAGE } from "../constants/messages.js";
+import reviews from "../models/schemas/Reviews.shema.js";
 import ordersRepo from "../repositories/orders.repo.js";
 import reviewRepo from "../repositories/reviews.repo.js";
 import userRepo from "../repositories/users.repo.js";
@@ -12,13 +13,14 @@ const writeReview = async (reqBody) => {
         const buyer = ordersRepo.getOrder
         const { reviewer, order_detail, content, create_at, star } = reqBody || {}
 
-        const newReview = { reviewer, order_detail, content, create_at, star }
+        const newdata = { reviewer, order_detail, content, create_at, star }
         // const filter = ['reviewer', 'order_detail', 'content', 'create_at', 'star']
         // const newReview = {
         //     ...Object.fromEntries(
         //         Object.entries(reqBody).filter(([key]) => filter.includes(key))
         //     )
-        // } // nen dung cach nay khi db phuc tap hon
+        // } // use this when we've got more complicated DB
+        const newReview = new reviews(newdata)
         return await reviewRepo.writeReview(newReview)
     } catch (error) {
         throw new Error(error.message)
