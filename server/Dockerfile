@@ -10,6 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install sharp for os linux on docker
+RUN npm install --arch=arm64 --platform=linux --libc=musl sharp
+
 # Copy application files
 COPY . .
 
