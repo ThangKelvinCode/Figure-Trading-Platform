@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { loginValidator, registerValidator } from '../middlewares/users.middlewares.js'
 import { userController } from '../controllers/users.controllers.js'
 import { wrapAsync } from '../utils/handler.js'
+import orderRoutes from './orders.routes.js'
 //tạo Router
 const usersRouter = Router()
 
@@ -89,4 +90,7 @@ usersRouter.get(
     */
   wrapAsync(userController.getUserProfile)
 )
+
+usersRouter.use('/:id/Orders', orderRoutes)
+
 export default usersRouter
