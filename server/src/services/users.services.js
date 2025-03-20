@@ -142,7 +142,6 @@ const login = async (email, password) => {
 
 const getUserProfile = async (userId) => {
   try {
-    // const user = userModel.getUserProfile(userId)
     const user = userRepo.findById(userId)
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
