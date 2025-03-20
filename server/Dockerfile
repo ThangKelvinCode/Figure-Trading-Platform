@@ -10,11 +10,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Generate Swagger 
-RUN npm run swagger
-
 # Copy application files
 COPY . .
+
+# Generate Swagger 
+RUN npm run swagger
 
 # Expose the application port
 # EXPOSE 3000
