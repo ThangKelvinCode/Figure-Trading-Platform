@@ -1,0 +1,2146 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Accessories Buying And Blindbox Trading",
+    "description": "API documentation for the Accessories Buying and Blindbox Trading Platform"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "SP25_SWD_SWAGGER"
+    }
+  ],
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Register a new user",
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Register Successfully"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "67d52b3c60c67cabfd83d7fd"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "confirmed_password",
+                  "date_of_birth"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "mailx2"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "mai12435@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "1234@Mai"
+                  },
+                  "confirmed_password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "1234@Mai"
+                  },
+                  "date_of_birth": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-03-15T11:58:32Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Login to the system",
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Login Successfully"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "example": "67d52b3c60c67cabfd83d7fd"
+                    },
+                    "access_token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Email or password is incorrect",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email or password is incorrect"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "mai12435@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "1234@Mai"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "View user profile by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID",
+            "example": "67d52b3c60c67cabfd83d7fd"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "67d52b3c60c67cabfd83d7fd"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "mailx2"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "mai12435@gmail.com"
+                        },
+                        "date_of_birth": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-03-15T11:58:32Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/accessories/postAccessories": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accessories/newCategory": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accessories/allAccessories": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accessories/allCategories": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accessories/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/accessories/categories/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/offer/": {
+      "post": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Create a new offer for a trade request",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Offer created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417c"
+                    },
+                    "offerItem": {
+                      "type": "string",
+                      "example": "Lalabu Blindbox"
+                    },
+                    "offerDescription": {
+                      "type": "string",
+                      "example": "A cool lalabu blindbox"
+                    },
+                    "offerImage": {
+                      "type": "string",
+                      "example": "https://example.com/lalabu.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "67d52a5a26375738eb1f4325"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417b"
+                    },
+                    "offerStatus": {
+                      "type": "string",
+                      "example": "Pending"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "offerItem",
+                  "offerDescription",
+                  "offerImage",
+                  "requestId"
+                ],
+                "properties": {
+                  "offerItem": {
+                    "type": "string",
+                    "example": "Lalabu Blindbox"
+                  },
+                  "offerDescription": {
+                    "type": "string",
+                    "example": "A cool lalabu blindbox"
+                  },
+                  "offerImage": {
+                    "type": "string",
+                    "example": "https://example.com/lalabu.jpg"
+                  },
+                  "requestId": {
+                    "type": "string",
+                    "example": "67d11022275b3dc778a0417b"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Get all offers",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all offers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417c"
+                      },
+                      "offerItem": {
+                        "type": "string",
+                        "example": "Lalabu Blindbox"
+                      },
+                      "offerDescription": {
+                        "type": "string",
+                        "example": "A cool lalabu blindbox"
+                      },
+                      "offerImage": {
+                        "type": "string",
+                        "example": "https://example.com/lalabu.jpg"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "67d52a5a26375738eb1f4325"
+                      },
+                      "requestId": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417b"
+                      },
+                      "offerStatus": {
+                        "type": "string",
+                        "example": "Pending"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/offer/request/{requestId}": {
+      "get": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Get all offers by request ID",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of offers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417c"
+                      },
+                      "offerItem": {
+                        "type": "string",
+                        "example": "Lalabu Blindbox"
+                      },
+                      "offerDescription": {
+                        "type": "string",
+                        "example": "A cool lalabu blindbox"
+                      },
+                      "offerImage": {
+                        "type": "string",
+                        "example": "https://example.com/lalabu.jpg"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "67d52a5a26375738eb1f4325"
+                      },
+                      "requestId": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417b"
+                      },
+                      "offerStatus": {
+                        "type": "string",
+                        "example": "Pending"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/offer/{offerId}": {
+      "get": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Get offer by ID",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offer ID",
+            "example": "67d11022275b3dc778a0417c"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417c"
+                    },
+                    "offerItem": {
+                      "type": "string",
+                      "example": "Lalabu Blindbox"
+                    },
+                    "offerDescription": {
+                      "type": "string",
+                      "example": "A cool lalabu blindbox"
+                    },
+                    "offerImage": {
+                      "type": "string",
+                      "example": "https://example.com/lalabu.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "67d52a5a26375738eb1f4325"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417b"
+                    },
+                    "offerStatus": {
+                      "type": "string",
+                      "example": "Pending"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/offer/{id}": {
+      "put": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Update offer by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offer ID",
+            "example": "67d11022275b3dc778a0417c"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417c"
+                    },
+                    "offerItem": {
+                      "type": "string",
+                      "example": "Updated Lalabu Blindbox"
+                    },
+                    "offerDescription": {
+                      "type": "string",
+                      "example": "An updated cool lalabu blindbox"
+                    },
+                    "offerImage": {
+                      "type": "string",
+                      "example": "https://example.com/updated-lalabu.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "67d52a5a26375738eb1f4325"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417b"
+                    },
+                    "offerStatus": {
+                      "type": "string",
+                      "example": "Pending"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "offerItem": {
+                    "type": "string",
+                    "example": "Updated Lalabu Blindbox"
+                  },
+                  "offerDescription": {
+                    "type": "string",
+                    "example": "An updated cool lalabu blindbox"
+                  },
+                  "offerImage": {
+                    "type": "string",
+                    "example": "https://example.com/updated-lalabu.jpg"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offer/{offerId}/status": {
+      "put": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Update offer status by ID",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offer ID",
+            "example": "67d11022275b3dc778a0417c"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Offer status updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "offerStatus"
+                ],
+                "properties": {
+                  "offerStatus": {
+                    "type": "string",
+                    "example": "Accepted"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offer/{offerId}/status/{offerStatus}": {
+      "patch": {
+        "tags": [
+          "Offers"
+        ],
+        "description": "Update offer status by ID and status value",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offer ID",
+            "example": "67d11022275b3dc778a0417c"
+          },
+          {
+            "name": "offerStatus",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "New status for the offer",
+            "example": "Accepted"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Offer status updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/": {
+      "post": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Create a new trade request",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Trade request created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Create request successfully"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "67d11022275b3dc778a0417b"
+                        },
+                        "requestItem": {
+                          "type": "string",
+                          "example": "Baby Three Blindbox"
+                        },
+                        "requestDescription": {
+                          "type": "string",
+                          "example": "A cute blindbox with baby three theme"
+                        },
+                        "requestImage": {
+                          "type": "string",
+                          "example": "https://example.com/babythree.jpg"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "67d52b3c60c67cabfd83d7fd"
+                        },
+                        "requestStatus": {
+                          "type": "string",
+                          "example": "Pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-03-16T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-03-16T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "requestItem",
+                  "requestDescription",
+                  "requestImage"
+                ],
+                "properties": {
+                  "requestItem": {
+                    "type": "string",
+                    "example": "Baby Three Blindbox"
+                  },
+                  "requestDescription": {
+                    "type": "string",
+                    "example": "A cute blindbox with baby three theme"
+                  },
+                  "requestImage": {
+                    "type": "string",
+                    "example": "https://example.com/babythree.jpg"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Get all trade requests",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all trade requests retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417b"
+                      },
+                      "requestItem": {
+                        "type": "string",
+                        "example": "Baby Three Blindbox"
+                      },
+                      "requestDescription": {
+                        "type": "string",
+                        "example": "A cute blindbox with baby three theme"
+                      },
+                      "requestImage": {
+                        "type": "string",
+                        "example": "https://example.com/babythree.jpg"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "67d52b3c60c67cabfd83d7fd"
+                      },
+                      "requestStatus": {
+                        "type": "string",
+                        "example": "Pending"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/user/{userId}": {
+      "get": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Get trade requests by user ID",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID",
+            "example": "67d52b3c60c67cabfd83d7fd"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trade requests by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417b"
+                      },
+                      "requestItem": {
+                        "type": "string",
+                        "example": "Baby Three Blindbox"
+                      },
+                      "requestDescription": {
+                        "type": "string",
+                        "example": "A cute blindbox with baby three theme"
+                      },
+                      "requestImage": {
+                        "type": "string",
+                        "example": "https://example.com/babythree.jpg"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "67d52b3c60c67cabfd83d7fd"
+                      },
+                      "requestStatus": {
+                        "type": "string",
+                        "example": "Pending"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/{requestId}": {
+      "get": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Get trade request by ID",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trade request retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417b"
+                    },
+                    "requestItem": {
+                      "type": "string",
+                      "example": "Baby Three Blindbox"
+                    },
+                    "requestDescription": {
+                      "type": "string",
+                      "example": "A cute blindbox with baby three theme"
+                    },
+                    "requestImage": {
+                      "type": "string",
+                      "example": "https://example.com/babythree.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "67d52b3c60c67cabfd83d7fd"
+                    },
+                    "requestStatus": {
+                      "type": "string",
+                      "example": "Pending"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Update trade request by ID",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trade request updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417b"
+                    },
+                    "requestItem": {
+                      "type": "string",
+                      "example": "Updated Baby Three Blindbox"
+                    },
+                    "requestDescription": {
+                      "type": "string",
+                      "example": "An updated cute blindbox with baby three theme"
+                    },
+                    "requestImage": {
+                      "type": "string",
+                      "example": "https://example.com/updated-babythree.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "67d52b3c60c67cabfd83d7fd"
+                    },
+                    "requestStatus": {
+                      "type": "string",
+                      "example": "Pending"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestItem": {
+                    "type": "string",
+                    "example": "Updated Baby Three Blindbox"
+                  },
+                  "requestDescription": {
+                    "type": "string",
+                    "example": "An updated cute blindbox with baby three theme"
+                  },
+                  "requestImage": {
+                    "type": "string",
+                    "example": "https://example.com/updated-babythree.jpg"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Delete trade request by ID",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trade request deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Trade request deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/{requestId}/select-offer/{offerId}": {
+      "post": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Select an offer for a trade request",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offer ID",
+            "example": "67d11022275b3dc778a0417c"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer selected and trade process started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Offer selected and trade process started"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/{requestId}/finish-trade": {
+      "post": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Confirm finish trade",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trade completed or waiting for confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Trade completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/{requestId}/cancel-trade": {
+      "post": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Cancel a trade",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trade canceled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Trade canceled successfully, request is now open for new offers"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/trade_requests/{requestId}/decline-offer/{offerId}": {
+      "post": {
+        "tags": [
+          "Trade Requests"
+        ],
+        "description": "Decline an offer for a trade request",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Request ID",
+            "example": "67d11022275b3dc778a0417b"
+          },
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offer ID",
+            "example": "67d11022275b3dc778a0417c"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer declined successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Offer declined successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Access token is required or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/messages/": {
+      "post": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Send a new message",
+        "responses": {
+          "201": {
+            "description": "Message sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417d"
+                    },
+                    "tradeId": {
+                      "type": "string",
+                      "example": "67d11022275b3dc778a0417b"
+                    },
+                    "senderId": {
+                      "type": "string",
+                      "example": "67d52b3c60c67cabfd83d7fd"
+                    },
+                    "receiverId": {
+                      "type": "string",
+                      "example": "67d52a5a26375738eb1f4325"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Hello, I like your offer!"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-16T10:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tradeId",
+                  "senderId",
+                  "receiverId",
+                  "message"
+                ],
+                "properties": {
+                  "tradeId": {
+                    "type": "string",
+                    "example": "67d11022275b3dc778a0417b"
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "example": "67d52b3c60c67cabfd83d7fd"
+                  },
+                  "receiverId": {
+                    "type": "string",
+                    "example": "67d52a5a26375738eb1f4325"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Hello, I like your offer!"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/{tradeId}": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "description": "Get messages by trade ID",
+        "parameters": [
+          {
+            "name": "tradeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Trade ID",
+            "example": "67d11022275b3dc778a0417b"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417d"
+                      },
+                      "tradeId": {
+                        "type": "string",
+                        "example": "67d11022275b3dc778a0417b"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "example": "67d52b3c60c67cabfd83d7fd"
+                      },
+                      "receiverId": {
+                        "type": "string",
+                        "example": "67d52a5a26375738eb1f4325"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Hello, I like your offer!"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-16T10:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
