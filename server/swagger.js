@@ -2,16 +2,25 @@ import swaggerAutogen from 'swagger-autogen';
 
 const doc = {
   info: {
-    version: '1.0.0', 
-    title: 'REST API',
-    description: ''   
+    version: '1.0.0',
+    title: 'Accessories Buying And Blindbox Trading',
+    description: 'API documentation for the Accessories Buying and Blindbox Trading Platform',
   },
   servers: [
     {
-      url: 'http://localhost:3000',   
-      description: 'SP25_SWD_SWAGGER'
+      url: 'http://localhost:3000',
+      description: 'SP25_SWD_SWAGGER',
     },
-  ]
+  ],
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
 };
 
 const outputFile = './swagger-output.json';
