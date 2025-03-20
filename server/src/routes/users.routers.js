@@ -57,6 +57,36 @@ usersRouter.post(
   wrapAsync(userController.login)
 )
 
-usersRouter.get('/:id', wrapAsync(userController.getUserProfile))
-
+usersRouter.get(
+  '/:id',
+  /*  #swagger.tags = ['Users']
+        #swagger.summary = 'Get user profile'
+        #swagger.description = 'Retrieves the profile details of a specific user by their ID'
+        #swagger.parameters['id'] = { 
+            description: "User ID", 
+            type: "string", 
+            required: true, 
+            example: "67af6d45efd963779dfa5f84" 
+        }
+        #swagger.responses[200] = { 
+            description: "User profile retrieved successfully",
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            id: { type: "string", example: "67af6d45efd963779dfa5f84" },
+                            name: { type: "string", example: "John Doe" },
+                            email: { type: "string", example: "john.doe@example.com" },
+                            role: { type: "string", example: "customer" },
+                            createdAt: { type: "string", format: "date-time", example: "2025-03-19T12:00:00Z" }
+                        }
+                    }
+                }
+            }
+        }
+        #swagger.responses[404] = { description: "User not found" }
+    */
+  wrapAsync(userController.getUserProfile)
+)
 export default usersRouter

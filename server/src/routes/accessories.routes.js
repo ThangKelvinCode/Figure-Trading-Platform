@@ -41,29 +41,6 @@ accessoriesRouter.post(
   wrapAsync(accessoriesController.postAccessories)
 )
 
-// accessoriesRouter.post('/newCategory', productValidator.CategoriesValidator,
-//     wrapAsync(accessoriesController.newCategory))
-//     // {
-//     //     "type": "hangbag",
-//     //     "description": "bag to hang the dolls with various sizes"
-//     //   }
-
-// accessoriesRouter.get('/allAccessories', wrapAsync(accessoriesController.getAllAccessories))
-
-// accessoriesRouter.get('/allCategories', wrapAsync(accessoriesController.getAllCategories))
-
-// accessoriesRouter.get('/:id', wrapAsync(accessoriesController.getAccessory))
-
-// accessoriesRouter.get('/categories/:id', wrapAsync(accessoriesController.getCategory))
-
-// accessoriesRouter.delete('/:id', wrapAsync(accessoriesController.deleteAccessory))
-
-// accessoriesRouter.get('/:id/reviews', wrapAsync(accessoriesController.getAllReview))
-
-// accessoriesRouter.post('/:id/purchase', wrapAsync(accessoriesController.buyAccessory))
-
-// accessoriesRouter.post('/:id/newReview', wrapAsync(accessoriesController.writeReview))
-
 // Create a new accessory category
 accessoriesRouter.post(
   '/newCategory',
@@ -165,13 +142,27 @@ accessoriesRouter.get(
   wrapAsync(accessoriesController.getAllReview)
 )
 
-// Purchase an accessory
 accessoriesRouter.post(
   '/:id/purchase',
   /*  #swagger.tags = ['Accessories']
         #swagger.summary = 'Purchase an accessory'
         #swagger.description = 'Handles the purchase of an accessory'
         #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67bca3f6207e4b98d3665a9f" }
+        #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["quantity", "userID"],
+                        properties: {
+                            quantity: { type: "number", example: 1 },
+                            userID: { type: "string", example: "67af6d45efd963779dfa5f84" }
+                        }
+                    }
+                }
+            }
+        }
         #swagger.responses[200] = { description: "Accessory purchased successfully" }
         #swagger.responses[400] = { description: "Invalid purchase request" }
     */

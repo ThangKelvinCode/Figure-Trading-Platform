@@ -70,17 +70,50 @@
     },
     "/user/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "User login",
         "responses": {
           "default": {
             "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "mai12435@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "1234@Mai"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/user/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user profile",
+        "description": "Retrieves the profile details of a specific user by their ID",
         "parameters": [
           {
             "name": "id",
@@ -88,12 +121,47 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "User ID",
+            "example": "67af6d45efd963779dfa5f84"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "67af6d45efd963779dfa5f84"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john.doe@example.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "customer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-19T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -145,7 +213,7 @@
                     "example": 59.99
                   },
                   "photo": {
-                    "type": "string",
+                    "type": "array",
                     "format": "url",
                     "example": "https://example3.com"
                   },
@@ -254,7 +322,7 @@
               "type": "string"
             },
             "description": "Accessory ID",
-            "example": "67bca3f6207e4b98d3665a9f"
+            "example": "67c91dad83ff104caa240547"
           }
         ],
         "responses": {
@@ -375,6 +443,30 @@
           "400": {
             "description": "Invalid purchase request"
           }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "quantity",
+                  "userID"
+                ],
+                "properties": {
+                  "quantity": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "userID": {
+                    "type": "string",
+                    "example": "67af6d45efd963779dfa5f84"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -433,7 +525,49 @@
     },
     "/trade_requests/list": {
       "get": {
+        "tags": [
+          "Requests"
+        ],
+        "summary": "Get all requests",
+        "description": "Retrieves a list of all available request",
+        "responses": {
+          "200": {
+            "description": "List of requests retrieved successfully"
+          }
+        }
+      }
+    },
+    "/trade_requests/create": {
+      "post": {
+        "tags": [
+          "Requests"
+        ],
+        "summary": "Create a new Request",
+        "description": "Creates a new Request",
+        "responses": {
+          "201": {
+            "description": "Request created successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        },
+        "requestBody": {}
+      }
+    },
+    "/trade_requests/update/{reqId}": {
+      "put": {
         "description": "",
+        "parameters": [
+          {
+            "name": "reqId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -441,9 +575,19 @@
         }
       }
     },
-    "/trade_requests/create": {
-      "post": {
+    "/trade_requests/update/{reqId}/status": {
+      "patch": {
         "description": "",
+        "parameters": [
+          {
+            "name": "reqId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -469,7 +613,7 @@
         }
       }
     },
-    "/offers/listRequest/{requestId}": {
+    "/offers/request/{requestId}": {
       "get": {
         "description": "",
         "parameters": [
@@ -507,12 +651,62 @@
             "description": ""
           }
         }
-      },
+      }
+    },
+    "/offers/{id}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/offers/{offerId}/status": {
       "put": {
         "description": "",
         "parameters": [
           {
             "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/offers/{offerId}/status/{offerStatus}": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offerStatus",
             "in": "path",
             "required": true,
             "schema": {
