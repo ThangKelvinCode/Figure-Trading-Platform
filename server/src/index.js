@@ -1,7 +1,6 @@
 import express from 'express'
 import cors from 'cors' // Import cors
 import { createServer } from 'http'; // Để tạo server HTTP
-
 import usersRouter from './routes/users.routers.js'
 import { defaultErrorHandler } from './middlewares/error.middlewares.js'
 import accessoriesRouter from './routes/accessories.routes.js'
@@ -9,48 +8,12 @@ import offersRouter from './routes/offers.routers.js'
 import tradeRequestsRouter from './routes/tradeRequests.routers.js'
 import { initFolder } from './utils/file.js'
 import database from './configs/database.js'
-
-
-import YAML from 'yaml'
-// import fs from 'fs'
 import swaggerUi from 'swagger-ui-express'
-import swaggerJsdoc from 'swagger-jsdoc'
 import messagesRouter from './routes/messages.routes.js';
 import { messagesServices } from './services/messages.services.js';
 import bodyParser from 'body-parser';
 import swaggerFile from '../swagger-output.json' assert { type: "json" }
 import { Server } from 'socket.io';
-// import path from 'path'
-
-
-// const file  = fs.readFileSync(path.resolve('swd-swagger.yaml'), 'utf8')
-
-// const options = {
-//   definition: {
-//     openapi: '3.0.0',
-//     info: {
-//       title: 'Accessories Buying And Blindbox Trading',
-//       version: '1.0.0',
-//     },
-
-//     // components: {
-//     //   securitySchemes: {
-//     //     BearerAuth: {
-//     //       type: 'http',
-//     //       scheme: 'bearer',
-//     //       bearerFormat: 'JWT'
-//     //     }
-//     //   }
-//     // }
-//   },
-//   // apis: ['./src/routes/*.routers.js', './src/models/schemas/*.schema.js'], // files containing annotations as above
-//   // apis: ['./swd-swagger.yaml'], // files containing annotations as above
-//   apis: ['./openapi/*.yaml'], // files containing annotations as above
-// };
-// const openapiSpecification = swaggerJsdoc(options);
-
-// const swaggerDocument = YAML.parse(file)
-
 
 //dựng server
 const app = express()
@@ -61,7 +24,7 @@ const server = createServer(app);
 // Tích hợp Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // URL frontend React của bạn (thay đổi nếu cần)
+    origin: 'http://localhost:5173', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true // Nếu dùng cookie hoặc token trong request
@@ -72,28 +35,17 @@ const io = new Server(server, {
 database.connect()
 initFolder()
 
-app.use(express.json()) //cho server xài middleware biến đổi json
-//cho server kết nối các Router
-// app.use('/', console.log('Hello World'))
+app.use(express.json()) 
 
-// Enable CORS
 app.use(cors({
-  origin: '*', // Allow all origins (for testing). Change this to your frontend URL in production.
+  origin: '*', 
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type,Authorization'
 }))
 
-
 // Enable JSON middleware
 app.use(express.json())
 app.use(bodyParser.json())
-
-// const openapiSpecification = './swagger-output.json';
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
-
-// Serve Swagger UI
-// const swaggerDocument = require('./swagger-output.json'); // Đường dẫn đến tệp JSON
-// app.use('/doc', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
@@ -113,7 +65,6 @@ app.use((req, res, next) => {
 // Error handling middleware (should be at the end)
 app.use(defaultErrorHandler)
 
-// Tạm thời để Socket.IO logic ở đây (sẽ tách sau)
 // Socket.IO logic
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
