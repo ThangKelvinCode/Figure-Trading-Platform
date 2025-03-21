@@ -50,9 +50,12 @@ const AccessoryDetail = () => {
     fetchProduct();
   }, [id]);
 
+  
+
   const handleBuyNow = () => {
     if (!product) return;
-    navigate(`/checkout?productId=${id}&quantity=${quantity}`);
+    const totalPrice = product?.price * quantity;
+    navigate(`/checkout?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
   };
 
   const handleQuantityChange = (value) => {
