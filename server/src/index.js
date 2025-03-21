@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors' // Import cors (giữ 1 dòng, loại trùng lặp từ backend)
-import { createServer } from 'http'; // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
+import { createServer } from 'http' // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
 import { corsOptions } from './configs/cors.js' // Chỉ có ở backend, giữ lại
 import usersRouter from './routes/users.routers.js'
 import { defaultErrorHandler } from './middlewares/error.middlewares.js'
@@ -14,8 +14,8 @@ import swaggerUi from 'swagger-ui-express' // Có ở cả hai, giữ 1 dòng
 import swaggerJsdocOSA from 'swagger-jsdoc' // Chỉ có ở trade-flow, giữ lại (tên biến đổi để tránh nhầm lẫn)
 import messagesRouter from './routes/messages.routes.js' // Chỉ có ở trade-flow, giữ lại
 import { messagesServices } from './services/messages.services.js' // Chỉ có ở trade-flow, giữ lại
-import bodyParser from 'bodyParser' // Có ở cả hai, giữ 1 dòng
-import swaggerFile from '../swagger-output.json' assert { type: "json" } // Có ở cả hai nhưng cú pháp khác nhau, giữ từ trade-flow
+import bodyParser from 'body-parser' // Có ở cả hai, giữ 1 dòng
+import swaggerFile from '../swagger-output.json' assert { type: 'json' } // Có ở cả hai nhưng cú pháp khác nhau, giữ từ trade-flow
 import { Server } from 'socket.io' // Chỉ có ở trade-flow, giữ lại
 import orderRoutes from './routes/orders.routes.js' // Chỉ có ở backend, giữ lại
 import paymentRouter from './routes/payments.routers.js' // Chỉ có ở backend, giữ lại
@@ -39,7 +39,7 @@ const io = new Server(server, {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true // Nếu dùng cookie hoặc token trong request
-  },
+  }
 })
 
 // Connect to database
@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
         tradeId,
         senderId,
         receiverId,
-        message,
+        message
       })
       console.log('Sending receive_message to trade:', tradeId, newMessage)
       io.to(tradeId).emit('receive_message', newMessage)

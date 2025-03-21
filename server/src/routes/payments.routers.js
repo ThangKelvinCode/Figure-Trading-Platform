@@ -5,7 +5,7 @@ import { wrapAsync } from '../utils/handler.js'
 const paymentRouter = Router()
 
 paymentRouter.post(
-  '/create',
+  '/create_momo',
   /*  
     #swagger.tags = ['Payment']
     #swagger.summary = 'Create MOMO payment'
@@ -26,11 +26,11 @@ paymentRouter.post(
         }
     }
     */
-  wrapAsync(paymentController.create)
+  wrapAsync(paymentController.createMomo)
 )
 
 paymentRouter.post(
-  '/check_status',
+  '/check_momo_status',
   /*  
     #swagger.tags = ['Payment']
     #swagger.summary = 'Check status'
@@ -50,7 +50,13 @@ paymentRouter.post(
         }
     }
     */
-  wrapAsync(paymentController.checkStatus)
+  wrapAsync(paymentController.checkStatusMomo)
 )
+
+paymentRouter.post('/create_vnpay', wrapAsync(paymentController.createZaloPay))
+
+paymentRouter.post('zaloPay_callback', paymentController.zaloPayCallback)
+
+paymentRouter.post('/check_zaloPay_status', wrapAsync(paymentController.checkStatusZaloPay))
 
 export default paymentRouter
