@@ -1,10 +1,16 @@
 import HTTP_STATUS from "../constants/httpStatus.js"
 import { REVIEW_MESSAGE } from "../constants/messages.js"
 import { reviewService } from "../services/reviews.services.js"
-
+import { ORDER_MESSAGE } from "../constants/messages.js"
 const writeReview = async (req, res) => {
     try {
-        const newReview = await reviewService.writeReview(req.body)
+        console.log('con', req.params.detailID)
+        const newReview = await reviewService.writeReview(req.body, req.params.id, req.params.detailID)
+        if(newReview ==  null){
+            return res.status(HTTP_STATUS.BAD_REQUEST).json({
+                message: ORDER_MESSAGE.NOT_COMPLETED
+            })
+        }
         return res.status(HTTP_STATUS.CREATED).json({
             message: REVIEW_MESSAGE.CREATE_SUCCESS,
             newReview

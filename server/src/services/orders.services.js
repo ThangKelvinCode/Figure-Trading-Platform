@@ -1,6 +1,7 @@
 import { ORDER_MESSAGE, USERS_MESSAGES } from "../constants/messages.js"
 import ordersRepo from "../repositories/orders.repo.js"
 import userRepo from "../repositories/users.repo.js"
+import { orderDetailsService } from "./orderDetails.services.js"
 import { usersServices } from "./users.services.js"
 
 const createOrder = async (reqBody) => {
@@ -46,7 +47,17 @@ const getAllUserOrder = async (buyerID) => {
         if (!user) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
         }
-        return ordersRepo.getAllUserOrders(buyerID)
+        const orders = await ordersRepo.getAllUserOrders(buyerID)
+        const fullOrders = await Promise.all(
+            orders.map(async (order) => {
+                const orderDetails = await orderDetailsService.getDetailOfOrder(order._id);
+                return {
+                    ...order,
+                    details: orderDetails, // Attach order details
+                }
+            })
+        )
+        return fullOrders
     } catch (error) {
         throw new Error(error)
     }

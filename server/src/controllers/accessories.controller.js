@@ -8,7 +8,7 @@ const postAccessories = async (req, res) => {
         try {
         const posted = await productServices.postAccessories(req.body)
         res.status(HTTP_STATUS.CREATED).json(posted)
-        console.log("reqbody in controller: ", req.body)
+        // console.log("reqbody in controller: ", req.body)
         // res.status(HTTP_STATUS.CREATED).json({links: req.body})
             // {
             //     linkURLs: [ ...]
@@ -88,17 +88,6 @@ const buyAccessory = async (req, res) => {
     }
   }
 
-const writeReview = async(req, res) => {
-    try {
-        const newReview = await reviewService.writeReview(req.body)
-        return res.status(HTTP_STATUS.CREATED).json({
-            newReview
-        })
-    } catch (error) {
-        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message })
-    }
-}
-
 export const accessoriesController = {
     postAccessories,
     newCategory,
@@ -108,6 +97,5 @@ export const accessoriesController = {
     getAllCategories,
     deleteAccessory,
     getAllReview,
-    buyAccessory,
-    writeReview
+    buyAccessory
 }
