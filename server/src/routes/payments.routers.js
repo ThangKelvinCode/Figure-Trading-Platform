@@ -53,7 +53,7 @@ paymentRouter.post(
   wrapAsync(paymentController.checkStatusMomo)
 )
 
-paymentRouter.post('/create_vnpay', wrapAsync(paymentController.createZaloPay))
+paymentRouter.post('/create_zaloPay', wrapAsync(paymentController.createZaloPay))
 
 paymentRouter.post('zaloPay_callback', paymentController.zaloPayCallback)
 
