@@ -13,6 +13,7 @@ import Tradelist from "./pages/Tradelist";
 import UserManagement from "./pages/user_management";
 import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSucess";
+import PaymentFailure from "./pages/PaymentFailure";
 import PaymentProcessing from "./components/PaymentProcessing";
 
 function App() {
