@@ -1,0 +1,44 @@
+.register_window {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("../images/wallpaper.jpg");
+  background-size: cover; /* Ensure the background image covers the entire area */
+  background-position: center; /* Center the background image */
+}
+
+.register_form {
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideInFromTop 1s ease-out forwards;
+}
+
+.register_form h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.navi_login {
+  color: white;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100vh); /* Start from above the viewport */
+    opacity: 0; /* Start with 0 opacity for a fade-in effect */
+  }
+  100% {
+    transform: translateY(
+      0
+    ); /* End at its natural position (middle of the screen) */
+    opacity: 1; /* Fully visible */
+  }
+}

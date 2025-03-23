@@ -1,0 +1,84 @@
+.tradelist_page {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.trade_request {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trade_request.accepted {
+  background: #e6ffe6;
+  border-color: #28a745;
+}
+
+.trade_request.denied {
+  background: #ffe6e6;
+  border-color: #dc3545;
+}
+
+.trade_buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.accept {
+  background-color: #28a745;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.accept:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.accept:disabled {
+  background-color: #85e085;
+  cursor: not-allowed;
+}
+
+.deny {
+  background-color: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.deny:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.deny:disabled {
+  background-color: #ff8080;
+  cursor: not-allowed;
+}
+
+.status {
+  width: 100%;
+  cursor: not-allowed;
+}
+
+.status.accepted {
+  background-color: #85e085;
+  color: white;
+}
+
+.status.denied {
+  background-color: #ff8080;
+  color: white;
+}

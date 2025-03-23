@@ -1,0 +1,198 @@
+/* usermanage.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.user-manage-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-manage-popup h2 {
+  margin: 0 0 10px;
+}
+
+.user-manage-popup input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.user-manage-popup button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.user-manage-popup button[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+}
+
+.user-manage-popup button[type="button"] {
+  background-color: #f44336;
+  color: white;
+}
+
+.user-manage-popup button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Style cho table nếu cần */
+/* General table styling */
+.user_manage_page {
+  margin-top: 2%;
+  display: flex;
+  justify-content: center;
+}
+
+.user_manage_page table {
+  width: 90%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+/* Table headers */
+.user_manage_page th {
+  background-color: #f5f5f5;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Table cells */
+.user_manage_page td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  color: #555;
+}
+
+/* Alternating row colors */
+.user_manage_page tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Hover effect on rows */
+.user_manage_page tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Header section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  width: 90%;
+  margin: 0 auto;
+  background-color: #e6f0fa;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+/* Buttons in the header */
+.header .button-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* Export to Excel button */
+.header .export-button {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 4px;
+}
+
+.header .export-button:hover {
+  background-color: #f5f5f5;
+}
+
+/* Add New User button */
+.add_button {
+  background-color: #4682b4;
+  color: white;
+  padding: 8px 15px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 4px;
+}
+
+.add_button:hover {
+  background-color: #3a6d9a;
+}
+
+/* Action buttons (Edit/Delete) in the table */
+.button {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Edit and Delete buttons (icons) */
+.edit-icon,
+.delete-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.edit-icon {
+  color: #4682b4;
+}
+
+.delete-icon {
+  color: #f44336;
+}
+
+.edit-icon:hover {
+  color: #3a6d9a;
+}
+
+.delete-icon:hover {
+  color: #d32f2f;
+}
