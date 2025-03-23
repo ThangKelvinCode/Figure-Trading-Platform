@@ -6,8 +6,8 @@ import { useAuth } from "../context/auth.jsx";
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setpassword] = useState("");
-  const [confirmPassword, setconfirmPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -16,19 +16,29 @@ function Register() {
     e.preventDefault();
     setError("");
 
+    // Client-side validation
+    if (!username || !email || !password || !confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setError("Password do not match");
+      setError("Passwords do not match");
       return;
     }
 
     try {
-      const success = await register(username, email, password);
+      const success = await register(username, email, password, confirmPassword);
       if (success) {
         navigate("/");
       }
     } catch (err) {
       setError(err.message || "Registration failed");
     }
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
   };
 
   return (
@@ -63,7 +73,7 @@ function Register() {
               required
               placeholder="Password"
               value={password}
-              onChange={(e) => setpassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="input-group">
@@ -73,14 +83,23 @@ function Register() {
               required
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setconfirmPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <Link className="navi_login" to="/login">
             Already have an account?
           </Link>
-          <button type="submit">Register</button>
+          <button type="submit" className="form-button">
+            Register
+          </button>
+          <button
+            type="button"
+            className="form-button"
+            onClick={handleBackToHome}
+          >
+            Back to Home
+          </button>
         </form>
       </div>
     </div>
