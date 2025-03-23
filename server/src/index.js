@@ -35,7 +35,7 @@ const server = createServer(app) // Chỉ có ở trade-flow, giữ lại
 // Tích hợp Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // URL frontend React của bạn (thay đổi nếu cần)
+    origin: 'http://localhost:5173', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true // Nếu dùng cookie hoặc token trong request
@@ -67,7 +67,6 @@ app.use((req, res, next) => {
 // Trở thành error handler cho cả app nên nó nằm cuối app để là điểm tập kết cuối cùng
 app.use(defaultErrorHandler)
 
-// Tạm thời để Socket.IO logic ở đây (sẽ tách sau)
 // Socket.IO logic
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`)
