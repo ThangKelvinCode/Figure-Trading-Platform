@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "navbarv1": "file:",
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",
     "bootstrap": "^5.3.3",

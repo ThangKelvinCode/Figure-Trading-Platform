@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb'
 import { USER_ROLE, UserVerifyStatus } from '../../constants/enums.js'
 
 //tạo ra class User để mô tả 1 user sẽ có các thuộc tính gì
-//class User sẽ dùng interface UserType để mô tả và tạo user
 export default class User {
   constructor(user) {
     const date = new Date() //tạo này cho ngày created_at updated_at bằng nhau

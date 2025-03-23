@@ -45,6 +45,7 @@ export const USERS_MESSAGES = {
   VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS: 'Verify forgot password token success',
   RESET_PASSWORD_SUCCESS: 'Reset password successfully',
   GET_PROFILE_SUCCESS: 'Get profile successfully',
+  USER_ROLE_IS_NOT_SUITABLE: 'User role is not suitable for this action',
 
   BIO_MUST_BE_A_STRING: 'Bio must be a string',
   BIO_LENGTH_MUST_BE_LESS_THAN_200: 'Bio length must be less than 200',
@@ -62,5 +63,64 @@ export const USERS_MESSAGES = {
   USERNAME_IS_INVALID:
     'Username must be a string and length must be 4 - 15, and contain only letters, numbers, and underscores, not only numbers',
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully',
+  //Product and others
+  EMPTY_DESCRIPTION : 'Please fill in description',
+  EMPTY_PRICE: 'Please fill in price',
+  EMPTY_PHOTO: 'Please upload product photos'
+}
+
+export const TRADE_REQUESTS_MESSAGES = {
+  GET_TRADE_REQUESTS_SUCCESS: 'Get trade request success',
+  ITEM_MUST_HAVE_NAME: 'Item must have name',
+  CREATE_REQUEST_SUCCESSFULLY: 'Create request successfully'
+}
+
+//Blindbox message
+export const BLINDBOX_MESSAGES = {
+  // General messages
+  VALIDATION_ERROR: 'Validation error',
+  BLINDBOX_NOT_FOUND: 'Blind box not found',
+  UNAUTHORIZED_ACCESS: 'Unauthorized access to blind box',
+
+  // Creation related messages
+  CREATE_BLINDBOX_SUCCESS: 'Blind box created successfully',
+  NAME_IS_REQUIRED: 'Name is required',
+  NAME_MUST_BE_A_STRING: 'Name must be a string',
+  NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Name length must be from 1 to 100',
+  IMAGE_IS_REQUIRED: 'Image is required',
+  IMAGE_MUST_BE_A_VALID_URL: 'Image must be a valid URL',
+  DESCRIPTION_IS_REQUIRED: 'Description is required',
+  DESCRIPTION_MUST_BE_A_STRING: 'Description must be a string',
+
+  // Update related messages
+  UPDATE_BLINDBOX_SUCCESS: 'Blind box updated successfully',
+
+  // Delete related messages
+  DELETE_BLINDBOX_SUCCESS: 'Blind box deleted successfully',
+
+  // Other messages
+  OWNER_NOT_FOUND: 'Owner of the blind box not found'
+  // Add more messages as needed for other blind box operations
+}
+
+export const OFFER_MESSAGES = {
+  VALIDATION_ERROR: 'Validation error',
+  OFFER_ITEM_REQUIRED: 'Offer item is required',
+  OFFER_ITEM_MUST_BE_STRING: 'Offer item must be a string',
+  OFFER_DESCRIPTION_REQUIRED: 'Offer description is required',
+  OFFER_DESCRIPTION_MUST_BE_STRING: 'Offer description must be a string',
+  OFFER_IMAGE_REQUIRED: 'Offer image is required',
+  OFFER_IMAGE_MUST_BE_STRING: 'Offer image must be a string',
+  OFFER_IMAGE_INVALID_URL: 'Offer image must be a valid URL',
+  REQUESTER_ID_REQUIRED: 'Requester ID is required',
+  REQUESTER_ID_INVALID: 'Requester ID is invalid',
+  REQUEST_ID_REQUIRED: 'Request ID is required',
+  REQUEST_ID_INVALID: 'Request ID is invalid',
+  OFFER_STATUS_REQUIRED: 'Offer status is required',
+  OFFER_STATUS_INVALID: 'Offer status is invalid',
+  CREATE_OFFER_SUCCESS: 'Offer created successfully',
+  OFFER_NOT_FOUND: 'Offer not found',
+  UPDATE_OFFER_SUCCESS: 'Offer updated successfully',
+  DELETE_OFFER_SUCCESS: 'Offer deleted successfully'
 }

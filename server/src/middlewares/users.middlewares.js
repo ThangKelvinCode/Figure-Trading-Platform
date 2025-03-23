@@ -1,5 +1,5 @@
 import { checkSchema } from 'express-validator'
-import { USERS_MESSAGES } from '../constants/message.js'
+import { USERS_MESSAGES } from '../constants/messages.js'
 import { validate } from '../utils/validation.js'
 
 const passwordSchema = {
@@ -91,34 +91,45 @@ const dateOfBirthSchema = {
     errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_BE_ISO8601
   }
 }
+
 //PARAMSCHEMA
 
 //viết hàm kiểm tra req body của chức năng đăng kí
 export const registerValidator = validate(
-  checkSchema({
-    name: nameSchema,
-    email: {
-      notEmpty: {
-        errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
+  checkSchema(
+    {
+      name: nameSchema,
+      email: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
+        },
+        isEmail: {
+          errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+        },
+        trim: true
       },
-      isEmail: {
-        errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
-      },
-      trim: true
+      password: passwordSchema,
+      confirmed_password: confirmPasswordSchema,
+      date_of_birth: dateOfBirthSchema
     },
-    password: passwordSchema,
-    confirmed_password: confirmPasswordSchema,
-    date_of_birth: dateOfBirthSchema
-  })
+    ['body']
+  )
 )
-export const loginValidator = (req, res, next) => {
-  // ta vào body lấy email, password ra
-  console.log(req.body) //log xem có gì
-  const { email, password } = req.body
-  if (!email || !password) {
-    return res.status(400).json({
-      error: 'Missing email or password'
-    })
-  }
-  next()
-}
+
+export const loginValidator = validate(
+  checkSchema(
+    {
+      email: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
+        },
+        isEmail: {
+          errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+        },
+        trim: true
+      },
+      password: passwordSchema
+    },
+    ['body']
+  )
+)
