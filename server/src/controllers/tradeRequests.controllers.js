@@ -41,7 +41,6 @@ const getTradeRequestById = async (req, res) => {
   }
 };
 
-
 const updateTradeRequest = async (req, res) => {
   try {
     const result = await tradeRequestsServices.updateTradeRequest(req.params.requestId, req.body);
@@ -113,29 +112,29 @@ const declineOffer = async (req, res) => {
 
 const updateRequest = async (req, res) => {
   // get reqId from URL
-  const reqId = req.params.reqId
+  const reqId = req.params.reqId;
   // get request body
-  const data = req.body
+  const data = req.body;
   //
-  const updateRequest = await tradeRequestServices.updateRequest(reqId, data)
+  const updateRequest = await tradeRequestsServices.updateRequest(reqId, data);
   res.status(HTTP_STATUS.OK).json({
     message: TRADE_REQUESTS_MESSAGES.UPDATE_REQUEST_SUCCESSFULLY,
     result: updateRequest
-  })
-}
+  });
+};
 
 const updateStatus = async (req, res) => {
   // get reqId from URL
-  const reqId = req.params.reqId
+  const reqId = req.params.reqId;
   // get request body
-  const data = req.body
+  const data = req.body;
   //
-  const updateRequest = await tradeRequestServices.updateStatus(reqId, data)
+  const updateRequest = await tradeRequestsServices.updateStatus(reqId, data);
   res.status(HTTP_STATUS.OK).json({
     message: TRADE_REQUESTS_MESSAGES.UPDATE_REQUEST_SUCCESSFULLY,
     result: updateRequest
-  })
-}
+  });
+};
 
 export const tradeRequestsController = {
   createTradeRequest,
@@ -147,5 +146,7 @@ export const tradeRequestsController = {
   selectOffer,
   confirmFinishTrade, 
   cancelTrade, 
-  declineOffer, 
+  declineOffer,
+  updateRequest,
+  updateStatus
 };

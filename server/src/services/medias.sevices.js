@@ -11,7 +11,7 @@ class MediaServices {
     // const result = await Promise.all(    //phần này sẽ đc sài khi có nhiều ảnh trong request
     //   files.map(async (file) => {
     const newFileName = getNameFormFullnameFile(file.newFilename) + '.jpg' //lấy tên cũ bỏ đuôi sau, thêm đuôi .jpg
-    const newaPath = UPLOAD_IMAGE_DIR + '/' + newFileName //đường dẫn mới để lưu ảnh
+    const newPath = UPLOAD_IMAGE_DIR + '/' + newFileName //đường dẫn mới để lưu ảnh
     //nén
     const infor = await sharp(file.filepath).jpeg().toFile(newPath)
     //xóa file ảnh cũ
