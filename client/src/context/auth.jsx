@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     setUsername("");
     setRole("user");
-    navigate("/login");
+    navigate("/authpage");
   };
 
   const register = async (username, email, password) => {
@@ -132,11 +132,27 @@ export const AuthProvider = ({ children }) => {
       status: "pending",
     };
     const existingTrades = JSON.parse(
-      sessionStorage.getItem("SWD392_trades") || "[]"
+      localStorage.getItem("SWD392_trades") || "[]"
     );
     const updatedTrades = [...existingTrades, tradeRequest];
-    sessionStorage.setItem("SWD392_trades", JSON.stringify(updatedTrades));
+    localStorage.setItem("SWD392_trades", JSON.stringify(updatedTrades));
     return tradeRequest;
+  };
+
+  const handleDeleteTrade = (tradeId) => {
+    try {
+      const existingTrades = JSON.parse(
+        localStorage.getItem("SWD392_trades") || "[]"
+      );
+      const updatedTrades = existingTrades.filter(
+        (trade) => trade.id !== tradeId
+      );
+      localStorage.setItem("SWD392_trades", JSON.stringify(updatedTrades));
+      return true;
+    } catch (error) {
+      console.error("Error deleting trade:", error);
+      return false;
+    }
   };
 
   return (
@@ -150,6 +166,7 @@ export const AuthProvider = ({ children }) => {
         register,
         updateTrades,
         createTrade,
+        handleDeleteTrade,
       }}
     >
       {children}

@@ -56,47 +56,45 @@ const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
             placeholder="Type a message..."
           />
           <button type="submit">Send</button>
+          <button onClick={onClose}> Close </button>
         </form>
       </div>
     </div>
   );
 };
 
-const TradeBlock = ({ trade, onAccept, onDeny }) => {
+const TradeBlock = ({ trade, onTradeDeleted }) => {
   const [showChatPopup, setChatPopup] = useState(false);
+  const { handleDeleteTrade } = useAuth();
 
+  const handleDelete = () => {
+    const success = handleDeleteTrade(trade.id);
+    if (success) {
+      console.log("Trade ${trade.id} deleted successfully");
+      onTradeDeleted(trade.id);
+    } else {
+      console.error("failed to delete");
+    }
+  };
   return (
-    <div className={`trade_request ${trade.status}`}>
+    <div className={`trade_request`}>
       <div>
         <h3>Trade #{trade.id}</h3>
         <p>Sender: {trade.sender}</p>
         <p>Offering: {trade.offer}</p>
         <p>Requesting: {trade.request}</p>
       </div>
-      <div className="trade_buttons">
-        {trade.status === "pending" ? (
-          <>
-            <button className="accept" onClick={() => onAccept(trade.id)}>
-              Accept
-            </button>
-            <button className="deny" onClick={() => onDeny(trade.id)}>
-              Deny
-            </button>
-          </>
-        ) : (
-          <button className={`status ${trade.status}`} disabled>
-            {trade.status === "accepted" ? "Accepted" : "Denied"}
-          </button>
-        )}
+      <div>
+        <button onClick={() => setChatPopup(true)}>Accept</button>
       </div>
       <div>
-        <button onClick={() => setChatPopup(true)}>Message</button>
+        <button onClick={handleDelete}>Delete</button>
       </div>
       <ChatModal
         isOpen={showChatPopup}
         onClose={() => setChatPopup(false)}
-        senderId={trade.senderId} // Assuming trade object has senderId
-        ownerId={trade.ownerId} // Assuming trade object has ownerId
+        senderId={trade.senderId}
+        ownerId={trade.ownerId}
       />
     </div>
   );
@@ -116,22 +114,11 @@ const Tradelist = () => {
     return () => clearInterval(interval);
   }, [currentUser, updateTrades]);
 
-  const handleAccept = (tradeId) => {
-    const allTrades = JSON.parse(localStorage.getItem("trades") || "[]");
-    const updatedTrades = allTrades.map((trade) =>
-      trade.id === tradeId ? { ...trade, status: "accepted" } : trade
+  const handleTradeDeleted = (deletedTradeId) => {
+    // Update trades state by filtering out the deleted trade
+    setTrades((prevTrades) =>
+      prevTrades.filter((trade) => trade.id !== deletedTradeId)
     );
-    localStorage.setItem("trades", JSON.stringify(updatedTrades));
-    setTrades(updateTrades(currentUser));
-  };
-
-  const handleDeny = (tradeId) => {
-    const allTrades = JSON.parse(localStorage.getItem("trades") || "[]");
-    const updatedTrades = allTrades.map((trade) =>
-      trade.id === tradeId ? { ...trade, status: "denied" } : trade
-    );
-    localStorage.setItem("trades", JSON.stringify(updatedTrades));
-    setTrades(updateTrades(currentUser));
   };
 
   return (
@@ -144,8 +131,7 @@ const Tradelist = () => {
           <TradeBlock
             key={trade.id}
             trade={trade}
-            onAccept={handleAccept}
-            onDeny={handleDeny}
+            onTradeDeleted={{ handleTradeDeleted }}
           />
         ))
       )}

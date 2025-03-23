@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../assets/css/Login.css";
 import { useAuth } from "../context/auth.jsx";
 
@@ -42,11 +42,6 @@ function Login() {
             required
             placeholder="Password"
           />
-          <div>
-            <Link className="navi_regi" to="/register">
-              Don't have account yet?
-            </Link>
-          </div>
           <button type="submit">Sign in</button>
         </form>
       </div>

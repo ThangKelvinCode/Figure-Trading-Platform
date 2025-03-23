@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../assets/css/Register.css";
 import { useAuth } from "../context/auth.jsx";
 
@@ -77,9 +77,6 @@ function Register() {
             />
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
-          <Link className="navi_login" to="/login">
-            Already have an account?
-          </Link>
           <button type="submit">Register</button>
         </form>
       </div>

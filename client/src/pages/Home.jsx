@@ -65,8 +65,8 @@ const Home = () => {
       return;
     }
     const product = products.find((p) => p.id === productId);
-    createTrade(username, "My Item", product.name, product.owner);
-    alert(`Trade request sent to ${product.owner}`);
+    // Redirect to Offer page with productId and username as params
+    window.location.href = `/offer`;
   };
 
   if (loading) {

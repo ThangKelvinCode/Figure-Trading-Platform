@@ -1,0 +1,118 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* Center the auth_form horizontally */
+  align-items: center; /* Center the auth_form vertically */
+  background: url("../images/wallpaper.jpg");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden; /* Prevent scrollbars during animation */
+}
+
+/* Centered container for banner and form */
+.auth_form {
+  width: 100%;
+  max-width: 700px; /* Reasonable width for the centered container */
+  height: 500px; /* Fixed height for the container */
+  display: flex;
+  border-radius: 30px;
+  position: relative; /* Make auth_form the positioning context for the banner */
+  background: rgba(255, 255, 255, 0.1); /* Optional: Add a subtle background */
+  border-radius: 16px;
+  overflow: hidden; /* Ensure the banner doesn't overflow the container */
+}
+
+/* Banner (Slides across the auth_form container) */
+.banner {
+  width: 30%; /* 3 parts out of 10 (3:7 ratio) */
+  height: 100%; /* Full height of auth_form */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay for contrast */
+  color: white;
+  padding: 2rem;
+  position: absolute; /* Position absolutely within auth_form */
+  top: 0;
+  z-index: 1; /* Ensure the banner is above the form */
+}
+
+/* Form Container */
+.form-container {
+  width: 70%; /* 7 parts out of 10 (3:7 ratio) */
+  height: 100%; /* Full height of auth_form */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  transition: margin-left 0.5s ease-in-out; /* Smooth transition for margin adjustment */
+}
+
+/* Adjust form container position based on mode */
+.form-login {
+  margin-left: 30%; /* Push the form to the right when the banner is on the left */
+}
+
+.form-register {
+  margin-left: 0; /* Form takes the left side when the banner is on the right */
+}
+
+/* Sliding Animations for the Banner */
+.slide-to-left {
+  animation: slideToLeft 0.5s ease-in-out forwards;
+}
+
+.slide-to-right {
+  animation: slideToRight 0.5s ease-in-out forwards;
+}
+
+@keyframes slideToLeft {
+  0% {
+    left: 70%; /* Start from the right side of auth_form */
+  }
+  100% {
+    left: 0; /* End on the left side of auth_form */
+  }
+}
+
+@keyframes slideToRight {
+  0% {
+    left: 0; /* Start from the left side of auth_form */
+  }
+  100% {
+    left: 70%; /* End on the right side of auth_form */
+  }
+}
+
+/* Banner content styling */
+.banner h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.toggle-button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid white;
+  border-radius: 25px;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.toggle-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Ensure the form inside the container inherits the correct styles */
+.form-container .login_form,
+.form-container .register_form {
+  width: 100%;
+  max-width: 400px;
+  background: transparent; /* Remove the default background to match the container */
+  border: none; /* Remove the default border */
+  backdrop-filter: none; /* Remove the default backdrop filter */
+}
