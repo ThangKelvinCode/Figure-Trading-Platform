@@ -175,7 +175,7 @@ usersRouter.get(
         }
       }
   */
-  verifyToken,
+  // verifyToken,
   wrapAsync(userController.getUserProfile)
 );
 
