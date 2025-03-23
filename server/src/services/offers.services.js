@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb'
 import Offer from '../models/schemas/Offers.schema.js'
-import databaseServices from './database.services.js'
 import offerRepo from '../repositories/offers.repo.js'
 import { OfferStatus } from '../constants/enums.js'
 

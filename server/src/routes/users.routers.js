@@ -4,6 +4,7 @@ import { loginValidator, registerValidator } from '../middlewares/users.middlewa
 import { userController } from '../controllers/users.controllers.js'
 import { wrapAsync } from '../utils/handler.js'
 import { verifyToken } from '../middlewares/auth.middlewares.js'
+import orderRoutes from './orders.routes.js'
 //tạo Router
 const usersRouter = Router()
 
@@ -179,4 +180,50 @@ usersRouter.get(
   wrapAsync(userController.getUserProfile)
 );
 
+usersRouter.use(
+  '/:id/Orders',
+  /*  #swagger.tags = ['Users', 'Orders']
+        #swagger.summary = 'Get all orders for a user'
+        #swagger.description = 'Retrieves a list of all orders placed by a specific user based on their ID'
+        #swagger.parameters['id'] = { 
+            description: "User ID", 
+            type: "string", 
+            required: true, 
+            example: "67af6d45efd963779dfa5f84" 
+        }
+        #swagger.responses[200] = { 
+            description: "Orders retrieved successfully",
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                order_id: { type: "string", example: "67d47099b5a8da11c7804a7d" },
+                                total_price: { type: "number", example: 49.99 },
+                                status: { type: "string", example: "Delivered" },
+                                createdAt: { type: "string", format: "date-time", example: "2025-03-19T14:00:00Z" },
+                                items: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            product_id: { type: "string", example: "67de65c697e0e4a9a6a33574" },
+                                            name: { type: "string", example: "Wireless Mouse" },
+                                            quantity: { type: "integer", example: 2 },
+                                            price: { type: "number", example: 24.99 }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #swagger.responses[404] = { description: "User not found or no orders available" }
+    */
+  orderRoutes
+)
 export default usersRouter

@@ -256,4 +256,3 @@ export const tradeRequestsServices = {
   cancelTrade, 
   declineOffer, 
 };
-

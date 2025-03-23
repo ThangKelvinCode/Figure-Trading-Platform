@@ -63,11 +63,36 @@ export const USERS_MESSAGES = {
   USERNAME_IS_INVALID:
     'Username must be a string and length must be 4 - 15, and contain only letters, numbers, and underscores, not only numbers',
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully',
-  //Product and others
-  EMPTY_DESCRIPTION: 'Please fill in description',
-  EMPTY_PRICE: 'Please fill in price',
-  EMPTY_PHOTO: 'Please upload product photos'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully'
+}
+
+export const PRODUCT_MESSAGE = {
+  // Product and others (hợp nhất từ trade-flow và backend)
+  EMPTY_TYPE: 'Type is required',
+  EMPTY_NAME: 'Name is required',
+  EMPTY_DESCRIPTION: 'Description is required', // Từ trade-flow và backend
+  EMPTY_PRICE: 'Price is required', // Từ trade-flow và backend
+  INVALID_PRICE: 'Price must be a number',
+  EMPTY_PHOTO: 'Photo is required', // Từ trade-flow (sửa thành Photo cho đồng nhất với backend)
+  EMPTY_OWNER: 'Owner is required',
+  NOT_FOUND: 'Accessory not found!',
+  DELETE_FAILED: 'Please check again, the delete failed'
+}
+
+export const ORDER_MESSAGE = {
+  NOT_FOUND: 'Not found!',
+  NO_PERMISSION: 'You do not have the permission to do this',
+  CREATED: 'order created successfully',
+  DELETE_SUCCESS: 'Accessories deleted',
+  NOT_COMPLETED: 'Order has not completed'
+}
+
+export const REVIEW_MESSAGE = {
+  NOT_FOUND: 'Review not found!',
+  UPDATE_SUCCESS: 'Update review success',
+  CREATE_SUCCESS: 'Create review success',
+  DELETE_SUCCESS: 'Review deleted',
+  NO_PERMISSION: 'You do not have the permission to do this'
 }
 
 export const TRADE_REQUESTS_MESSAGES = {
@@ -79,7 +104,7 @@ export const TRADE_REQUESTS_MESSAGES = {
   UPDATE_REQUEST_SUCCESSFULLY: 'Update Request Successfully'
 }
 
-//Blindbox message
+// Blindbox message
 export const BLINDBOX_MESSAGES = {
   // General messages
   VALIDATION_ERROR: 'Validation error',
@@ -88,23 +113,7 @@ export const BLINDBOX_MESSAGES = {
 
   // Creation related messages
   CREATE_BLINDBOX_SUCCESS: 'Blind box created successfully',
-  NAME_IS_REQUIRED: 'Name is required',
-  NAME_MUST_BE_A_STRING: 'Name must be a string',
-  NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Name length must be from 1 to 100',
-  IMAGE_IS_REQUIRED: 'Image is required',
-  IMAGE_MUST_BE_A_VALID_URL: 'Image must be a valid URL',
-  DESCRIPTION_IS_REQUIRED: 'Description is required',
-  DESCRIPTION_MUST_BE_A_STRING: 'Description must be a string',
-
-  // Update related messages
-  UPDATE_BLINDBOX_SUCCESS: 'Blind box updated successfully',
-
-  // Delete related messages
-  DELETE_BLINDBOX_SUCCESS: 'Blind box deleted successfully',
-
-  // Other messages
-  OWNER_NOT_FOUND: 'Owner of the blind box not found'
-  // Add more messages as needed for other blind box operations
+  NAME_IS_REQUIRED: 'Name is required'
 }
 
 export const OFFER_MESSAGES = {
@@ -126,4 +135,8 @@ export const OFFER_MESSAGES = {
   OFFER_NOT_FOUND: 'Offer not found',
   UPDATE_OFFER_SUCCESS: 'Offer updated successfully',
   DELETE_OFFER_SUCCESS: 'Offer deleted successfully'
+}
+
+export const PAYMENT_MESSAGES = {
+  PAYMENT_ERROR: 'Payment is error'
 }

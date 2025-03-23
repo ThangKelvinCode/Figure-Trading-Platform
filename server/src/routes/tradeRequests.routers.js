@@ -523,5 +523,4 @@ tradeRequestsRouter.post(
   wrapAsync(tradeRequestsController.declineOffer)
 );
 
-  export default tradeRequestsRouter;
-
+export default tradeRequestsRouter;
