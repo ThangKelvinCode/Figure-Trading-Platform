@@ -1,7 +1,3 @@
-import express from 'express'
-import cors from 'cors' // Import cors (giữ 1 dòng, loại trùng lặp từ backend)
-import { createServer } from 'http' // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
-import { corsOptions } from './configs/cors.js' // Chỉ có ở backend, giữ lại
 import cors from 'cors' // Import cors (giữ 1 dòng, loại trùng lặp từ backend)
 import { createServer } from 'http' // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
 import { corsOptions } from './configs/cors.js' // Chỉ có ở backend, giữ lại
@@ -12,15 +8,7 @@ import offersRouter from './routes/offers.routers.js'
 import tradeRequestsRouter from './routes/tradeRequests.routers.js'
 import { initFolder } from './utils/file.js'
 import database from './configs/database.js'
-import swaggerUi from 'swagger-ui-express'
-import messagesRouter from './routes/messages.routes.js';
-import { messagesServices } from './services/messages.services.js';
-import bodyParser from 'body-parser';
-import swaggerFile from '../swagger-output.json' assert { type: "json" }
-import { Server } from 'socket.io';
-import YAML from 'yaml' // Chỉ có ở trade-flow, giữ lại
 import swaggerUi from 'swagger-ui-express' // Có ở cả hai, giữ 1 dòng
-import swaggerJsdocOSA from 'swagger-jsdoc' // Chỉ có ở trade-flow, giữ lại (tên biến đổi để tránh nhầm lẫn)
 import messagesRouter from './routes/messages.routes.js' // Chỉ có ở trade-flow, giữ lại
 import { messagesServices } from './services/messages.services.js' // Chỉ có ở trade-flow, giữ lại
 import bodyParser from 'body-parser' // Có ở cả hai, giữ 1 dòng
