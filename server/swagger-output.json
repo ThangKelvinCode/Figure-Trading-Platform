@@ -197,13 +197,6 @@
             },
             "description": "User ID",
             "example": "67d52b3c60c67cabfd83d7fd"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -285,49 +278,535 @@
         ]
       }
     },
+    "/user/{id}/Orders/allOrders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get all orders for a user",
+        "description": "Retrieves all orders placed by the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID",
+            "example": "67af6d45efd963779dfa5f84"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "order_id": {
+                        "type": "string",
+                        "example": "67d47099b5a8da11c7804a7d"
+                      },
+                      "total_price": {
+                        "type": "number",
+                        "example": 49.99
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "Delivered"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-19T14:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No orders found for the user"
+          }
+        }
+      }
+    },
+    "/user/{id}/Orders/{detailID}/writeReview": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Write a review for an order detail",
+        "description": "Allows a user to submit a review for a specific order detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "detailID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order Detail ID",
+            "example": "67dfcb5138afc23bf8cff336"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "order_id": {
+                        "type": "string",
+                        "example": "67d47099b5a8da11c7804a7d"
+                      },
+                      "total_price": {
+                        "type": "number",
+                        "example": 49.99
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "Delivered"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-19T14:00:00Z"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "product_id": {
+                              "type": "string",
+                              "example": "67de65c697e0e4a9a6a33574"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Wireless Mouse"
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 24.99
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Review submitted successfully"
+          },
+          "400": {
+            "description": "Invalid review submission"
+          },
+          "404": {
+            "description": "User not found or no orders available"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "content",
+                  "star"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "This product is very good, well fit."
+                  },
+                  "star": {
+                    "type": "integer",
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}/Orders/review/{reviewID}/delete": {
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Delete a review",
+        "description": "Deletes a review based on review ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reviewID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Review ID",
+            "example": "67dfbeea2fb93c43002e5fa6"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "order_id": {
+                        "type": "string",
+                        "example": "67d47099b5a8da11c7804a7d"
+                      },
+                      "total_price": {
+                        "type": "number",
+                        "example": 49.99
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "Delivered"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-19T14:00:00Z"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "product_id": {
+                              "type": "string",
+                              "example": "67de65c697e0e4a9a6a33574"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Wireless Mouse"
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 24.99
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Review not found"
+          }
+        }
+      }
+    },
+    "/user/{id}/Orders/review/{reviewID}/edit": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Edit a review",
+        "description": "Allows a user to edit their review based on the review ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reviewID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Review ID",
+            "example": "67dfcb5138afc23bf8cff336"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "order_id": {
+                        "type": "string",
+                        "example": "67d47099b5a8da11c7804a7d"
+                      },
+                      "total_price": {
+                        "type": "number",
+                        "example": 49.99
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "Delivered"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-19T14:00:00Z"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "product_id": {
+                              "type": "string",
+                              "example": "67de65c697e0e4a9a6a33574"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Wireless Mouse"
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 24.99
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Review not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "content",
+                  "star"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "This product is very good, well fit."
+                  },
+                  "star": {
+                    "type": "integer",
+                    "example": 4
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/accessories/postAccessories": {
       "post": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Post a new accessory",
+        "description": "Creates a new accessory listing",
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Accessory posted successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "description",
+                  "type",
+                  "price",
+                  "photo",
+                  "owner"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "1000% bag"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Big bag for 1000%"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "67c91d9583ff104caa240546"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 59.99
+                  },
+                  "photo": {
+                    "type": "array",
+                    "format": "url",
+                    "example": "https://example3.com"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "date_added": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": ""
+                  },
+                  "owner": {
+                    "type": "string",
+                    "example": "67bca3f6207e4b98d3665a9f"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/accessories/newCategory": {
       "post": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Create a new category",
+        "description": "Creates a new accessory category",
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Category created successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "description"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "handbag"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Bag to hang the dolls with various sizes"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/accessories/allAccessories": {
       "get": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get all accessories",
+        "description": "Retrieves a list of all available accessories",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "List of accessories retrieved successfully"
           }
         }
       }
     },
     "/accessories/allCategories": {
       "get": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get all categories",
+        "description": "Retrieves a list of all accessory categories",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "List of categories retrieved successfully"
           }
         }
       }
     },
     "/accessories/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get an accessory by ID",
+        "description": "Retrieves details of a specific accessory",
         "parameters": [
           {
             "name": "id",
@@ -335,17 +814,26 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Accessory ID",
+            "example": "67c91dad83ff104caa240547"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Accessory details retrieved successfully"
+          },
+          "404": {
+            "description": "Accessory not found"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Delete an accessory",
+        "description": "Deletes a specific accessory by its ID",
         "parameters": [
           {
             "name": "id",
@@ -353,19 +841,28 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Accessory deleted successfully"
+          },
+          "404": {
+            "description": "Accessory not found"
           }
         }
       }
     },
     "/accessories/categories/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get a category by ID",
+        "description": "Retrieves details of a specific accessory category",
         "parameters": [
           {
             "name": "id",
@@ -373,12 +870,149 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Category ID",
+            "example": "67c91d9583ff104caa240546"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Category details retrieved successfully"
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        }
+      }
+    },
+    "/accessories/{id}/reviews": {
+      "get": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Get all reviews for an accessory",
+        "description": "Retrieves all reviews for a specific accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reviews retrieved successfully"
+          }
+        }
+      }
+    },
+    "/accessories/{id}/purchase": {
+      "post": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Purchase an accessory",
+        "description": "Handles the purchase of an accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accessory purchased successfully"
+          },
+          "400": {
+            "description": "Invalid purchase request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "quantity",
+                  "userID"
+                ],
+                "properties": {
+                  "quantity": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "userID": {
+                    "type": "string",
+                    "example": "67af6d45efd963779dfa5f84"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accessories/{id}/newReview": {
+      "post": {
+        "tags": [
+          "Accessories"
+        ],
+        "summary": "Write a review for an accessory",
+        "description": "Allows a user to submit a review for an accessory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Accessory ID",
+            "example": "67bca3f6207e4b98d3665a9f"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Review submitted successfully"
+          },
+          "400": {
+            "description": "Invalid review submission"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rating",
+                  "comment"
+                ],
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "example": 5
+                  },
+                  "comment": {
+                    "type": "string",
+                    "example": "Great accessory! Highly recommended."
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1956,6 +2590,288 @@
             "BearerAuth": []
           }
         ]
+      }
+    },
+    "/orders/allOrders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get all orders for a user",
+        "description": "Retrieves all orders placed by the user",
+        "responses": {
+          "200": {
+            "description": "Orders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "order_id": {
+                        "type": "string",
+                        "example": "67d47099b5a8da11c7804a7d"
+                      },
+                      "total_price": {
+                        "type": "number",
+                        "example": 49.99
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "Delivered"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-03-19T14:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No orders found for the user"
+          }
+        }
+      }
+    },
+    "/orders/{detailID}/writeReview": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Write a review for an order detail",
+        "description": "Allows a user to submit a review for a specific order detail",
+        "parameters": [
+          {
+            "name": "detailID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order Detail ID",
+            "example": "67dfcb5138afc23bf8cff336"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Review submitted successfully"
+          },
+          "400": {
+            "description": "Invalid review submission"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "content",
+                  "star"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "This product is very good, well fit."
+                  },
+                  "star": {
+                    "type": "integer",
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/review/{reviewID}/delete": {
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Delete a review",
+        "description": "Deletes a review based on review ID",
+        "parameters": [
+          {
+            "name": "reviewID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Review ID",
+            "example": "67dfbeea2fb93c43002e5fa6"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review deleted successfully"
+          },
+          "404": {
+            "description": "Review not found"
+          }
+        }
+      }
+    },
+    "/orders/review/{reviewID}/edit": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Edit a review",
+        "description": "Allows a user to edit their review based on the review ID",
+        "parameters": [
+          {
+            "name": "reviewID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Review ID",
+            "example": "67dfcb5138afc23bf8cff336"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review updated successfully"
+          },
+          "404": {
+            "description": "Review not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "content",
+                  "star"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "This product is very good, well fit."
+                  },
+                  "star": {
+                    "type": "integer",
+                    "example": 4
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/create_momo": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Create MOMO payment",
+        "description": "Creates a new MOMO payment",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "amount",
+                  "orderId"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "example": "10000"
+                  },
+                  "orderId": {
+                    "type": "string",
+                    "example": "67af6d45efd963779dfa5f84"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/check_momo_status": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Check status",
+        "description": "Check MoMo payment status",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "orderId"
+                ],
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "example": "67af6d45efd963779dfa5f84"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/create_zaloPay": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/paymentzaloPay_callback": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/payment/check_zaloPay_status": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/messages/": {

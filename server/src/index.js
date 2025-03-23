@@ -1,3 +1,4 @@
+import express from 'express'
 import cors from 'cors' // Import cors (giữ 1 dòng, loại trùng lặp từ backend)
 import { createServer } from 'http' // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
 import { corsOptions } from './configs/cors.js' // Chỉ có ở backend, giữ lại
