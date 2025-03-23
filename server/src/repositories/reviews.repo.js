@@ -19,7 +19,7 @@ class Review {
     
     async editReview(newRate, newContent, id) {
         return await this.db.updateOne(
-            { _id: id }, 
+            { _id: new ObjectId(id) }, 
             { $set: { content: newContent, star: newRate } }
         )
     }

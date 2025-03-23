@@ -27,10 +27,10 @@ class AccessoriesRepo {
 
     async getAllReview(id) {
         const pipeline = [
-            { $match: { _id: id } },
+            { $match: { _id: new ObjectId(id) } },
             {
                 $lookup: {
-                    from: 'order_details',
+                    from: 'Order_details',
                     localField: '_id',
                     foreignField: 'accessories',
                     as: 'order_details'
@@ -39,7 +39,7 @@ class AccessoriesRepo {
             { $unwind: '$order_details' },
             {
                 $lookup: {
-                    from: 'reviews',
+                    from: 'Reviews',
                     localField: 'order_details._id',
                     foreignField: 'order_detail',
                     as: 'reviews'

@@ -83,7 +83,8 @@ export const ORDER_MESSAGE = {
   NOT_FOUND: 'Not found!',
   NO_PERMISSION: 'You do not have the permission to do this',
   CREATED: 'order created successfully',
-  DELETE_SUCCESS: 'Accessories deleted'
+  DELETE_SUCCESS: 'Accessories deleted',
+  NOT_COMPLETED: 'Order has not completed'
 }
 
 export const REVIEW_MESSAGE = {

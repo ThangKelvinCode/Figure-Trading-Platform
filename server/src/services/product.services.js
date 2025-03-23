@@ -110,12 +110,6 @@ const buyAccessory = async (reqBody, accessoryID) => {
     }
 
     const { quantity } = reqBody
-    // degug
-    console.log('acc..: ', accessories)
-    console.log('quantity: ', quantity)
-    console.log('acc..: ', accessories.price)
-
-    // end debug
     const orderData = {
       _id: new ObjectId(),
       buyer: buyer._id,
@@ -123,10 +117,6 @@ const buyAccessory = async (reqBody, accessoryID) => {
     }
     const order = new orders(orderData)
     const newOrder = await ordersRepo.createOrder(order)
-    //
-    console.log('neworder', newOrder)
-    console.log('total: ', orderData.total_price)
-    //
     const detailData = {
       _id: new ObjectId(),
       order: orderData._id,

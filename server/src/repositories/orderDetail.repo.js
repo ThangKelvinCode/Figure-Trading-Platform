@@ -13,8 +13,8 @@ class OrderDetailsRepo {
         return await this.db.insertOne(order)
     }
 
-    async getAllOrderDetails() {
-        return await this.db.find().toArray()
+    async getAllDetailOfOrder(orderID) {
+        return await this.db.find({order: new ObjectId(orderID) }).toArray()
     }
 
     async getOrderDetails(id) {

@@ -29,7 +29,7 @@ class OrdersRepo {
     }
 
     async getAllUserOrders(userID){
-        return await this.db.find({buyer : userID}).toArray()
+        return await this.db.find({buyer : new ObjectId(userID)}).toArray()
     }
 
     
