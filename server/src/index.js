@@ -1,12 +1,10 @@
 import express from 'express'
-<<<<<<< HEAD
-import cors from 'cors' // Import cors
-import { createServer } from 'http'; // Để tạo server HTTP
-=======
 import cors from 'cors' // Import cors (giữ 1 dòng, loại trùng lặp từ backend)
 import { createServer } from 'http' // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
 import { corsOptions } from './configs/cors.js' // Chỉ có ở backend, giữ lại
->>>>>>> 8d39440db5e202c98f9a31b366e8945e2cf0ff42
+import cors from 'cors' // Import cors (giữ 1 dòng, loại trùng lặp từ backend)
+import { createServer } from 'http' // Để tạo server HTTP (chỉ có ở trade-flow, giữ lại)
+import { corsOptions } from './configs/cors.js' // Chỉ có ở backend, giữ lại
 import usersRouter from './routes/users.routers.js'
 import { defaultErrorHandler } from './middlewares/error.middlewares.js'
 import accessoriesRouter from './routes/accessories.routes.js'
@@ -14,16 +12,12 @@ import offersRouter from './routes/offers.routers.js'
 import tradeRequestsRouter from './routes/tradeRequests.routers.js'
 import { initFolder } from './utils/file.js'
 import database from './configs/database.js'
-<<<<<<< HEAD
 import swaggerUi from 'swagger-ui-express'
 import messagesRouter from './routes/messages.routes.js';
 import { messagesServices } from './services/messages.services.js';
 import bodyParser from 'body-parser';
 import swaggerFile from '../swagger-output.json' assert { type: "json" }
 import { Server } from 'socket.io';
-
-//dựng server
-=======
 import YAML from 'yaml' // Chỉ có ở trade-flow, giữ lại
 import swaggerUi from 'swagger-ui-express' // Có ở cả hai, giữ 1 dòng
 import swaggerJsdocOSA from 'swagger-jsdoc' // Chỉ có ở trade-flow, giữ lại (tên biến đổi để tránh nhầm lẫn)
@@ -38,7 +32,6 @@ import paymentRouter from './routes/payments.routers.js' // Chỉ có ở backen
 console.log(Date.now().toString())
 
 // Dựng server
->>>>>>> 8d39440db5e202c98f9a31b366e8945e2cf0ff42
 const app = express()
 
 // Cors
@@ -62,7 +55,6 @@ const io = new Server(server, {
 database.connect()
 initFolder()
 
-<<<<<<< HEAD
 app.use(express.json()) 
 
 app.use(cors({
@@ -76,11 +68,12 @@ app.use(express.json())
 app.use(bodyParser.json())
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-=======
 app.use(express.json()) // Có ở cả hai, giữ 1 dòng
 app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
->>>>>>> 8d39440db5e202c98f9a31b366e8945e2cf0ff42
+app.use(express.json()) // Có ở cả hai, giữ 1 dòng
+app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
 
 // Setup routes
 app.use('/user', usersRouter)
