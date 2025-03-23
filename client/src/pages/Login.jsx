@@ -14,18 +14,30 @@ function Login() {
     e.preventDefault();
     setError("");
 
-    const loginSuccess = await login(email, password);
-    if (loginSuccess) {
-      navigate("/");
-    } else {
-      alert("Wrong email or password");
+    // Client-side validation
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
     }
+
+    try {
+      const loginSuccess = await login(email, password);
+      if (loginSuccess) {
+        navigate("/");
+      }
+    } catch (err) {
+      setError(err.message || "Wrong email or password");
+    }
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
   };
 
   return (
     <div className="login_window">
       <div className="login_form">
-        <h2>Sign in your account</h2>
+        <h2>Sign in to your account</h2>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
@@ -44,10 +56,19 @@ function Login() {
           />
           <div>
             <Link className="navi_regi" to="/register">
-              Don't have account yet?
+              Don't have an account yet?
             </Link>
           </div>
-          <button type="submit">Sign in</button>
+          <button type="submit" className="form-button">
+            Sign in
+          </button>
+          <button
+            type="button"
+            className="form-button"
+            onClick={handleBackToHome}
+          >
+            Back to Home
+          </button>
         </form>
       </div>
     </div>
