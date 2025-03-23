@@ -1,14 +1,12 @@
 import axios from "axios";
 
-// const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8082/api/";
-
 const api = axios.create({
   baseURL: "http://localhost:3000",
 });
 
 api.interceptors.request.use(
   function (config) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token"); // Changed from localStorage to sessionStorage
     if (token && token !== "null" && token !== "undefined") {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,7 +24,8 @@ api.interceptors.response.use(
   },
   function (error) {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token"); // Changed from localStorage to sessionStorage
+      sessionStorage.removeItem("refresh_token"); // Clear refresh token as well
       console.error("Token expired:", error);
     }
     return Promise.reject(error);

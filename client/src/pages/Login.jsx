@@ -1,28 +1,102 @@
+// import { useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import "../assets/css/Login.css";
+// import { useAuth } from "../context/auth.jsx";
+
+// function Login() {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [error, setError] = useState("");
+//   const { login } = useAuth();
+//   const navigate = useNavigate();
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError("");
+
+//     // Client-side validation
+//     if (!email || !password) {
+//       setError("Email and password are required");
+//       return;
+//     }
+
+//     try {
+//       const loginSuccess = await login(email, password);
+//       if (loginSuccess) {
+//         navigate("/");
+//       }
+//     } catch (err) {
+//       setError(err.message || "Wrong email or password");
+//     }
+//   };
+
+//   const handleBackToHome = () => {
+//     navigate("/");
+//   };
+
+//   return (
+//     <div className="login_window">
+//       <div className="login_form">
+//         <h2>Sign in to your account</h2>
+//         {error && <p className="error">{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           <input
+//             type="email"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             required
+//             placeholder="Email address"
+//           />
+//           <input
+//             type="password"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             required
+//             placeholder="Password"
+//           />
+//           <div>
+//             <Link className="navi_regi" to="/register">
+//               Don't have an account yet?
+//             </Link>
+//           </div>
+//           <button type="submit" className="form-button">
+//             Sign in
+//           </button>
+//           <button
+//             type="button"
+//             className="form-button"
+//             onClick={handleBackToHome}
+//           >
+//             Back to Home
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default Login;
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/Login.css";
-import { useAuth } from "../context/auth.jsx";
-
-function Login() {
+import { useAuth } from "../context/auth.jsx";function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
+  const navigate = useNavigate();  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    const loginSuccess = await login(email, password);
-    if (loginSuccess) {
-      navigate("/");
-    } else {
-      alert("Wrong email or password");
-    }
-  };
+const loginSuccess = await login(email, password);
+if (loginSuccess) {
+  navigate("/");
+} else {
+  alert("Wrong email or password");
+}
 
-  return (
+  };  return (
     <div className="login_window">
       <div className="login_form">
         <h2>Sign in your account</h2>
@@ -47,6 +121,5 @@ function Login() {
       </div>
     </div>
   );
-}
+}export default Login;
 
-export default Login;
