@@ -1,13 +1,23 @@
-import React, { useState } from "react";
-import "../assets/css/AuthPage.css"; // Import the updated CSS for this page
-import Login from "./Login"; // Import your existing Login component
-import Register from "./Register"; // Import your existing Register component
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../assets/css/AuthPage.css";
+import { useAuth } from "../context/auth.jsx";
+import Login from "./Login";
+import Register from "./Register";
 
 function AuthPage() {
-  const [isLoginMode, setIsLoginMode] = useState(true); // State to toggle between login and register
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   const toggleMode = () => {
-    setIsLoginMode((prevMode) => !prevMode); // Toggle between login and register modes
+    setIsLoginMode((prevMode) => !prevMode);
   };
 
   return (

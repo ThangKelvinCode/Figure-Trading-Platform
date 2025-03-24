@@ -15,7 +15,7 @@ const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
         ...messages,
         {
           id: Date.now(),
-          senderId: ownerId, // For now, assuming current user is owner
+          senderId: ownerId,
           text: newMessage,
           timestamp: new Date(),
         },
@@ -67,26 +67,38 @@ const TradeBlock = ({ trade, onTradeDeleted }) => {
   const [showChatPopup, setChatPopup] = useState(false);
   const { handleDeleteTrade } = useAuth();
 
-  const handleDelete = () => {
-    const success = handleDeleteTrade(trade.id);
+  const handleDelete = async () => {
+    const success = await handleDeleteTrade(trade.id);
     if (success) {
-      console.log("Trade ${trade.id} deleted successfully");
+      console.log(`Trade ${trade.id} deleted successfully`);
       onTradeDeleted(trade.id);
     } else {
-      console.error("failed to delete");
+      console.error("Failed to delete trade");
     }
   };
+
   return (
-    <div className={`trade_request`}>
+    <div className="trade_request">
       <div>
         <h3>Trade #{trade.id}</h3>
+        <p>Type: {trade.type === "incoming" ? "Incoming" : "Outgoing"}</p>
         <p>Sender: {trade.sender}</p>
         <p>Offering: {trade.offer}</p>
         <p>Requesting: {trade.request}</p>
+        <p>
+          My Item:{" "}
+          <img
+            src={trade.imageUrl}
+            alt="Offered Item"
+            style={{ width: "100px", height: "100px" }}
+          />
+        </p>
       </div>
-      <div>
-        <button onClick={() => setChatPopup(true)}>Accept</button>
-      </div>
+      {trade.type === "incoming" && (
+        <div>
+          <button onClick={() => setChatPopup(true)}>Accept</button>
+        </div>
+      )}
       <div>
         <button onClick={handleDelete}>Delete</button>
       </div>
@@ -104,22 +116,37 @@ const Tradelist = () => {
   const { username, updateTrades } = useAuth();
   const currentUser = username || "guest";
   const [trades, setTrades] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTrades(updateTrades(currentUser));
-    const interval = setInterval(
-      () => setTrades(updateTrades(currentUser)),
-      5000
-    );
-    return () => clearInterval(interval);
+    const fetchTrades = async () => {
+      try {
+        const fetchedTrades = await updateTrades(currentUser);
+        setTrades(fetchedTrades);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching trades:", error);
+        setTrades([]);
+        setLoading(false);
+      }
+    };
+
+    if (currentUser !== "guest") {
+      fetchTrades();
+    } else {
+      setLoading(false);
+    }
   }, [currentUser, updateTrades]);
 
   const handleTradeDeleted = (deletedTradeId) => {
-    // Update trades state by filtering out the deleted trade
     setTrades((prevTrades) =>
       prevTrades.filter((trade) => trade.id !== deletedTradeId)
     );
   };
+
+  if (loading) {
+    return <div>Loading trades...</div>;
+  }
 
   return (
     <div className="tradelist_page">
@@ -131,7 +158,7 @@ const Tradelist = () => {
           <TradeBlock
             key={trade.id}
             trade={trade}
-            onTradeDeleted={{ handleTradeDeleted }}
+            onTradeDeleted={handleTradeDeleted}
           />
         ))
       )}

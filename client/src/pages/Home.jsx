@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/Home.css";
-import Cocacola from "../assets/images/CocaCola.jpg"; // Fixed import path
-import ExcitingMacaron from "../assets/images/ExcitingMacaron.jpg"; // Fixed import path
-import Haveaseat from "../assets/images/Haveaseat.jpg"; // Fixed import path
+import Cocacola from "../assets/images/CocaCola.jpg";
+import ExcitingMacaron from "../assets/images/ExcitingMacaron.jpg";
+import Haveaseat from "../assets/images/Haveaseat.jpg";
 import Itempopup from "../components/Itempopup.jsx";
 import AnimatedGif from "../context/AnimatedGif.jsx";
 import { useAuth } from "../context/auth.jsx";
@@ -13,17 +13,17 @@ import { fetchUsers } from "./../context/adminauth";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { username, createTrade } = useAuth();
+  const { username } = useAuth(); // Removed createTrade since it's not used here
   const [showItemPopup, setItemPopup] = useState(false);
-  const [users, setUsers] = useState([]); // State to store fetched users
-  const [loading, setLoading] = useState(true); // State to handle loading
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const fetchedUsers = await fetchUsers(); // Call fetchUsers from adminauth
-        setUsers(fetchedUsers); // Store the fetched users in state
-        setLoading(false); // Set loading to false once data is fetched
+        const fetchedUsers = await fetchUsers();
+        setUsers(fetchedUsers);
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch users:", error);
         setLoading(false);
@@ -36,37 +36,42 @@ const Home = () => {
     {
       id: 1,
       name: "Labubu V2 Have A Seat",
-      owner: users[0]?.username || "Unknown", // Will be "liem"
+      owner: users[0]?.username || "Unknown",
       image: Haveaseat,
     },
     {
       id: 2,
       name: "Labubu Exciting Macaron",
-      owner: users[1]?.username || "", // Will be "anh"
+      owner: users[1]?.username || "",
       image: ExcitingMacaron,
     },
     {
       id: 3,
       name: "Labubu Coca Cola",
-      owner: users[2]?.username || "", // Will be "thang"
+      owner: users[2]?.username || "",
       image: Cocacola,
     },
     {
       id: 4,
       name: "MR BONE DOUBLE EDGED",
-      owner: users[3]?.username || "", // Will be "an"
+      owner: users[3]?.username || "",
       image: Cocacola,
     },
   ];
 
   const handleOffer = (productId) => {
     if (!username) {
-      alert("please log in to make an offer!");
+      alert("Please log in to make an offer!");
+      navigate("/authpage"); // Redirect to login page if not logged in
       return;
     }
     const product = products.find((p) => p.id === productId);
-    // Redirect to Offer page with productId and username as params
-    window.location.href = `/offer`;
+    if (product) {
+      // Navigate to Offer page with productId and owner as query params
+      navigate(`/offer?productId=${product.id}&owner=${product.owner}`);
+    } else {
+      console.error("Product not found:", productId);
+    }
   };
 
   if (loading) {
