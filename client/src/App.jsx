@@ -37,7 +37,7 @@ function App() {
         <Route path="/accessory_management" element={<AccessoryManagement />} />
         <Route path="/product/:id" element={<ViewScreen />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/payment-succes" element={<PaymentSuccess />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />
         <Route path="/payment-process" element={<PaymentProcessing />} />
         <Route path="/billinginfo" element={<BillingInfo />} />

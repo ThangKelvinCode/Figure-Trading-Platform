@@ -13,15 +13,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate, useLocation } from "react-router-dom";
 
-// Lấy query params từ URL
-const queryParams = new URLSearchParams(location.search);
-const productId = queryParams.get("productId") || "N/A";
-const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
-const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000;
-
 const BillingInfo = () => {
-  const navigate = useNavigate(); // Thêm useNavigate
-  const location = useLocation(); // Thêm useLocation để lấy query params
+  const navigate = useNavigate();
+  const location = useLocation(); // Get location object
+
+  // Parse query params inside the component
+  const queryParams = new URLSearchParams(location.search);
+  const productId = queryParams.get("productId") || "N/A";
+  const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
+  const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000;
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -50,7 +51,7 @@ const BillingInfo = () => {
         ...formData,
         productID: productId,
         quantity: quantity,
-        totalPrice: totalPrice * 1000,
+        totalPrice: totalPrice,
       };
       // Navigate to /checkout with the data
       navigate("/checkout", { state: checkoutData });

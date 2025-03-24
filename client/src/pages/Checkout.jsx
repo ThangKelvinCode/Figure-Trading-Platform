@@ -12,8 +12,8 @@ function Checkout() {
   const { state } = location;
   const {
     email = "",
-    fullName = "",
-    phoneNumber = "",
+    name = "",
+    phone = "",
     address = "",
     productID = "N/A",
     quantity = 1,
@@ -33,11 +33,11 @@ function Checkout() {
         method: "POST",
         url: "http://localhost:3000/payment/create_momo",
         data: {
-          amount: totalPriceFromQuery * 1000, // Convert to VND
-          orderId: '123fwcw',
+          amount: totalPriceFromQuery, // Convert to VND
+          orderId: '123fwcfdw',
           email: email,
-          fullName: fullName,
-          phoneNumber: phoneNumber,
+          fullName: name,
+          phoneNumber: phone,
           address: address
         },
       });
@@ -72,11 +72,11 @@ function Checkout() {
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <span>Full Name:</span>
-                  <span>{fullName}</span>
+                  <span>{name}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <span>Phone Number:</span>
-                  <span>{phoneNumber}</span>
+                  <span>{phone}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <span>Address:</span>
@@ -104,7 +104,7 @@ function Checkout() {
                 <hr />
                 <div className="d-flex justify-content-between fw-bold">
                   <span>Total:</span>
-                  <span>{(totalPriceFromQuery * 1000).toLocaleString('vi-VN')} VND</span>
+                  <span>{(totalPriceFromQuery).toLocaleString('vi-VN')} VND</span>
                 </div>
               </div>
               <Button
