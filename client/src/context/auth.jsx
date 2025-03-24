@@ -127,14 +127,29 @@ export const AuthProvider = ({ children }) => {
   };
 
 
+  // const logout = () => {
+  //   sessionStorage.removeItem("SWD392_isLoggedIn");
+  //   sessionStorage.removeItem("SWD392_username");
+  //   sessionStorage.removeItem("SWD392_role");
+  //   setIsLoggedIn(false);
+  //   setUsername("");
+  //   setRole("user");
+  //   navigate("/authpage");
+  // };
+
   const logout = () => {
+    // Clear sessionStorage
     sessionStorage.removeItem("SWD392_isLoggedIn");
     sessionStorage.removeItem("SWD392_username");
+    sessionStorage.removeItem("SWD392_user_id");
     sessionStorage.removeItem("SWD392_role");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("refresh_token");
+  
     setIsLoggedIn(false);
     setUsername("");
     setRole("user");
-    navigate("/authpage");
+    navigate("/login");
   };
 
   // const register = async (username, email, password) => {
