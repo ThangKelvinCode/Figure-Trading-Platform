@@ -12,6 +12,13 @@ class AccessoriesRepo {
     async postAccessories(data) {
         return await this.db.insertOne(data)
     }
+    
+    async editAccessories(id, data) {
+        console.log(id, data)
+        return await this.db.updateOne(
+            { _id: new ObjectId(id) }, 
+            { $set: data })
+    }
 
     async getAccessorybyID(id) {
         return await this.db.findOne({ _id: new ObjectId(id) })

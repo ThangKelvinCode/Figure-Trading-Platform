@@ -41,6 +41,54 @@ accessoriesRouter.post(
   wrapAsync(accessoriesController.postAccessories)
 )
 
+// accessoriesRouter.put('/:id/edit', wrapAsync(accessoriesController.editAccessories))
+
+accessoriesRouter.put(
+  '/:id/edit',
+  /*  #swagger.tags = ['Accessories']
+      #swagger.summary = 'Edit an existing accessory'
+      #swagger.description = 'Updates the details of an existing accessory by its ID'
+      #swagger.parameters['id'] = { 
+          description: "Accessory ID", 
+          type: "string", 
+          required: true, 
+          example: "67dfcb5138afc23bf8cff336" 
+      }
+      #swagger.requestBody = {
+          required: true,
+          content: {
+              "application/json": {
+                  schema: {
+                      type: "object",
+                      required: ["name", "description", "type", "price", "photo", "owner"],
+                      properties: {
+                          name: { type: "string", example: "1000% bag" },
+                          description: { type: "string", example: "Big bag for 1000%" },
+                          type: { type: "string", example: "67c91d9583ff104caa240546" },
+                          price: { type: "number", example: 59.99 },
+                          photo: { type: "array", format: "url", example: "https://example3.com" },
+                          status: { type: "string", example: "" },
+                          date_added: { type: "string", format: "date-time", example: "" },
+                          owner: { type: "string", example: "67bca3f6207e4b98d3665a9f" }
+                      }
+                  }
+              }
+          }
+      }
+      #swagger.responses[200] = {
+          description: "Accessory updated successfully"
+      }
+      #swagger.responses[400] = {
+          description: "Invalid request"
+      }
+      #swagger.responses[404] = {
+          description: "Accessory not found"
+      }
+  */
+  wrapAsync(accessoriesController.editAccessories)
+)
+
+
 // Create a new accessory category
 accessoriesRouter.post(
   '/newCategory',
