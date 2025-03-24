@@ -13,12 +13,10 @@ import swaggerUi from 'swagger-ui-express' // Có ở cả hai, giữ 1 dòng
 import messagesRouter from './routes/messages.routes.js' // Chỉ có ở trade-flow, giữ lại
 import { messagesServices } from './services/messages.services.js' // Chỉ có ở trade-flow, giữ lại
 import bodyParser from 'body-parser' // Có ở cả hai, giữ 1 dòng
-import swaggerFile from '../swagger-output.json' assert { type: 'json' } // Có ở cả hai nhưng cú pháp khác nhau, giữ từ trade-flow
+import swaggerFile from '../swagger-output.json' with { type: 'json' } // Có ở cả hai nhưng cú pháp khác nhau, giữ từ trade-flow
 import { Server } from 'socket.io' // Chỉ có ở trade-flow, giữ lại
 import orderRoutes from './routes/orders.routes.js' // Chỉ có ở backend, giữ lại
 import paymentRouter from './routes/payments.routers.js' // Chỉ có ở backend, giữ lại
-
-console.log(Date.now().toString())
 
 // Dựng server
 const app = express()
@@ -33,7 +31,7 @@ const server = createServer(app) // Chỉ có ở trade-flow, giữ lại
 // Tích hợp Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', 
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true // Nếu dùng cookie hoặc token trong request
@@ -44,7 +42,7 @@ const io = new Server(server, {
 database.connect()
 initFolder()
 
-app.use(express.json()) 
+app.use(express.json())
 
 // Enable JSON middleware
 app.use(express.json())

@@ -29,6 +29,13 @@ paymentRouter.post(
   wrapAsync(paymentController.createMomo)
 )
 
+paymentRouter.post('/callback', async (req, res) => {
+  console.log('callback:: ')
+  console.log(req.body)
+
+  return res.status(200).json(req.body)
+})
+
 paymentRouter.post(
   '/check_momo_status',
   /*  
