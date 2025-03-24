@@ -78,42 +78,76 @@ export const AuthProvider = ({ children }) => {
     navigate("/authpage");
   };
 
-  const register = async (username, email, password) => {
+  // const register = async (username, email, password) => {
+  //   try {
+  //     const apiUrl =
+  //       "https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/users";
+  //     const checkResponse = await fetch(apiUrl, {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+  //     if (!checkResponse.ok) throw new Error("Failed to fetch users");
+  //     const users = await checkResponse.json();
+  //     const emailExists = users.some((user) => user.email === email);
+
+  //     if (emailExists) {
+  //       throw new Error("Email already registered");
+  //     }
+
+  //     const newUser = { username, email, password };
+  //     const response = await fetch(apiUrl, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(newUser),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to register user");
+  //     }
+
+  //     const createdUser = await response.json();
+  //     sessionStorage.setItem("SWD392_isLoggedIn", "true");
+  //     sessionStorage.setItem("SWD392_username", createdUser.username);
+  //     setIsLoggedIn(true);
+  //     setUsername(createdUser.username);
+  //     return true;
+  //   } catch (error) {
+  //     console.error("Error during registration:", error);
+  //     throw error;
+  //   }
+  // };
+
+   const register = async (username, email, password, confirmPassword) => {
     try {
-      const apiUrl =
-        "https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/users";
-      const checkResponse = await fetch(apiUrl, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!checkResponse.ok) throw new Error("Failed to fetch users");
-      const users = await checkResponse.json();
-      const emailExists = users.some((user) => user.email === email);
-
-      if (emailExists) {
-        throw new Error("Email already registered");
-      }
-
-      const newUser = { username, email, password };
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to register user");
-      }
-
-      const createdUser = await response.json();
+      const apiUrl = "http://localhost:3000/user/register";
+      const newUser = {
+        name: username,
+        email,
+        password,
+        confirmed_password: confirmPassword,
+      };
+  
+      console.log("Request body:", newUser);
+      const response = await api.post(apiUrl, newUser);
+  
+      const createdUser = response.data;
       sessionStorage.setItem("SWD392_isLoggedIn", "true");
-      sessionStorage.setItem("SWD392_username", createdUser.username);
+      sessionStorage.setItem("SWD392_username", createdUser.name || username);
+  
+      // If the register endpoint returns tokens in the future, store them in sessionStorage
+      if (createdUser.access_token) {
+        sessionStorage.setItem("token", createdUser.access_token);
+      }
+      if (createdUser.refresh_token) {
+        sessionStorage.setItem("refresh_token", createdUser.refresh_token);
+      }
+  
       setIsLoggedIn(true);
-      setUsername(createdUser.username);
+      setUsername(createdUser.name || username);
       return true;
     } catch (error) {
-      console.error("Error during registration:", error);
-      throw error;
+      console.error("Error during registration:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Registration failed");
     }
   };
 
