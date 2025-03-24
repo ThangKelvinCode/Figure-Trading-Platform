@@ -1,14 +1,41 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Spinner,
+  Pagination,
+  Dropdown,
+  DropdownButton,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+// Hàm định dạng số kiểu double, giữ nguyên phần thập phân
+const toLocaleDouble = (number) => {
+  if (typeof number !== "number") return "0đ";
+
+  // Luôn hiển thị ít nhất 1 chữ số thập phân, khớp với kiểu double của backend
+  return number.toLocaleString("vi-VN", {
+    minimumFractionDigits: 1, // Luôn hiển thị ít nhất 1 chữ số thập phân
+    maximumFractionDigits: 1, // Hiển thị tối đa 1 chữ số thập phân
+  }) + "đ";
+};
 
 const Accessory = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [typeIds, setTypeIds] = useState([]); // Danh sách Type ID duy nhất
+  const [selectedTypeId, setSelectedTypeId] = useState(""); // Type ID được chọn
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const productsPerPage = 9; // Số sản phẩm mỗi trang
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,16 +49,19 @@ const Accessory = () => {
           throw new Error("Dữ liệu từ API không hợp lệ!");
         }
 
+        // Lưu danh sách sản phẩm
         setProducts(response.data);
 
-        response.data.forEach((product, index) => {
-          console.log(`Product ${index + 1}:`, product);
-          console.log(`Product ID: ${product._id}`);
-          console.log(`Photo: ${product.photo}`);
-        });
+        // Lấy danh sách Type ID duy nhất
+        const uniqueTypeIds = [...new Set(response.data.map((product) => product.type))];
+        setTypeIds(uniqueTypeIds);
 
-        const totalCount = parseInt(response.headers["x-total-count"], 10);
-        setTotalPages(!isNaN(totalCount) ? Math.ceil(totalCount / 10) : 1);
+        // Lọc sản phẩm ban đầu (hiển thị tất cả)
+        setFilteredProducts(response.data);
+
+        // Tính tổng số trang
+        const totalCount = response.data.length;
+        setTotalPages(Math.ceil(totalCount / productsPerPage));
         setLoading(false);
       })
       .catch((err) => {
@@ -39,7 +69,22 @@ const Accessory = () => {
         setError("Lỗi khi tải dữ liệu!");
         setLoading(false);
       });
-  }, [currentPage]);
+  }, []);
+
+  // Lọc sản phẩm khi Type ID hoặc trang thay đổi
+  useEffect(() => {
+    let filtered = products;
+    if (selectedTypeId) {
+      filtered = products.filter((product) => product.type === selectedTypeId);
+    }
+
+    setFilteredProducts(filtered);
+
+    // Cập nhật tổng số trang sau khi lọc
+    const totalCount = filtered.length;
+    setTotalPages(Math.ceil(totalCount / productsPerPage));
+    setCurrentPage(1); // Reset về trang 1 khi lọc
+  }, [selectedTypeId, products]);
 
   const handleProductClick = (product) => {
     if (!product || !product._id) {
@@ -55,101 +100,129 @@ const Accessory = () => {
     setCurrentPage(page);
   };
 
+  // Tính toán sản phẩm hiển thị trên trang hiện tại
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-12 p-3">
-          {loading && <p>⏳ Đang tải dữ liệu...</p>}
-          {error && <p className="text-danger">{error}</p>}
+    <Container className="my-5">
+      <h2 className="mb-4 text-center">Danh sách phụ kiện</h2>
 
-          <div className="row mt-3">
-            {!loading &&
-              !error &&
-              products.map((product, index) => {
-                console.log(`Rendering Product ${index + 1}:`, product);
-                console.log(`Rendering Photo: ${product.photo}`);
+      {/* Bộ lọc Type ID */}
+      <Row className="mb-4">
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label><strong>Sorted By Category:</strong></Form.Label>
+            <DropdownButton
+              id="dropdown-type-id"
+              title={selectedTypeId || "Tất cả"}
+              variant="outline-primary"
+              onSelect={(typeId) => setSelectedTypeId(typeId === "all" ? "" : typeId)}
+            >
+              <Dropdown.Item eventKey="all">Tất cả</Dropdown.Item>
+              {typeIds.map((typeId) => (
+                <Dropdown.Item key={typeId} eventKey={typeId}>
+                  {typeId}
+                </Dropdown.Item>
+              ))}
+            </DropdownButton>
+          </Form.Group>
+        </Col>
+      </Row>
 
-                // Xác định URL ảnh để hiển thị
-                let photoUrl = "https://via.placeholder.com/200"; // Ảnh placeholder mặc định
-                if (product.photo) {
-                  if (Array.isArray(product.photo) && product.photo.length > 0) {
-                    photoUrl = product.photo[0]; // Lấy ảnh đầu tiên nếu photo là mảng
-                  } else if (typeof product.photo === "string" && product.photo.length > 0) {
-                    photoUrl = product.photo; // Sử dụng trực tiếp nếu photo là chuỗi
-                  }
-                }
-
-                return (
-                  <div
-                    key={product._id || `product-${index}`}
-                    className="col-md-4 mb-4"
-                  >
-                    <div
-                      className="card"
-                      onClick={() => handleProductClick(product)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div
-                        className="d-flex justify-content-center align-items-center"
-                        style={{ height: "200px", overflow: "hidden" }}
-                      >
-                        <img
-                          src={photoUrl}
-                          className="img-fluid"
-                          alt={product.name}
-                          style={{ maxHeight: "100%", maxWidth: "100%" }}
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/200"; // Hiển thị ảnh placeholder nếu ảnh không load được
-                          }}
-                        />
-                      </div>
-                      <div className="card-body text-center">
-                        <p className="mb-0">{product.name}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-
-          <div className="d-flex justify-content-center mt-4">
-            <nav className="justify-content-center">
-              <ul className="pagination">
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    Previous
-                  </button>
-                </li>
-                {[...Array(totalPages)].map((_, index) => (
-                  <li
-                    key={`page-${index}`}
-                    className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                ))}
-                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
+      {/* Hiển thị sản phẩm */}
+      {loading ? (
+        <div className="text-center my-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-2">⏳ Đang tải dữ liệu...</p>
         </div>
-      </div>
-    </div>
+      ) : error ? (
+        <Alert variant="danger" className="text-center">
+          {error}
+        </Alert>
+      ) : currentProducts.length === 0 ? (
+        <Alert variant="info" className="text-center">
+          Không có sản phẩm nào phù hợp với bộ lọc.
+        </Alert>
+      ) : (
+        <Row>
+          {currentProducts.map((product, index) => {
+            console.log(`Rendering Product ${index + 1}:`, product);
+            console.log(`Rendering Photo: ${product.photo}`);
+
+            // Xác định URL ảnh để hiển thị
+            let photoUrl = "https://via.placeholder.com/200"; // Ảnh placeholder mặc định
+            if (product.photo) {
+              if (Array.isArray(product.photo) && product.photo.length > 0) {
+                photoUrl = product.photo[0]; // Lấy ảnh đầu tiên nếu photo là mảng
+              } else if (typeof product.photo === "string" && product.photo.length > 0) {
+                photoUrl = product.photo; // Sử dụng trực tiếp nếu photo là chuỗi
+              }
+            }
+
+            return (
+              <Col md={4} key={product._id || `product-${index}`} className="mb-4">
+                <Card
+                  className="shadow-sm h-100"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleProductClick(product)}
+                >
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "200px", overflow: "hidden" }}
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={photoUrl}
+                      alt={product.name}
+                      style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/200";
+                      }}
+                    />
+                  </div>
+                  <Card.Body className="text-center">
+                    <Card.Title className="text-truncate">{product.name}</Card.Title>
+                    <Card.Text className="text-danger">
+                      {toLocaleDouble(product.price)}
+                    </Card.Text>
+                    <Button variant="outline-primary" size="sm">
+                      Xem chi tiết
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      )}
+
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination>
+            <Pagination.Prev
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            />
+            {[...Array(totalPages)].map((_, index) => (
+              <Pagination.Item
+                key={`page-${index}`}
+                active={currentPage === index + 1}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            />
+          </Pagination>
+        </div>
+      )}
+    </Container>
   );
 };
 

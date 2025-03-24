@@ -1,21 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Form, Alert } from "react-bootstrap";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../config/firebase";
 import { Link } from "react-router-dom";
+
+// Hàm định dạng giá tiền theo VND
+const formatPriceVND = (price) => {
+  if (typeof price !== "number" || isNaN(price)) {
+    console.warn("Invalid price value:", price);
+    return "0đ";
+  }
+
+  // Kiểm tra xem giá có phần thập phân không
+  const hasDecimal = price % 1 !== 0;
+  const decimalPlaces = hasDecimal
+    ? price.toString().split(".")[1]?.length || 0
+    : 0;
+
+  return price.toLocaleString("vi-VN", {
+    minimumFractionDigits: hasDecimal ? Math.min(decimalPlaces, 3) : 0, // Hiển thị số chữ số thập phân thực tế, tối đa 3
+    maximumFractionDigits: 3, // Hiển thị tối đa 3 chữ số thập phân
+  }) + "đ";
+};
 
 const AccessoryManagement = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
-    photo: [], // Đổi từ photos thành photo để khớp với API
+    photo: [],
     type: "",
     owner: "",
   });
 
   const [accessories, setAccessories] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,12 +47,15 @@ const AccessoryManagement = () => {
   const fetchAccessories = async () => {
     try {
       const response = await fetch("http://localhost:3000/accessories/allAccessories");
+      if (!response.ok) {
+        throw new Error("Không thể tải danh sách phụ kiện.");
+      }
       const data = await response.json();
       console.log("Fetched accessories:", data);
       setAccessories(data);
     } catch (error) {
       console.error("Failed to fetch accessories:", error);
-      setError("Không thể tải danh sách phụ kiện.");
+      setError("Không thể tải danh sách phụ kiện: " + error.message);
     }
   };
 
@@ -70,7 +94,7 @@ const AccessoryManagement = () => {
       }
       setFormData((prev) => ({
         ...prev,
-        photo: [...prev.photo, ...uploadedUrls], // Đổi từ photos thành photo
+        photo: [...prev.photo, ...uploadedUrls],
       }));
       console.log("Updated formData.photo:", uploadedUrls);
     } catch (error) {
@@ -92,7 +116,19 @@ const AccessoryManagement = () => {
       return;
     }
 
-    console.log("Form data before sending:", formData);
+    // Chuyển đổi price thành số trước khi gửi
+    const priceAsNumber = parseFloat(formData.price);
+    if (isNaN(priceAsNumber)) {
+      setError("Giá tiền không hợp lệ. Vui lòng nhập số.");
+      return;
+    }
+
+    const dataToSend = {
+      ...formData,
+      price: priceAsNumber,
+    };
+
+    console.log("Form data before sending:", dataToSend);
 
     setLoading(true);
     setError(null);
@@ -103,27 +139,117 @@ const AccessoryManagement = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || "Không thể thêm phụ kiện.");
+      }
 
       const result = await response.json();
       console.log("Response:", result);
 
-      if (response.ok) {
-        alert("Thêm phụ kiện thành công!");
-        setShowForm(false);
-        setFormData({
-          name: "",
-          description: "",
-          price: "",
-          photo: [], // Đổi từ photos thành photo
-          type: "",
-          owner: "",
-        });
-        fetchAccessories();
-      } else {
-        setError(`Không thể thêm phụ kiện: ${result.message || "Lỗi không xác định"}`);
+      alert("Thêm phụ kiện thành công!");
+      setShowForm(false);
+      setFormData({
+        name: "",
+        description: "",
+        price: "",
+        photo: [],
+        type: "",
+        owner: "",
+      });
+      fetchAccessories();
+    } catch (error) {
+      setError("Lỗi kết nối đến server: " + error.message);
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditAccessory = (accessory) => {
+    let photoArray = [];
+    if (accessory.photo) {
+      if (Array.isArray(accessory.photo)) {
+        photoArray = accessory.photo;
+      } else if (typeof accessory.photo === "string" && accessory.photo.length > 0) {
+        photoArray = [accessory.photo];
       }
+    }
+
+    setFormData({
+      name: accessory.name,
+      description: accessory.description || "",
+      price: accessory.price,
+      photo: photoArray,
+      type: accessory.type,
+      owner: accessory.owner,
+    });
+    setEditId(accessory._id);
+    setEditMode(true);
+    setShowForm(true);
+  };
+
+  const handleUpdateAccessory = async () => {
+    if (!formData.name || !formData.price || !formData.type || !formData.owner) {
+      setError("Vui lòng điền đầy đủ thông tin (Tên, Giá, Type ID, Owner ID).");
+      return;
+    }
+
+    if (formData.photo.length === 0) {
+      setError("Vui lòng upload ít nhất một ảnh.");
+      return;
+    }
+
+    // Chuyển đổi price thành số trước khi gửi
+    const priceAsNumber = parseFloat(formData.price);
+    if (isNaN(priceAsNumber)) {
+      setError("Giá tiền không hợp lệ. Vui lòng nhập số.");
+      return;
+    }
+
+    const dataToSend = {
+      ...formData,
+      price: priceAsNumber,
+    };
+
+    console.log("Form data before updating:", dataToSend);
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`http://localhost:3000/accessories/${editId}/edit`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || "Không thể cập nhật phụ kiện. Kiểm tra xem endpoint PUT /accessories/:id/edit có tồn tại không.");
+      }
+
+      const result = await response.json();
+      console.log("Update response:", result);
+
+      alert("Cập nhật phụ kiện thành công!");
+      setShowForm(false);
+      setEditMode(false);
+      setEditId(null);
+      setFormData({
+        name: "",
+        description: "",
+        price: "",
+        photo: [],
+        type: "",
+        owner: "",
+      });
+      fetchAccessories();
     } catch (error) {
       setError("Lỗi kết nối đến server: " + error.message);
       console.error("Error:", error);
@@ -139,14 +265,15 @@ const AccessoryManagement = () => {
           method: "DELETE",
         });
 
-        if (response.ok) {
-          alert("Sản phẩm đã được xóa thành công!");
-          fetchAccessories();
-        } else {
-          alert("Lỗi: Không thể xóa sản phẩm.");
+        if (!response.ok) {
+          const errorData = await response.text();
+          throw new Error(errorData || "Không thể xóa sản phẩm.");
         }
+
+        alert("Sản phẩm đã được xóa thành công!");
+        fetchAccessories();
       } catch (error) {
-        alert("Lỗi kết nối đến server.");
+        setError("Lỗi kết nối đến server: " + error.message);
         console.error("Lỗi:", error);
       }
     }
@@ -157,7 +284,22 @@ const AccessoryManagement = () => {
       <h1 className="mt-4 mb-4 text-center">Accessory Management</h1>
 
       <div className="text-center mb-3">
-        <Button variant="primary" onClick={() => setShowForm(!showForm)} disabled={loading}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            setShowForm(!showForm);
+            setEditMode(false);
+            setFormData({
+              name: "",
+              description: "",
+              price: "",
+              photo: [],
+              type: "",
+              owner: "",
+            });
+          }}
+          disabled={loading}
+        >
           {showForm ? "Close Form" : "+ Add New Accessory"}
         </Button>
       </div>
@@ -185,12 +327,13 @@ const AccessoryManagement = () => {
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Price ($)</Form.Label>
+                  <Form.Label>Price (đ)</Form.Label>
                   <Form.Control
                     type="number"
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
+                    step="0.001" // Cho phép nhập số thập phân với tối đa 3 chữ số
                   />
                 </Form.Group>
               </Col>
@@ -224,7 +367,7 @@ const AccessoryManagement = () => {
                 {loading && <p className="text-center mt-2">Đang upload ảnh...</p>}
 
                 <Row className="mt-2">
-                  {formData.photo && formData.photo.length > 0 ? (
+                  {Array.isArray(formData.photo) && formData.photo.length > 0 ? (
                     formData.photo.map((url, index) => (
                       <Col key={index} md={4} className="mb-2">
                         <img
@@ -264,14 +407,25 @@ const AccessoryManagement = () => {
               </Col>
             </Row>
 
-            <Button
-              className="mt-3"
-              variant="success"
-              onClick={handleAddAccessory}
-              disabled={loading}
-            >
-              {loading ? "Đang gửi..." : "Submit"}
-            </Button>
+            {editMode ? (
+              <Button
+                className="mt-3"
+                variant="warning"
+                onClick={handleUpdateAccessory}
+                disabled={loading}
+              >
+                {loading ? "Đang cập nhật..." : "Update Accessory"}
+              </Button>
+            ) : (
+              <Button
+                className="mt-3"
+                variant="success"
+                onClick={handleAddAccessory}
+                disabled={loading}
+              >
+                {loading ? "Đang gửi..." : "Submit"}
+              </Button>
+            )}
           </Form>
         </Card>
       )}
@@ -307,7 +461,7 @@ const AccessoryManagement = () => {
                 <Card.Body>
                   <Card.Title>{item.name}</Card.Title>
                   <Card.Text>
-                    <strong>Price:</strong> ${item.price} <br />
+                    <strong>Price:</strong> {formatPriceVND(item.price)} <br />
                     <strong>Type ID:</strong> {item.type} <br />
                   </Card.Text>
                   <Link to={`/accessory/${item._id}`}>
@@ -315,6 +469,14 @@ const AccessoryManagement = () => {
                       View Details
                     </Button>
                   </Link>
+                  <Button
+                    variant="outline-warning"
+                    size="sm"
+                    className="ms-2"
+                    onClick={() => handleEditAccessory(item)}
+                  >
+                    Edit
+                  </Button>
                   <Button
                     variant="outline-danger"
                     size="sm"
