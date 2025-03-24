@@ -12,7 +12,6 @@ import Offer from "./pages/Offer";
 import Tradelist from "./pages/Tradelist";
 import UserManagement from "./pages/user_management";
 import ViewScreen from "./pages/ViewScreen";
-import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSucess";
 import PaymentFailure from "./pages/PaymentFailure";
 import PaymentProcessing from "./components/PaymentProcessing";
