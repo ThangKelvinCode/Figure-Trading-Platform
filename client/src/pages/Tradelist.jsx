@@ -2,27 +2,72 @@ import React, { useEffect, useState } from "react";
 import "../assets/css/Tradelist.css";
 import { useAuth } from "../context/auth.jsx";
 
+const api = {
+  getMessages: async (senderId, ownerId) => {
+    const response = await fetch(
+      `http://localhost:3000/messages?senderId=${senderId}&ownerId=${ownerId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Add any authentication headers if required
+          // 'Authorization': `Bearer ${yourToken}`
+        },
+      }
+    );
+    return response.json();
+  },
+  sendMessage: async (senderId, ownerId, text) => {
+    const response = await fetch("http://localhost:3000/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Add any authentication headers if required
+        // 'Authorization': `Bearer ${yourToken}`
+      },
+      body: JSON.stringify({ senderId, ownerId, text }),
+    });
+    return response.json();
+  },
+};
+
 const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      fetchMessages();
+    }
+  }, [isOpen, senderId, ownerId]);
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (newMessage.trim()) {
-      setMessages([
-        ...messages,
-        {
-          id: Date.now(),
-          senderId: ownerId,
-          text: newMessage,
-          timestamp: new Date(),
-        },
-      ]);
-      setNewMessage("");
+  const fetchMessages = async () => {
+    setLoading(true);
+    try {
+      const fetchedMessages = await api.getMessages(senderId, ownerId);
+      setMessages(fetchedMessages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    try {
+      const sentMessage = await api.sendMessage(senderId, ownerId, newMessage);
+      setMessages([...messages, sentMessage]);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
@@ -36,17 +81,23 @@ const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
           </button>
         </div>
         <div className="chat-messages">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`message ${
-                msg.senderId === ownerId ? "sent" : "received"
-              }`}
-            >
-              <p>{msg.text}</p>
-              <span>{new Date(msg.timestamp).toLocaleTimeString()}</span>
-            </div>
-          ))}
+          {loading ? (
+            <p>Loading messages...</p>
+          ) : messages.length === 0 ? (
+            <p>No messages yet</p>
+          ) : (
+            messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`message ${
+                  msg.senderId === ownerId ? "sent" : "received"
+                }`}
+              >
+                <p>{msg.text}</p>
+                <span>{new Date(msg.timestamp).toLocaleTimeString()}</span>
+              </div>
+            ))
+          )}
         </div>
         <form className="chat-input" onSubmit={handleSendMessage}>
           <input
@@ -54,9 +105,14 @@ const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
+            disabled={loading}
           />
-          <button type="submit">Send</button>
-          <button onClick={onClose}> Close </button>
+          <button type="submit" disabled={loading}>
+            Send
+          </button>
+          <button onClick={onClose} disabled={loading}>
+            Close
+          </button>
         </form>
       </div>
     </div>

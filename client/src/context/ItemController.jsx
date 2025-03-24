@@ -1,4 +1,3 @@
-// itemPopupUtils.js
 export const Id = () => {
   return Math.random().toString(36).substr(2, 9); // Simple random ID
 };

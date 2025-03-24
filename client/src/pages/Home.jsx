@@ -1,23 +1,30 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import "../assets/css/Home.css";
-import Cocacola from "../assets/images/CocaCola.jpg";
-import ExcitingMacaron from "../assets/images/ExcitingMacaron.jpg";
-import Haveaseat from "../assets/images/Haveaseat.jpg";
-import Itempopup from "../components/Itempopup.jsx";
+import { storage } from "../config/firebase";
 import AnimatedGif from "../context/AnimatedGif.jsx";
 import { useAuth } from "../context/auth.jsx";
 import { fetchUsers } from "./../context/adminauth";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { username } = useAuth(); // Removed createTrade since it's not used here
+  const { username, updateItems, createItem } = useAuth();
   const [showItemPopup, setItemPopup] = useState(false);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState([]); // State for dynamic items
 
+  // State for the add item modal
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [productName, setProductName] = useState("");
+  const [addLoading, setAddLoading] = useState(false);
+
+  // Fetch users
   useEffect(() => {
     const getUsers = async () => {
       try {
@@ -32,45 +39,100 @@ const Home = () => {
     getUsers();
   }, []);
 
-  const products = [
-    {
-      id: 1,
-      name: "Labubu V2 Have A Seat",
-      owner: users[0]?.username || "Unknown",
-      image: Haveaseat,
-    },
-    {
-      id: 2,
-      name: "Labubu Exciting Macaron",
-      owner: users[1]?.username || "",
-      image: ExcitingMacaron,
-    },
-    {
-      id: 3,
-      name: "Labubu Coca Cola",
-      owner: users[2]?.username || "",
-      image: Cocacola,
-    },
-    {
-      id: 4,
-      name: "MR BONE DOUBLE EDGED",
-      owner: users[3]?.username || "",
-      image: Cocacola,
-    },
-  ];
+  // Fetch items when username changes or on initial load
+  useEffect(() => {
+    const loadItems = () => {
+      if (username) {
+        const fetchedItems = updateItems(username);
+        // If no items exist for the user, use default items with the current username
+        setItems(
+          fetchedItems.length > 0
+            ? fetchedItems
+            : defaultItems.map((item) => ({
+                ...item,
+                owner: username,
+              }))
+        );
+      } else {
+        // If no user is logged in, show default items
+        setItems(defaultItems);
+      }
+    };
+    loadItems();
+  }, [username, updateItems]);
 
   const handleOffer = (productId) => {
     if (!username) {
       alert("Please log in to make an offer!");
-      navigate("/authpage"); // Redirect to login page if not logged in
+      navigate("/authpage");
       return;
     }
-    const product = products.find((p) => p.id === productId);
+    const product = items.find((p) => p.id === productId);
     if (product) {
-      // Navigate to Offer page with productId and owner as query params
       navigate(`/offer?productId=${product.id}&owner=${product.owner}`);
     } else {
       console.error("Product not found:", productId);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleAddItem = async (e) => {
+    e.preventDefault();
+    if (!username) {
+      alert("Please log in to add an item!");
+      navigate("/authpage");
+      return;
+    }
+
+    if (!image || !productName) {
+      alert("Please fill in all fields and upload an image!");
+      return;
+    }
+
+    setAddLoading(true);
+
+    try {
+      const imageRef = ref(
+        storage,
+        `items/${username}/${image.name + uuidv4()}`
+      );
+      const snapshot = await uploadBytes(imageRef, image);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      const newItem = {
+        id: Date.now(),
+        name: productName,
+        owner: username,
+        image: downloadURL,
+      };
+
+      // Save the new item using createItem
+      createItem(newItem);
+
+      // Update the items list
+      const updatedItems = updateItems(username);
+      setItems(
+        updatedItems.length > 0 ? updatedItems : [...defaultItems, newItem]
+      );
+
+      // Reset form and close modal
+      setImage(null);
+      setImagePreview(null);
+      setProductName("");
+      setItemPopup(false);
+      alert("Item added successfully!");
+    } catch (error) {
+      console.error("Error adding item:", error);
+      alert("Failed to add item: " + error.message);
+    } finally {
+      setAddLoading(false);
     }
   };
 
@@ -94,7 +156,7 @@ const Home = () => {
         <Container className="text-center my-5">
           <h2 className="fw-bold">NEW ARRIVAL</h2>
           <Row className="mt-4">
-            {products.map((product) => (
+            {items.map((product) => (
               <Col key={product.id} md={3} sm={6} xs={12} className="mb-4">
                 <Card className="border-0">
                   <div className="image-container">
@@ -142,7 +204,51 @@ const Home = () => {
         <div className="plus_icon">+</div>
       </button>
 
-      {showItemPopup && <Itempopup onClose={() => setItemPopup(false)} />}
+      <Modal show={showItemPopup} onHide={() => setItemPopup(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={handleAddItem}>
+            <div className="image-upload">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="image-preview"
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
+              ) : (
+                <div className="drop-image">
+                  <p>Drop Image Here</p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: "block", margin: "10px 0" }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Product Name</label>
+              <input
+                type="text"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                placeholder="Enter product name"
+                className="form-control"
+                required
+              />
+            </div>
+
+            <Button type="submit" variant="primary" disabled={addLoading}>
+              {addLoading ? "Adding..." : "Add Item"}
+            </Button>
+          </form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  //chỉnh sửa login
   const login = async (email, password) => {
     try {
       const apiUrl =
@@ -69,113 +68,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // const login = async (email, password) => {
-  //   try {
-  //     const apiUrl = "http://localhost:3000/user/login";
-  //     const credentials = {
-  //       email,
-  //       password,
-  //     };
-
-  //     console.log("Login request body:", credentials); // Log for debugging
-  //     const response = await api.post(apiUrl, credentials);
-
-  //     const { message, user_id, access_token, refresh_token, token } = response.data;
-
-  //     if (message === "Login Successfully") {
-  //       // Store the access token in localStorage (used by Axios interceptor)
-  //       localStorage.setItem("token", access_token);
-
-  //       // Optionally store refresh_token if your app supports token refresh
-  //       localStorage.setItem("refresh_token", refresh_token);
-
-  //       // Store user data in sessionStorage
-  //       sessionStorage.setItem("SWD392_isLoggedIn", "true");
-  //       sessionStorage.setItem("SWD392_username", email); // Use email as username for now; adjust if backend returns a username
-  //       sessionStorage.setItem("SWD392_user_id", user_id); // Store user_id if needed
-  //       sessionStorage.setItem("SWD392_role", "user"); // Set a default role; adjust if backend returns a role
-
-  //       setIsLoggedIn(true);
-  //       setUsername(email); // Use email as username; adjust if needed
-  //       setRole("user"); // Adjust if backend returns a role
-
-  //       console.log("State after login:", {
-  //         isLoggedIn: true,
-  //         username: email,
-  //         role: "user",
-  //         user_id,
-  //       });
-
-  //       navigate("/");
-  //       return true;
-  //     } else {
-  //       console.log("Login failed:", message);
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during login:", error.response?.data || error.message);
-  //     throw new Error(error.response?.data?.message || "Login failed");
-  //   }
-  // };
-
-  // const login = async (email, password) => {
-  //   try {
-  //     // Step 1: Call the login endpoint to authenticate the user
-  //     const loginUrl = "http://localhost:3000/user/login";
-  //     const credentials = {
-  //       email,
-  //       password,
-  //     };
-
-  //     console.log("Login request body:", credentials);
-  //     const loginResponse = await api.post(loginUrl, credentials);
-
-  //     const { message, user_id, access_token, refresh_token } = loginResponse.data;
-
-  //     if (message === "Login Successfully") {
-  //       // Step 2: Call the /user/{id} endpoint to fetch user details
-  //       const userDetailsUrl = `http://localhost:3000/user/${user_id}`;
-  //       const userResponse = await api.get(userDetailsUrl, {
-  //         headers: {
-  //           Authorization: `Bearer ${access_token}`, // Include the access token in the request
-  //         },
-  //       });
-
-  //       const userDetails = userResponse.data;
-  //       const username = userDetails.name; // The endpoint returns "name" as the username
-
-  //       // Step 3: Store tokens and user data in sessionStorage
-  //       sessionStorage.setItem("token", access_token);
-  //       sessionStorage.setItem("refresh_token", refresh_token);
-
-  //       sessionStorage.setItem("SWD392_isLoggedIn", "true");
-  //       sessionStorage.setItem("SWD392_username", username);
-  //       sessionStorage.setItem("SWD392_user_id", user_id);
-  //       sessionStorage.setItem("SWD392_role", "user"); // Adjust if the backend returns a role
-
-  //       setIsLoggedIn(true);
-  //       setUsername(username);
-  //       setRole("user");
-
-  //       console.log("State after login:", {
-  //         isLoggedIn: true,
-  //         username,
-  //         role: "user",
-  //         user_id,
-  //       });
-
-  //       navigate("/");
-  //       return true;
-  //     } else {
-  //       console.log("Login failed:", message);
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during login:", error.response?.data || error.message);
-  //     throw new Error(error.response?.data?.message || "Login failed");
-  //   }
-  // };
-
   const logout = () => {
     sessionStorage.removeItem("SWD392_isLoggedIn");
     sessionStorage.removeItem("SWD392_username");
@@ -186,27 +78,10 @@ export const AuthProvider = ({ children }) => {
     navigate("/authpage");
   };
 
-  // const logout = () => {
-  //   // Clear sessionStorage
-  //   sessionStorage.removeItem("SWD392_isLoggedIn");
-  //   sessionStorage.removeItem("SWD392_username");
-  //   sessionStorage.removeItem("SWD392_user_id");
-  //   sessionStorage.removeItem("SWD392_role");
-  //   sessionStorage.removeItem("token");
-  //   sessionStorage.removeItem("refresh_token");
-
-  //   setIsLoggedIn(false);
-  //   setUsername("");
-  //   setRole("user");
-  //   navigate("/login");
-  // };
-
-  // chỉnh sửa register
   const register = async (username, email, password) => {
     try {
       const apiUrl =
         "https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/users";
-      // "http://localhost:3000/user/register";
       const checkResponse = await fetch(apiUrl, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -242,60 +117,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // const register = async (username, email, password, confirmPassword) => {
-  //   try {
-  //     const apiUrl = "http://localhost:3000/user/register";
-  //     const newUser = {
-  //       name: username,
-  //       email,
-  //       password,
-  //       confirmed_password: confirmPassword,
-  //     };
-
-  //     console.log("Request body:", newUser);
-  //     const response = await api.post(apiUrl, newUser);
-
-  //     const createdUser = response.data;
-  //     sessionStorage.setItem("SWD392_isLoggedIn", "true");
-  //     sessionStorage.setItem("SWD392_username", createdUser.name || username);
-
-  //     // If the register endpoint returns tokens in the future, store them in sessionStorage
-  //     if (createdUser.access_token) {
-  //       sessionStorage.setItem("token", createdUser.access_token);
-  //     }
-  //     if (createdUser.refresh_token) {
-  //       sessionStorage.setItem("refresh_token", createdUser.refresh_token);
-  //     }
-
-  //     setIsLoggedIn(true);
-  //     setUsername(createdUser.name || username);
-  //     return true;
-  //   } catch (error) {
-  //     console.error("Error during registration:", error.response?.data || error.message);
-  //     throw new Error(error.response?.data?.message || "Registration failed");
-  //   }
-  // };
-
   const updateTrades = (currentUser) => {
     const allTrades = JSON.parse(localStorage.getItem("SWD392_trades") || "[]");
     return allTrades.filter((trade) => trade.owner === currentUser);
   };
 
-  const createTrade = (sender, offer, request, owner) => {
-    const tradeRequest = {
-      id: Date.now(),
-      sender,
-      offer,
-      request,
-      owner,
-      status: "pending",
-    };
+  const createTrade = (tradeData) => {
+    // Modified to accept full trade object
     const existingTrades = JSON.parse(
       localStorage.getItem("SWD392_trades") || "[]"
     );
-    const updatedTrades = [...existingTrades, tradeRequest];
+    const updatedTrades = [...existingTrades, tradeData];
     localStorage.setItem("SWD392_trades", JSON.stringify(updatedTrades));
-    return tradeRequest;
+    return tradeData;
   };
 
   const handleDeleteTrade = (tradeId) => {
@@ -314,6 +148,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // New functions for items
+  const updateItems = (currentUser) => {
+    const allItems = JSON.parse(localStorage.getItem("SWD392_items") || "[]");
+    return allItems.filter((item) => item.owner === currentUser);
+  };
+
+  const createItem = (itemData) => {
+    const existingItems = JSON.parse(
+      localStorage.getItem("SWD392_items") || "[]"
+    );
+    const updatedItems = [...existingItems, itemData];
+    localStorage.setItem("SWD392_items", JSON.stringify(updatedItems));
+    return itemData;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -326,6 +175,8 @@ export const AuthProvider = ({ children }) => {
         updateTrades,
         createTrade,
         handleDeleteTrade,
+        updateItems, // Added
+        createItem, // Added
       }}
     >
       {children}
