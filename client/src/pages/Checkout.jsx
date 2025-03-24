@@ -1,89 +1,22 @@
 import React, { useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import '../assets/css/Checkout.css'; // Import custom CSS
 
 function Checkout() {
   const location = useLocation();
-
-//   // Extract query parameters
-  const queryParams = new URLSearchParams(location.search);
-  const productId = queryParams.get("productId");
-  const quantity = parseInt(queryParams.get("quantity"), 10);
-  const totalPrice = parseInt(queryParams.get("totalPrice"), 10);
-
-//   // const paymentData = {
-//   //   partnerCode: "MOMO",
-//   //   orderId: "MOMO1742289263055",
-//   //   requestId: "MOMO1742289263055",
-//   //   amount: totalPrice * 1000,
-//   //   responseTime: 1742289262649,
-//   //   message: "Thành công.",
-//   //   resultCode: 0,
-//   //   payUrl:
-//   //     "https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3xNT01PMTc0MjI4OTI2MzA1NQ&s=c1dca9c589dda76152fc7855b569d5903835e666c550303feb75ce1a9971eb07",
-//   //   shortLink: "https://test-payment.momo.vn/shortlink/YI3PfGqnl5",
-//   // };
-//   // Your component making the API call
-  
-// const handlePayment = async () => {
-//   try {
-//     const response = await fetch('http://localhost:3000/payment/create_momo', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         amount: 10000,
-//         orderId: "67af6d45efd963779dfa5f84"
-//       })
-//     });
-    
-//     const paymentData = await response.json();
-//     // Redirect to payment page
-//     navigate('/payment-redirect');
-//   } catch (error) {
-//     console.error('Payment initiation failed:', error);
-//   }
-// };
-
-//   const handlePayUrlClick = () => {
-//     window.open(paymentData.payUrl, "_blank", "noopener,noreferrer");
-//     handlePayment();
-//   };
-
-//   return (
-//     <div className="payment-result-container">
-//       <h1>Payment Receipt</h1>
-//       <div className="bill-details">
-//         <h2>Transaction Summary</h2>
-//         <div className="bill-item">
-//           <span className="label">Order ID:</span>
-//           <span className="value">{paymentData.orderId}</span>
-//         </div>
-//         <div className="bill-item">
-//           <span className="label">Amount:</span>
-//           <span className="value">
-//             {new Intl.NumberFormat("vi-VN", {
-//               style: "currency",
-//               currency: "VND",
-//             }).format(paymentData.amount)}
-//           </span>
-//         </div>
-//         <div className="pay-button-container">
-//           <button className="pay-button" onClick={handlePayUrlClick}>
-//             Proceed to Payment
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-// function MomoPayment() {
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Extract query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const productId = queryParams.get("productId") || "N/A";
+  const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
+  const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000; // Default to 10000 if not provided
 
   const handlePayment = async () => {
     setLoading(true);
@@ -92,8 +25,12 @@ function Checkout() {
         method: "POST",
         url: "http://localhost:3000/payment/create_momo",
         data: {
-          amount: 10000,
-          orderId: '123wfewcacdw',
+          amount: totalPrice * 1000, // Convert to VND
+          orderId: '123fwcw',
+          email: email,
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          address: address
         },
       });
 
@@ -113,17 +50,97 @@ function Checkout() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold">MoMo Payment</h1>
-      <button
-        onClick={handlePayment}
-        disabled={loading}
-        className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg disabled:opacity-50"
-      >
-        {loading ? "Processing..." : "Pay with MoMo"}
-      </button>
-    </div>
+    <Container className="checkout-page py-5">
+      <h1 className="text-center mb-5">Checkout</h1>
+      <Row>
+        {/* Left Column: Billing Information */}
+        <Col md={7}>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Billing Information</Card.Title>
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Full Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Address</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter your address"
+                    required
+                  />
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* Right Column: Order Summary */}
+        <Col md={5}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Order Summary</Card.Title>
+              <div className="order-details">
+                <div className="d-flex justify-content-between">
+                  <span>Product ID:</span>
+                  <span>{productId}</span>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <span>Quantity:</span>
+                  <span>{quantity}</span>
+                </div>
+                <hr />
+                <div className="d-flex justify-content-between fw-bold">
+                  <span>Total:</span>
+                  <span>{(totalPrice * 1000).toLocaleString('vi-VN')} VND</span>
+                </div>
+              </div>
+              <Button
+                variant="primary"
+                onClick={handlePayment}
+                disabled={loading}
+                className="w-100 mt-3 pay-button"
+              >
+                {loading ? "Processing..." : "Pay with MoMo"}
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
- export default Checkout;
+export default Checkout;
