@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
-import '../assets/css/BillingInfo.css';
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Card,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
+// Lấy query params từ URL
 const queryParams = new URLSearchParams(location.search);
-  const productId = queryParams.get("productId") || "N/A";
-  const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
-  const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000;
+const productId = queryParams.get("productId") || "N/A";
+const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
+const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000;
 
 const BillingInfo = () => {
+  const navigate = useNavigate(); // Thêm useNavigate
+  const location = useLocation(); // Thêm useLocation để lấy query params
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Changing ${name} to ${value}`); // Debugging log
+    console.log(`Changing ${name} to ${value}`);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -25,78 +42,108 @@ const BillingInfo = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form Submitted:', formData);
-    const checkoutData = {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log("Form Submitted:", formData);
+      const checkoutData = {
         ...formData,
         productID: productId,
-        quantity: quantity, 
-        totalPrice: totalPrice * 1000, 
+        quantity: quantity,
+        totalPrice: totalPrice * 1000,
       };
       // Navigate to /checkout with the data
-      navigate('/checkout', { state: checkoutData });
+      navigate("/checkout", { state: checkoutData });
+    } catch (err) {
+      setError("Không thể gửi thông tin: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="billing-container">
-      <h2 className="billing-title">Billing Info</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name" className="form-label">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="form-input"
-            required
-          />
-        </div>
+    <Container className="my-5">
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <Card className="shadow-sm border-0">
+            <Card.Body>
+              <h2 className="text-center mb-4">Billing Info</h2>
+              {error && (
+                <Alert variant="danger" className="text-center">
+                  {error}
+                </Alert>
+              )}
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your name"
+                    required
+                  />
+                </Form.Group>
 
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="form-input"
-            required
-          />
-        </div>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </Form.Group>
 
-        <div className="form-group">
-          <label htmlFor="phone" className="form-label">Phone</label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="form-input"
-            required
-          />
-        </div>
+                <Form.Group className="mb-3">
+                  <Form.Label>Phone</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </Form.Group>
 
-        <div className="form-group">
-          <label htmlFor="address" className="form-label">Address</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="form-input"
-            required
-          />
-        </div>
+                <Form.Group className="mb-3">
+                  <Form.Label>Address</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Enter your address"
+                    required
+                  />
+                </Form.Group>
 
-        <button type="submit" className="submit-button">
-          Submit
-        </button>
-      </form>
-    </div>
+                <div className="d-flex justify-content-end">
+                  <Button
+                    variant="success"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Spinner animation="border" size="sm" className="me-2" />
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </div>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
