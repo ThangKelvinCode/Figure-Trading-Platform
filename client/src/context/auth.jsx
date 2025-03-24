@@ -26,47 +26,106 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const apiUrl =
-        "https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/users";
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) throw new Error("Failed to fetch users");
-      const users = await response.json();
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
+  // const login = async (email, password) => {
+  //   try {
+  //     const apiUrl =
+  //       "https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/users";
+  //     const response = await fetch(apiUrl, {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+  //     if (!response.ok) throw new Error("Failed to fetch users");
+  //     const users = await response.json();
+  //     const user = users.find(
+  //       (u) => u.email === email && u.password === password
+  //     );
 
-      if (user) {
-        const normalizedRole = user.role
-          ? user.role.toLowerCase().trim()
-          : "user";
-        console.log("Logged in user:", user);
+  //     if (user) {
+  //       const normalizedRole = user.role
+  //         ? user.role.toLowerCase().trim()
+  //         : "user";
+  //       console.log("Logged in user:", user);
+  //       sessionStorage.setItem("SWD392_isLoggedIn", "true");
+  //       sessionStorage.setItem("SWD392_username", user.username);
+  //       sessionStorage.setItem("SWD392_role", normalizedRole);
+  //       setIsLoggedIn(true);
+  //       setUsername(user.username);
+  //       setRole(normalizedRole);
+  //       console.log("State after login:", {
+  //         isLoggedIn: true,
+  //         username: user.username,
+  //         role: normalizedRole,
+  //       });
+  //       navigate("/");
+  //       return true;
+  //     } else {
+  //       console.log("Invalid email or password");
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during login:", error);
+  //     return false;
+  //   }
+  // };
+
+   const login = async (email, password) => {
+    try {
+      // Step 1: Call the login endpoint to authenticate the user
+      const loginUrl = "http://localhost:3000/user/login";
+      const credentials = {
+        email,
+        password,
+      };
+  
+      console.log("Login request body:", credentials);
+      const loginResponse = await api.post(loginUrl, credentials);
+  
+      const { message, user_id, access_token, refresh_token } = loginResponse.data;
+  
+      if (message === "Login Successfully") {
+        // Step 2: Call the /user/{id} endpoint to fetch user details
+        const userDetailsUrl = `http://localhost:3000/user/${user_id}`;
+        const userResponse = await api.get(userDetailsUrl, {
+          headers: {
+            Authorization: `Bearer ${access_token}`, // Include the access token in the request
+          },
+        });
+  
+        const userDetails = userResponse.data;
+        const username = userDetails.name; // The endpoint returns "name" as the username
+  
+        // Step 3: Store tokens and user data in sessionStorage
+        sessionStorage.setItem("token", access_token);
+        sessionStorage.setItem("refresh_token", refresh_token);
+  
         sessionStorage.setItem("SWD392_isLoggedIn", "true");
-        sessionStorage.setItem("SWD392_username", user.username);
-        sessionStorage.setItem("SWD392_role", normalizedRole);
+        sessionStorage.setItem("SWD392_username", username);
+        sessionStorage.setItem("SWD392_user_id", user_id);
+        sessionStorage.setItem("SWD392_role", "user"); // Adjust if the backend returns a role
+  
         setIsLoggedIn(true);
-        setUsername(user.username);
-        setRole(normalizedRole);
+        setUsername(username);
+        setRole("user");
+  
         console.log("State after login:", {
           isLoggedIn: true,
-          username: user.username,
-          role: normalizedRole,
+          username,
+          role: "user",
+          user_id,
         });
+  
         navigate("/");
         return true;
       } else {
-        console.log("Invalid email or password");
+        console.log("Login failed:", message);
         return false;
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      return false;
+      console.error("Error during login:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Login failed");
     }
   };
+
 
   const logout = () => {
     sessionStorage.removeItem("SWD392_isLoggedIn");
