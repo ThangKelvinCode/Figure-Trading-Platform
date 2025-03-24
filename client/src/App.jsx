@@ -15,6 +15,7 @@ import ViewScreen from "./pages/ViewScreen";
 import PaymentSuccess from "./pages/PaymentSucess";
 import PaymentFailure from "./pages/PaymentFailure";
 import PaymentProcessing from "./components/PaymentProcessing";
+import BillingInfo from "./pages/BillingInfo";
 
 function App() {
   const location = useLocation();
@@ -36,9 +37,10 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/offer" element={<Offer />} />
         <Route path="/authpage" element={<AuthPage hideNavBar={true} />} />
-        <Route path="/payment-succes" element={<PaymentSuccess />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />
         <Route path="/payment-process" element={<PaymentProcessing />} />
+        <Route path="/billinginfo" element={<BillingInfo />} />
       </Routes>
     </div>
   );
