@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Form, Alert } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Alert,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../config/firebase";
 import { Link } from "react-router-dom";
+
+// Import Bootstrap Icons (cần cài đặt: npm install bootstrap-icons)
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 // Hàm định dạng giá tiền theo VND
 const formatPriceVND = (price) => {
@@ -11,15 +25,12 @@ const formatPriceVND = (price) => {
     return "0đ";
   }
 
-  // Kiểm tra xem giá có phần thập phân không
   const hasDecimal = price % 1 !== 0;
-  const decimalPlaces = hasDecimal
-    ? price.toString().split(".")[1]?.length || 0
-    : 0;
+  const decimalPlaces = hasDecimal ? price.toString().split(".")[1]?.length || 0 : 0;
 
   return price.toLocaleString("vi-VN", {
-    minimumFractionDigits: hasDecimal ? Math.min(decimalPlaces, 3) : 0, // Hiển thị số chữ số thập phân thực tế, tối đa 3
-    maximumFractionDigits: 3, // Hiển thị tối đa 3 chữ số thập phân
+    minimumFractionDigits: hasDecimal ? Math.min(decimalPlaces, 3) : 0,
+    maximumFractionDigits: 3,
   }) + "đ";
 };
 
@@ -34,7 +45,7 @@ const AccessoryManagement = () => {
   });
 
   const [accessories, setAccessories] = useState([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Sử dụng Modal thay vì showForm
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -46,6 +57,7 @@ const AccessoryManagement = () => {
 
   const fetchAccessories = async () => {
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:3000/accessories/allAccessories");
       if (!response.ok) {
         throw new Error("Không thể tải danh sách phụ kiện.");
@@ -56,6 +68,8 @@ const AccessoryManagement = () => {
     } catch (error) {
       console.error("Failed to fetch accessories:", error);
       setError("Không thể tải danh sách phụ kiện: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,6 +119,13 @@ const AccessoryManagement = () => {
     }
   };
 
+  const handleRemovePhoto = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      photo: prev.photo.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleAddAccessory = async () => {
     if (!formData.name || !formData.price || !formData.type || !formData.owner) {
       setError("Vui lòng điền đầy đủ thông tin (Tên, Giá, Type ID, Owner ID).");
@@ -116,7 +137,6 @@ const AccessoryManagement = () => {
       return;
     }
 
-    // Chuyển đổi price thành số trước khi gửi
     const priceAsNumber = parseFloat(formData.price);
     if (isNaN(priceAsNumber)) {
       setError("Giá tiền không hợp lệ. Vui lòng nhập số.");
@@ -151,7 +171,7 @@ const AccessoryManagement = () => {
       console.log("Response:", result);
 
       alert("Thêm phụ kiện thành công!");
-      setShowForm(false);
+      setShowModal(false);
       setFormData({
         name: "",
         description: "",
@@ -189,7 +209,7 @@ const AccessoryManagement = () => {
     });
     setEditId(accessory._id);
     setEditMode(true);
-    setShowForm(true);
+    setShowModal(true);
   };
 
   const handleUpdateAccessory = async () => {
@@ -203,7 +223,6 @@ const AccessoryManagement = () => {
       return;
     }
 
-    // Chuyển đổi price thành số trước khi gửi
     const priceAsNumber = parseFloat(formData.price);
     if (isNaN(priceAsNumber)) {
       setError("Giá tiền không hợp lệ. Vui lòng nhập số.");
@@ -238,7 +257,7 @@ const AccessoryManagement = () => {
       console.log("Update response:", result);
 
       alert("Cập nhật phụ kiện thành công!");
-      setShowForm(false);
+      setShowModal(false);
       setEditMode(false);
       setEditId(null);
       setFormData({
@@ -261,6 +280,7 @@ const AccessoryManagement = () => {
   const handleDeleteAccessory = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
       try {
+        setLoading(true);
         const response = await fetch(`http://localhost:3000/accessories/${id}`, {
           method: "DELETE",
         });
@@ -275,167 +295,63 @@ const AccessoryManagement = () => {
       } catch (error) {
         setError("Lỗi kết nối đến server: " + error.message);
         console.error("Lỗi:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
-  return (
-    <Container>
-      <h1 className="mt-4 mb-4 text-center">Accessory Management</h1>
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditMode(false);
+    setEditId(null);
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      photo: [],
+      type: "",
+      owner: "",
+    });
+    setError(null);
+  };
 
-      <div className="text-center mb-3">
-        <Button
-          variant="primary"
-          onClick={() => {
-            setShowForm(!showForm);
-            setEditMode(false);
-            setFormData({
-              name: "",
-              description: "",
-              price: "",
-              photo: [],
-              type: "",
-              owner: "",
-            });
-          }}
-          disabled={loading}
-        >
-          {showForm ? "Close Form" : "+ Add New Accessory"}
-        </Button>
-      </div>
+  return (
+    <Container className="my-5">
+      <Row className="mb-4 align-items-center">
+        <Col>
+          <h1 className="text-center">Accessory Management</h1>
+        </Col>
+        <Col className="text-end">
+          <Button variant="primary" onClick={() => setShowModal(true)} disabled={loading}>
+            <i className="bi bi-plus-circle me-2"></i> Add New Accessory
+          </Button>
+        </Col>
+      </Row>
 
       {error && (
-        <div className="alert alert-danger text-center" role="alert">
+        <Alert variant="danger" className="text-center">
           {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <div className="text-center my-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-2">Loading...</p>
         </div>
-      )}
-
-      {showForm && (
-        <Card className="p-3 mb-4">
-          <Form>
-            <Row>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Price (đ)</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    step="0.001" // Cho phép nhập số thập phân với tối đa 3 chữ số
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Form.Group className="mt-2">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={2}
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Row className="mt-2">
-              <Col md={6}>
-                <Form.Group>
-                  <Form.Label>Upload Photos</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="photo"
-                    multiple
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    disabled={loading}
-                  />
-                </Form.Group>
-
-                {loading && <p className="text-center mt-2">Đang upload ảnh...</p>}
-
-                <Row className="mt-2">
-                  {Array.isArray(formData.photo) && formData.photo.length > 0 ? (
-                    formData.photo.map((url, index) => (
-                      <Col key={index} md={4} className="mb-2">
-                        <img
-                          src={url}
-                          alt={`uploaded-${index}`}
-                          style={{ width: "100%", borderRadius: "8px" }}
-                        />
-                      </Col>
-                    ))
-                  ) : (
-                    <p className="text-muted mt-2">Chưa có ảnh nào được upload.</p>
-                  )}
-                </Row>
-              </Col>
-
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Type ID</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="type"
-                    value={formData.type}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Owner ID</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="owner"
-                    value={formData.owner}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            {editMode ? (
-              <Button
-                className="mt-3"
-                variant="warning"
-                onClick={handleUpdateAccessory}
-                disabled={loading}
-              >
-                {loading ? "Đang cập nhật..." : "Update Accessory"}
-              </Button>
-            ) : (
-              <Button
-                className="mt-3"
-                variant="success"
-                onClick={handleAddAccessory}
-                disabled={loading}
-              >
-                {loading ? "Đang gửi..." : "Submit"}
-              </Button>
-            )}
-          </Form>
-        </Card>
-      )}
-
-      <h2 className="mt-4 mb-3 text-center">Accessory List</h2>
-      <Row>
-        {accessories.length > 0 ? (
-          accessories.map((item) => (
+      ) : accessories.length === 0 ? (
+        <Alert variant="info" className="text-center">
+          Không có phụ kiện nào để hiển thị.
+        </Alert>
+      ) : (
+        <Row>
+          {accessories.map((item) => (
             <Col key={item._id} md={4} sm={6} xs={12} className="mb-4">
-              <Card className="shadow-sm">
+              <Card className="shadow-sm h-100" style={{ transition: "transform 0.2s" }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+              >
                 {item.photo && Array.isArray(item.photo) && item.photo.length > 0 ? (
                   <Card.Img
                     variant="top"
@@ -459,42 +375,204 @@ const AccessoryManagement = () => {
                   </div>
                 )}
                 <Card.Body>
-                  <Card.Title>{item.name}</Card.Title>
+                  <Card.Title className="text-truncate">{item.name}</Card.Title>
                   <Card.Text>
                     <strong>Price:</strong> {formatPriceVND(item.price)} <br />
                     <strong>Type ID:</strong> {item.type} <br />
                   </Card.Text>
-                  <Link to={`/accessory/${item._id}`}>
-                    <Button variant="outline-primary" size="sm">
-                      View Details
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline-warning"
-                    size="sm"
-                    className="ms-2"
-                    onClick={() => handleEditAccessory(item)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    className="ms-2"
-                    onClick={() => handleDeleteAccessory(item._id)}
-                  >
-                    Xóa
-                  </Button>
+                  <div className="d-flex justify-content-between">
+                    <Link to={`/accessory/${item._id}`}>
+                      <Button variant="outline-primary" size="sm">
+                        <i className="bi bi-eye me-1"></i> View Details
+                      </Button>
+                    </Link>
+                    <div>
+                      <Button
+                        variant="outline-warning"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleEditAccessory(item)}
+                      >
+                        <i className="bi bi-pencil-square me-1"></i> Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDeleteAccessory(item._id)}
+                      >
+                        <i className="bi bi-trash me-1"></i> Delete
+                      </Button>
+                    </div>
+                  </div>
                 </Card.Body>
               </Card>
             </Col>
-          ))
-        ) : (
-          <Col>
-            <p className="text-center">Không có phụ kiện nào để hiển thị.</p>
-          </Col>
-        )}
-      </Row>
+          ))}
+        </Row>
+      )}
+
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{editMode ? "Edit Accessory" : "Add New Accessory"}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {error && (
+            <Alert variant="danger" className="text-center">
+              {error}
+            </Alert>
+          )}
+          <Form>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter accessory name"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Price (đ)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    step="0.001"
+                    placeholder="Enter price"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter description"
+              />
+            </Form.Group>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Upload Photos</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="photo"
+                    multiple
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    disabled={loading}
+                  />
+                </Form.Group>
+
+                {loading && (
+                  <div className="text-center mb-3">
+                    <Spinner animation="border" variant="primary" size="sm" />
+                    <span className="ms-2">Đang upload ảnh...</span>
+                  </div>
+                )}
+
+                <Row className="mb-3">
+                  {Array.isArray(formData.photo) && formData.photo.length > 0 ? (
+                    formData.photo.map((url, index) => (
+                      <Col key={index} xs={4} className="mb-2 position-relative">
+                        <img
+                          src={url}
+                          alt={`uploaded-${index}`}
+                          style={{ width: "100%", borderRadius: "8px" }}
+                        />
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          className="position-absolute top-0 end-0"
+                          style={{ transform: "translate(50%, -50%)" }}
+                          onClick={() => handleRemovePhoto(index)}
+                        >
+                          <i className="bi bi-x"></i>
+                        </Button>
+                      </Col>
+                    ))
+                  ) : (
+                    <p className="text-muted">Chưa có ảnh nào được upload.</p>
+                  )}
+                </Row>
+              </Col>
+
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Type ID</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    placeholder="Enter Type ID"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Owner ID</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="owner"
+                    value={formData.owner}
+                    onChange={handleChange}
+                    placeholder="Enter Owner ID"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal} disabled={loading}>
+            Close
+          </Button>
+          {editMode ? (
+            <Button
+              variant="warning"
+              onClick={handleUpdateAccessory}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Đang cập nhật...
+                </>
+              ) : (
+                "Update Accessory"
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="success"
+              onClick={handleAddAccessory}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Đang gửi...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
