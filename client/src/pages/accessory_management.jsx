@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../config/firebase";
+import { Link } from "react-router-dom";
 
 const AccessoryManagement = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
-    photo: "",
+    photo: [], // Đổi từ photos thành photo để khớp với API
     type: "",
     owner: "",
   });
 
   const [accessories, setAccessories] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAccessories();
@@ -22,9 +27,11 @@ const AccessoryManagement = () => {
     try {
       const response = await fetch("http://localhost:3000/accessories/allAccessories");
       const data = await response.json();
+      console.log("Fetched accessories:", data);
       setAccessories(data);
     } catch (error) {
       console.error("Failed to fetch accessories:", error);
+      setError("Không thể tải danh sách phụ kiện.");
     }
   };
 
@@ -32,7 +39,64 @@ const AccessoryManagement = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const uploadImageToFirebase = async (file) => {
+    try {
+      const storageRef = ref(storage, `accessories/${Date.now()}-${file.name}`);
+      const uploadResult = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(uploadResult.ref);
+      return downloadURL;
+    } catch (error) {
+      console.error("Lỗi khi upload ảnh:", error);
+      throw new Error("Không thể upload ảnh. Vui lòng thử lại: " + error.message);
+    }
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) {
+      setError("Vui lòng chọn ít nhất một ảnh để upload.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    const uploadedUrls = [];
+
+    try {
+      for (const file of files) {
+        const url = await uploadImageToFirebase(file);
+        console.log("Uploaded image URL:", url);
+        uploadedUrls.push(url);
+      }
+      setFormData((prev) => ({
+        ...prev,
+        photo: [...prev.photo, ...uploadedUrls], // Đổi từ photos thành photo
+      }));
+      console.log("Updated formData.photo:", uploadedUrls);
+    } catch (error) {
+      setError(error.message);
+      console.error("Upload error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddAccessory = async () => {
+    if (!formData.name || !formData.price || !formData.type || !formData.owner) {
+      setError("Vui lòng điền đầy đủ thông tin (Tên, Giá, Type ID, Owner ID).");
+      return;
+    }
+
+    if (formData.photo.length === 0) {
+      setError("Vui lòng upload ít nhất một ảnh.");
+      return;
+    }
+
+    console.log("Form data before sending:", formData);
+
+    setLoading(true);
+    setError(null);
+
     try {
       const response = await fetch("http://localhost:3000/accessories/postAccessories", {
         method: "POST",
@@ -46,25 +110,35 @@ const AccessoryManagement = () => {
       console.log("Response:", result);
 
       if (response.ok) {
-        alert("Accessory added successfully!");
+        alert("Thêm phụ kiện thành công!");
         setShowForm(false);
+        setFormData({
+          name: "",
+          description: "",
+          price: "",
+          photo: [], // Đổi từ photos thành photo
+          type: "",
+          owner: "",
+        });
         fetchAccessories();
       } else {
-        alert(`Failed to add accessory: ${result.message || "Unknown error"}`);
+        setError(`Không thể thêm phụ kiện: ${result.message || "Lỗi không xác định"}`);
       }
     } catch (error) {
-      alert("Error connecting to the server.");
+      setError("Lỗi kết nối đến server: " + error.message);
       console.error("Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteAccessory = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
       try {
-        const response = await fetch(`http://localhost:3000/accessories/${_id}`, {
+        const response = await fetch(`http://localhost:3000/accessories/${id}`, {
           method: "DELETE",
         });
-  
+
         if (response.ok) {
           alert("Sản phẩm đã được xóa thành công!");
           fetchAccessories();
@@ -83,10 +157,16 @@ const AccessoryManagement = () => {
       <h1 className="mt-4 mb-4 text-center">Accessory Management</h1>
 
       <div className="text-center mb-3">
-        <Button variant="primary" onClick={() => setShowForm(!showForm)}>
+        <Button variant="primary" onClick={() => setShowForm(!showForm)} disabled={loading}>
           {showForm ? "Close Form" : "+ Add New Accessory"}
         </Button>
       </div>
+
+      {error && (
+        <div className="alert alert-danger text-center" role="alert">
+          {error}
+        </div>
+      )}
 
       {showForm && (
         <Card className="p-3 mb-4">
@@ -95,45 +175,102 @@ const AccessoryManagement = () => {
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Name</Form.Label>
-                  <Form.Control type="text" name="name" onChange={handleChange} />
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Price ($)</Form.Label>
-                  <Form.Control type="number" name="price" onChange={handleChange} />
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                  />
                 </Form.Group>
               </Col>
             </Row>
 
             <Form.Group className="mt-2">
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={2} name="description" onChange={handleChange} />
+              <Form.Control
+                as="textarea"
+                rows={2}
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+              />
             </Form.Group>
 
             <Row className="mt-2">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Photo URL</Form.Label>
-                  <Form.Control type="text" name="photo" onChange={handleChange} />
+                  <Form.Label>Upload Photos</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="photo"
+                    multiple
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    disabled={loading}
+                  />
                 </Form.Group>
+
+                {loading && <p className="text-center mt-2">Đang upload ảnh...</p>}
+
+                <Row className="mt-2">
+                  {formData.photo && formData.photo.length > 0 ? (
+                    formData.photo.map((url, index) => (
+                      <Col key={index} md={4} className="mb-2">
+                        <img
+                          src={url}
+                          alt={`uploaded-${index}`}
+                          style={{ width: "100%", borderRadius: "8px" }}
+                        />
+                      </Col>
+                    ))
+                  ) : (
+                    <p className="text-muted mt-2">Chưa có ảnh nào được upload.</p>
+                  )}
+                </Row>
               </Col>
+
               <Col md={3}>
                 <Form.Group>
                   <Form.Label>Type ID</Form.Label>
-                  <Form.Control type="text" name="type" onChange={handleChange} />
+                  <Form.Control
+                    type="text"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                  />
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group>
                   <Form.Label>Owner ID</Form.Label>
-                  <Form.Control type="text" name="owner" onChange={handleChange} />
+                  <Form.Control
+                    type="text"
+                    name="owner"
+                    value={formData.owner}
+                    onChange={handleChange}
+                  />
                 </Form.Group>
               </Col>
             </Row>
 
-            <Button className="mt-3" variant="success" onClick={handleAddAccessory}>
-              Submit
+            <Button
+              className="mt-3"
+              variant="success"
+              onClick={handleAddAccessory}
+              disabled={loading}
+            >
+              {loading ? "Đang gửi..." : "Submit"}
             </Button>
           </Form>
         </Card>
@@ -141,29 +278,60 @@ const AccessoryManagement = () => {
 
       <h2 className="mt-4 mb-3 text-center">Accessory List</h2>
       <Row>
-        {accessories.map((item) => (
-          <Col key={item._id} md={4} sm={6} xs={12} className="mb-4">
-            <Card className="shadow-sm">
-              <Card.Img variant="top" src={item.photo} alt={item.name} style={{ height: "200px", objectFit: "cover" }} />
-              <Card.Body>
-                <Card.Title>{item.name}</Card.Title>
-                <Card.Text>
-                  <strong>Price:</strong> ${item.price} <br />
-                  <strong>Type ID:</strong> {item.type} <br/>
-                </Card.Text>
-                <Button variant="outline-primary" size="sm">View Details</Button>
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  className="ms-2"
-                  onClick={() => handleDeleteAccessory(item._id)}
-                >
-                  Xóa
-                </Button>
-              </Card.Body>
-            </Card>
+        {accessories.length > 0 ? (
+          accessories.map((item) => (
+            <Col key={item._id} md={4} sm={6} xs={12} className="mb-4">
+              <Card className="shadow-sm">
+                {item.photo && Array.isArray(item.photo) && item.photo.length > 0 ? (
+                  <Card.Img
+                    variant="top"
+                    src={item.photo[0]}
+                    alt={item.name}
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                ) : item.photo && typeof item.photo === "string" && item.photo.length > 0 ? (
+                  <Card.Img
+                    variant="top"
+                    src={item.photo}
+                    alt={item.name}
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div
+                    className="text-center p-5"
+                    style={{ height: "200px", backgroundColor: "#f8f9fa" }}
+                  >
+                    Không có ảnh
+                  </div>
+                )}
+                <Card.Body>
+                  <Card.Title>{item.name}</Card.Title>
+                  <Card.Text>
+                    <strong>Price:</strong> ${item.price} <br />
+                    <strong>Type ID:</strong> {item.type} <br />
+                  </Card.Text>
+                  <Link to={`/accessory/${item._id}`}>
+                    <Button variant="outline-primary" size="sm">
+                      View Details
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    className="ms-2"
+                    onClick={() => handleDeleteAccessory(item._id)}
+                  >
+                    Xóa
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))
+        ) : (
+          <Col>
+            <p className="text-center">Không có phụ kiện nào để hiển thị.</p>
           </Col>
-        ))}
+        )}
       </Row>
     </Container>
   );

@@ -17,7 +17,7 @@ const Accessory = () => {
       .get(`http://localhost:3000/accessories/allAccessories`)
       .then((response) => {
         console.log("API Response:", response.data);
-        
+
         if (!Array.isArray(response.data)) {
           throw new Error("Dữ liệu từ API không hợp lệ!");
         }
@@ -27,10 +27,10 @@ const Accessory = () => {
         response.data.forEach((product, index) => {
           console.log(`Product ${index + 1}:`, product);
           console.log(`Product ID: ${product._id}`);
-          console.log(`Photo URL: ${product.photo}`);
+          console.log(`Photo: ${product.photo}`);
         });
 
-        const totalCount = parseInt(response.headers['x-total-count'], 10);
+        const totalCount = parseInt(response.headers["x-total-count"], 10);
         setTotalPages(!isNaN(totalCount) ? Math.ceil(totalCount / 10) : 1);
         setLoading(false);
       })
@@ -67,11 +67,21 @@ const Accessory = () => {
               !error &&
               products.map((product, index) => {
                 console.log(`Rendering Product ${index + 1}:`, product);
-                console.log(`Rendering Photo URL: ${product.photo}`);
-                
+                console.log(`Rendering Photo: ${product.photo}`);
+
+                // Xác định URL ảnh để hiển thị
+                let photoUrl = "https://via.placeholder.com/200"; // Ảnh placeholder mặc định
+                if (product.photo) {
+                  if (Array.isArray(product.photo) && product.photo.length > 0) {
+                    photoUrl = product.photo[0]; // Lấy ảnh đầu tiên nếu photo là mảng
+                  } else if (typeof product.photo === "string" && product.photo.length > 0) {
+                    photoUrl = product.photo; // Sử dụng trực tiếp nếu photo là chuỗi
+                  }
+                }
+
                 return (
-                  <div 
-                    key={product._id || `product-${index}`} 
+                  <div
+                    key={product._id || `product-${index}`}
                     className="col-md-4 mb-4"
                   >
                     <div
@@ -79,12 +89,18 @@ const Accessory = () => {
                       onClick={() => handleProductClick(product)}
                       style={{ cursor: "pointer" }}
                     >
-                      <div className="d-flex justify-content-center align-items-center" style={{ height: "200px", overflow: "hidden" }}>
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{ height: "200px", overflow: "hidden" }}
+                      >
                         <img
-                          src={product.photo || "https://via.placeholder.com/200"}
+                          src={photoUrl}
                           className="img-fluid"
                           alt={product.name}
                           style={{ maxHeight: "100%", maxWidth: "100%" }}
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/200"; // Hiển thị ảnh placeholder nếu ảnh không load được
+                          }}
                         />
                       </div>
                       <div className="card-body text-center">
@@ -99,16 +115,34 @@ const Accessory = () => {
           <div className="d-flex justify-content-center mt-4">
             <nav className="justify-content-center">
               <ul className="pagination">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
+                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                  >
+                    Previous
+                  </button>
                 </li>
                 {[...Array(totalPages)].map((_, index) => (
-                  <li key={`page-${index}`} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => handlePageChange(index + 1)}>{index + 1}</button>
+                  <li
+                    key={`page-${index}`}
+                    className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
                   </li>
                 ))}
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>Next</button>
+                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                  >
+                    Next
+                  </button>
                 </li>
               </ul>
             </nav>
