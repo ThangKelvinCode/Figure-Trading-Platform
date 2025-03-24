@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSucess";
 import PaymentFailure from "./pages/PaymentFailure";
 import PaymentProcessing from "./components/PaymentProcessing";
+import BillingInfo from "./pages/BillingInfo";
 
 function App() {
   const location = useLocation();
@@ -39,6 +40,7 @@ function App() {
         <Route path="/payment-succes" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />
         <Route path="/payment-process" element={<PaymentProcessing />} />
+        <Route path="/billinginfo" element={<BillingInfo />} />
       </Routes>
     </div>
   );
