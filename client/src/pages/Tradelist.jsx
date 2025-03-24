@@ -81,7 +81,6 @@ const TradeBlock = ({ trade, onTradeDeleted }) => {
     <div className="trade_request">
       <div>
         <h3>Trade #{trade.id}</h3>
-        <p>Type: {trade.type === "incoming" ? "Incoming" : "Outgoing"}</p>
         <p>Sender: {trade.sender}</p>
         <p>Offering: {trade.offer}</p>
         <p>Requesting: {trade.request}</p>
@@ -94,11 +93,9 @@ const TradeBlock = ({ trade, onTradeDeleted }) => {
           />
         </p>
       </div>
-      {trade.type === "incoming" && (
-        <div>
-          <button onClick={() => setChatPopup(true)}>Accept</button>
-        </div>
-      )}
+      <div>
+        <button onClick={() => setChatPopup(true)}>Accept</button>
+      </div>
       <div>
         <button onClick={handleDelete}>Delete</button>
       </div>
