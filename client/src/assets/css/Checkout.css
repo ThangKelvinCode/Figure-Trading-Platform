@@ -1,0 +1,72 @@
+.checkout-page {
+    min-height: 100vh;
+    background-color: #f8f9fa; /* Light gray background */
+  }
+  
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 1rem;
+  }
+  
+  .form-control {
+    border-radius: 8px;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s ease;
+  }
+  
+  .form-control:focus {
+    border-color: #9333ea; /* Purple */
+    box-shadow: 0 0 0 0.2rem rgba(147, 51, 234, 0.25);
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .order-details {
+    margin-bottom: 1.5rem;
+  }
+  
+  .order-details div {
+    margin-bottom: 0.5rem;
+    color: #666;
+  }
+  
+  .order-details .fw-bold {
+    color: #333;
+    font-size: 1.1rem;
+  }
+  
+  .pay-button {
+    background-color: #9333ea; /* Purple */
+    border: none;
+    padding: 0.75rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .pay-button:hover:not(:disabled) {
+    background-color: #7e22ce; /* Darker purple */
+  }
+  
+  .pay-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }

@@ -1,0 +1,37 @@
+.payment-failure-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+  }
+  
+  .failure-icon {
+    font-size: 8rem;
+    color: #f44336; /* Red for failure */
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .home-button {
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .home-button:hover {
+    background-color: #e63946;
+  }
