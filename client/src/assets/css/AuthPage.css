@@ -1,19 +1,22 @@
 .auth-page {
-  min-height: 100vh;
+  height: 100vh; /* Thay min-height thành height để cố định chiều cao */
   display: flex;
   justify-content: center; /* Center the auth_form horizontally */
   align-items: center; /* Center the auth_form vertically */
   background: url("../images/wallpaper.jpg");
   background-size: cover;
   background-position: center;
-  overflow: hidden; /* Prevent scrollbars during animation */
+  overflow: hidden; /* Ngăn cuộn trên toàn bộ trang */
+  margin: 0; /* Loại bỏ margin mặc định */
+  padding: 0; /* Loại bỏ padding mặc định */
 }
 
 /* Centered container for banner and form */
 .auth_form {
   width: 100%;
   max-width: 700px; /* Reasonable width for the centered container */
-  height: 500px; /* Fixed height for the container */
+  max-height: 90vh; /* Đảm bảo không vượt quá 90% chiều cao viewport */
+  height: 500px; /* Giữ chiều cao cố định, nhưng sẽ bị giới hạn bởi max-height */
   display: flex;
   border-radius: 30px;
   position: relative; /* Make auth_form the positioning context for the banner */
@@ -36,9 +39,9 @@
   position: absolute; /* Position absolutely within auth_form */
   top: 0;
   z-index: 1; /* Ensure the banner is above the form */
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
 }
 
-/* Form Container */
 .form-container {
   width: 70%; /* 7 parts out of 10 (3:7 ratio) */
   height: 100%; /* Full height of auth_form */
@@ -48,6 +51,7 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
   transition: margin-left 0.5s ease-in-out; /* Smooth transition for margin adjustment */
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
 }
 
 /* Adjust form container position based on mode */
