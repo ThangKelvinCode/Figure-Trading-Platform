@@ -1,3 +1,172 @@
+// import React, { useState } from "react";
+// import {
+//   Container,
+//   Row,
+//   Col,
+//   Card,
+//   Button,
+//   Alert,
+//   Spinner,
+// } from "react-bootstrap";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap-icons/font/bootstrap-icons.css";
+// import { useLocation } from "react-router-dom";
+// import axios from "axios";
+
+// function Checkout() {
+//   const location = useLocation();
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState(null);
+
+//   // Get billing info and orderId from BillingInfo page via location.state
+//   const { state } = location;
+//   const {
+//     email = "",
+//     name = "",
+//     phoneNumber = "",
+//     address = "",
+//     productId = "N/A",
+//     orderId = "", // Nhận orderId (id) từ state
+//     quantity, 
+//     totalPrice,
+//     detailId,
+//   } = state || {};
+
+//   // Extract query parameters (optional fallback if not passed via state)
+//   // const queryParams = new URLSearchParams(location.search);
+//   // const productIdFromQuery = queryParams.get("productId") || productId;
+//   // const quantityFromQuery = parseInt(queryParams.get("quantity"), 10);
+//   // const totalPriceFromQuery = parseInt(queryParams.get("totalPrice"), 10);
+
+//   const handlePayment = async () => {
+//     setLoading(true);
+//     setError(null);
+//     try {
+//       // Kiểm tra xem orderId có tồn tại không
+//       if (!orderId) {
+//         throw new Error("Order ID is missing.");
+//       }
+
+//       console.log("Sending Payment Request:", {
+//         amount: totalPrice,
+//         orderId: orderId, // Should be a valid string
+//       });
+
+//       const response = await axios({
+//         method: "POST",
+//         url: "http://localhost:3000/payment/create_momo",
+//         headers: {
+//           "Content-Type": "application/json", // Explicitly set JSON type
+//           "Accept": "application/json",
+//         },
+//         data: {
+//           orderId: orderId, // Ensure it's a valid string
+//           orderDetail,
+//         },
+//         timeout: 10000,
+//       });
+      
+
+//       console.log("MoMo Response:", response.data);
+
+//       if (response.data.payUrl) {
+//         window.location.href = response.data.payUrl;
+//       } else {
+//         setError("Failed to get payment URL from MoMo.");
+//       }
+//     } catch (error) {
+//       setError("An error occurred while processing the payment: " + error.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <Container className="py-5">
+//       <h1 className="text-center mb-5">Checkout</h1>
+//       {error && (
+//         <Alert variant="danger" className="text-center">
+//           {error}
+//         </Alert>
+//       )}
+//       <Row>
+//         {/* Left Column: Billing Information */}
+//         <Col md={7}>
+//           <Card className="mb-4 shadow-sm border-0">
+//             <Card.Body>
+//               <Card.Title className="mb-4">Billing Information</Card.Title>
+//               <div className="billing-details">
+//                 <div className="d-flex justify-content-between mb-3">
+//                   <span><strong>Email:</strong></span>
+//                   <span>{email || "N/A"}</span>
+//                 </div>
+//                 <div className="d-flex justify-content-between mb-3">
+//                   <span><strong>Full Name:</strong></span>
+//                   <span>{name || "N/A"}</span>
+//                 </div>
+//                 <div className="d-flex justify-content-between mb-3">
+//                   <span><strong>Phone Number:</strong></span>
+//                   <span>{phoneNumber || "N/A"}</span>
+//                 </div>
+//                 <div className="d-flex justify-content-between mb-3">
+//                   <span><strong>Address:</strong></span>
+//                   <span>{address || "N/A"}</span>
+//                 </div>
+//               </div>
+//             </Card.Body>
+//           </Card>
+//         </Col>
+
+//         {/* Right Column: Order Summary */}
+//         <Col md={5}>
+//           <Card className="shadow-sm border-0">
+//             <Card.Body>
+//               <Card.Title className="mb-4">Order Summary</Card.Title>
+//               <div className="order-details">
+//                 <div className="d-flex justify-content-between mb-2">
+//                   <span>Order ID:</span>
+//                   <span>{orderId || "N/A"}</span>
+//                 </div>
+//                 <div className="d-flex justify-content-between mb-2">
+//                   <span>Product ID:</span>
+//                   <span>{productIdFromQuery}</span>
+//                 </div>
+//                 <div className="d-flex justify-content-between mb-2">
+//                   <span>Quantity:</span>
+//                   <span>{quantityFromQuery}</span>
+//                 </div>
+//                 <hr />
+//                 <div className="d-flex justify-content-between fw-bold">
+//                   <span>Total:</span>
+//                   <span>{totalPriceFromQuery.toLocaleString("vi-VN")} VND</span>
+//                 </div>
+//               </div>
+//               <Button
+//                 variant="primary"
+//                 onClick={handlePayment}
+//                 disabled={loading}
+//                 className="w-100 mt-3"
+//               >
+//                 {loading ? (
+//                   <>
+//                     <Spinner animation="border" size="sm" className="me-2" />
+//                     Processing...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <i className="bi bi-wallet2 me-2"></i> Pay with MoMo
+//                   </>
+//                 )}
+//               </Button>
+//             </Card.Body>
+//           </Card>
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// }
+
+// export default Checkout;
 import React, { useState } from "react";
 import {
   Container,
@@ -18,56 +187,50 @@ function Checkout() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Get billing info and orderId from BillingInfo page via location.state
+  // Get billing info and orderId from state
   const { state } = location;
   const {
     email = "",
     name = "",
-    phone = "",
+    phoneNumber = "",
     address = "",
-    productID = "N/A",
+    productId = "N/A",
+    orderId = "", // Order ID from state
     quantity = 1,
-    totalPrice = 10000,
-    orderId = "", // Nhận orderId (id) từ state
+    totalPrice = 0,
+    detailId,
   } = state || {};
-
-  // Extract query parameters (optional fallback if not passed via state)
-  const queryParams = new URLSearchParams(location.search);
-  const productIdFromQuery = queryParams.get("productId") || productID;
-  const quantityFromQuery = parseInt(queryParams.get("quantity"), 10) || quantity;
-  const totalPriceFromQuery = parseInt(queryParams.get("totalPrice"), 10) || totalPrice;
 
   const handlePayment = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      // Kiểm tra xem orderId có tồn tại không
       if (!orderId) {
-        throw new Error("Order ID is missing.");
+        throw new Error("❌ Order ID is missing.");
       }
+
+      console.log(`🔍 Sending Payment Request to: http://localhost:3000/payment/create_momo/${orderId}`);
 
       const response = await axios({
         method: "POST",
-        url: "http://localhost:3000/payment/create_momo",
-        data: {
-          amount: totalPriceFromQuery,
-          orderId: orderId, // Sử dụng orderId từ backend
-          email: email,
-          fullName: name,
-          phoneNumber: phone,
-          address: address,
+        url: `http://localhost:3000/payment/create_momo/${orderId}`,
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
         },
         timeout: 10000,
       });
 
-      console.log("MoMo Response:", response.data);
+      console.log("✅ MoMo Response:", response.data);
 
       if (response.data.payUrl) {
         window.location.href = response.data.payUrl;
       } else {
-        setError("Failed to get payment URL from MoMo.");
+        setError("⚠️ Failed to get payment URL from MoMo.");
       }
     } catch (error) {
+      console.error("🚨 Payment Error:", error.response ? error.response.data : error.message);
       setError("An error occurred while processing the payment: " + error.message);
     } finally {
       setLoading(false);
@@ -99,7 +262,7 @@ function Checkout() {
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <span><strong>Phone Number:</strong></span>
-                  <span>{phone || "N/A"}</span>
+                  <span>{phoneNumber || "N/A"}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-3">
                   <span><strong>Address:</strong></span>
@@ -117,21 +280,21 @@ function Checkout() {
               <Card.Title className="mb-4">Order Summary</Card.Title>
               <div className="order-details">
                 <div className="d-flex justify-content-between mb-2">
-                  <span>Order ID:</span>
+                  <span><strong>Order ID:</strong></span>
                   <span>{orderId || "N/A"}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
-                  <span>Product ID:</span>
-                  <span>{productIdFromQuery}</span>
+                  <span><strong>Product ID:</strong></span>
+                  <span>{productId || "N/A"}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
-                  <span>Quantity:</span>
-                  <span>{quantityFromQuery}</span>
+                  <span><strong>Quantity:</strong></span>
+                  <span>{quantity}</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between fw-bold">
                   <span>Total:</span>
-                  <span>{totalPriceFromQuery.toLocaleString("vi-VN")} VND</span>
+                  <span>{totalPrice.toLocaleString("vi-VN")} VND</span>
                 </div>
               </div>
               <Button

@@ -83,10 +83,48 @@ const AccessoryDetail = () => {
     fetchRelatedProducts();
   }, [id, navigate]);
 
-  const handleBuyNow = () => {
+  // const handleBuyNow = () => {
+  //   if (!product) return;
+  //   const totalPrice = product?.price * quantity;
+  //   navigate(`/billinginfo?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
+  // };
+  const handleBuyNow = async () => {
     if (!product) return;
-    const totalPrice = product?.price * quantity;
-    navigate(`/billinginfo?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
+  
+    const userId = '67e019be04481e26be8762c5'// localStorage.getItem("userId"); // Adjust according to how you manage authentication
+  
+    if (!userId) {
+      alert("Vui lòng đăng nhập để tiếp tục.");
+      navigate("/login");
+      return;
+    }
+  
+    try {
+      // Fetch shipping info from backend
+      const response = await fetch(`http://localhost:3000/user/${userId}/shippingInfo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Lỗi khi lấy thông tin giao hàng.");
+      }
+  
+      const shippingInfo = await response.json();
+  
+      // Navigate to billing page with shipping info
+      navigate(`/billinginfo`, {
+        state: {
+          productId: id,
+          quantity,
+          totalPrice: product?.price * quantity,
+          shippingInfo, // Prefill the shipping form
+        },
+      });
+    } catch (error) {
+      console.error("Lỗi khi mua hàng:", error);
+      alert("Không thể lấy thông tin giao hàng. Vui lòng thử lại.");
+    }
   };
 
   const handleQuantityChange = (value) => {

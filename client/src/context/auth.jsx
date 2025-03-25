@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
           ? user.role.toLowerCase().trim()
           : "user";
         console.log("Logged in user:", user);
+        sessionStorage.setItem("SWD392_userId", user.id);
         sessionStorage.setItem("SWD392_isLoggedIn", "true");
         sessionStorage.setItem("SWD392_username", user.username);
         sessionStorage.setItem("SWD392_role", normalizedRole);
