@@ -1,29 +1,31 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useEffect, useState } from "react";
 import {
-  Container,
-  Row,
-  Col,
-  Card,
   Button,
-  Form,
-  Spinner,
-  Pagination,
+  Card,
+  Col,
+  Container,
   Dropdown,
   DropdownButton,
+  Form,
+  Pagination,
+  Row,
+  Spinner,
 } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 
 // Hàm định dạng số kiểu double, giữ nguyên phần thập phân
 const toLocaleDouble = (number) => {
   if (typeof number !== "number") return "0đ";
 
   // Luôn hiển thị ít nhất 1 chữ số thập phân, khớp với kiểu double của backend
-  return number.toLocaleString("vi-VN", {
-    minimumFractionDigits: 1, // Luôn hiển thị ít nhất 1 chữ số thập phân
-    maximumFractionDigits: 1, // Hiển thị tối đa 1 chữ số thập phân
-  }) + "đ";
+  return (
+    number.toLocaleString("vi-VN", {
+      minimumFractionDigits: 1, // Luôn hiển thị ít nhất 1 chữ số thập phân
+      maximumFractionDigits: 1, // Hiển thị tối đa 1 chữ số thập phân
+    }) + "đ"
+  );
 };
 
 const Accessory = () => {
@@ -53,7 +55,9 @@ const Accessory = () => {
         setProducts(response.data);
 
         // Lấy danh sách Type ID duy nhất
-        const uniqueTypeIds = [...new Set(response.data.map((product) => product.type))];
+        const uniqueTypeIds = [
+          ...new Set(response.data.map((product) => product.type)),
+        ];
         setTypeIds(uniqueTypeIds);
 
         // Lọc sản phẩm ban đầu (hiển thị tất cả)
@@ -88,7 +92,10 @@ const Accessory = () => {
 
   const handleProductClick = (product) => {
     if (!product || !product._id) {
-      console.error("🚨 Không thể điều hướng! ID sản phẩm không tồn tại:", product);
+      console.error(
+        "🚨 Không thể điều hướng! ID sản phẩm không tồn tại:",
+        product
+      );
       return;
     }
 
@@ -103,7 +110,10 @@ const Accessory = () => {
   // Tính toán sản phẩm hiển thị trên trang hiện tại
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   return (
     <Container className="my-5">
@@ -113,12 +123,16 @@ const Accessory = () => {
       <Row className="mb-4">
         <Col md={3}>
           <Form.Group>
-            <Form.Label><strong>Sorted By Category:</strong></Form.Label>
+            <Form.Label>
+              <strong>Sorted By Category:</strong>
+            </Form.Label>
             <DropdownButton
               id="dropdown-type-id"
               title={selectedTypeId || "Tất cả"}
               variant="outline-primary"
-              onSelect={(typeId) => setSelectedTypeId(typeId === "all" ? "" : typeId)}
+              onSelect={(typeId) =>
+                setSelectedTypeId(typeId === "all" ? "" : typeId)
+              }
             >
               <Dropdown.Item eventKey="all">Tất cả</Dropdown.Item>
               {typeIds.map((typeId) => (
@@ -156,13 +170,20 @@ const Accessory = () => {
             if (product.photo) {
               if (Array.isArray(product.photo) && product.photo.length > 0) {
                 photoUrl = product.photo[0]; // Lấy ảnh đầu tiên nếu photo là mảng
-              } else if (typeof product.photo === "string" && product.photo.length > 0) {
+              } else if (
+                typeof product.photo === "string" &&
+                product.photo.length > 0
+              ) {
                 photoUrl = product.photo; // Sử dụng trực tiếp nếu photo là chuỗi
               }
             }
 
             return (
-              <Col md={4} key={product._id || `product-${index}`} className="mb-4">
+              <Col
+                md={4}
+                key={product._id || `product-${index}`}
+                className="mb-4"
+              >
                 <Card
                   className="shadow-sm h-100"
                   style={{ cursor: "pointer" }}
@@ -176,14 +197,20 @@ const Accessory = () => {
                       variant="top"
                       src={photoUrl}
                       alt={product.name}
-                      style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                      style={{
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                        objectFit: "contain",
+                      }}
                       onError={(e) => {
                         e.target.src = "https://via.placeholder.com/200";
                       }}
                     />
                   </div>
                   <Card.Body className="text-center">
-                    <Card.Title className="text-truncate">{product.name}</Card.Title>
+                    <Card.Title className="text-truncate">
+                      {product.name}
+                    </Card.Title>
                     <Card.Text className="text-danger">
                       {toLocaleDouble(product.price)}
                     </Card.Text>
