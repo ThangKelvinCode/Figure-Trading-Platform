@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button, Form, Alert, Carousel, Card, Badge } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  Alert,
+  Carousel,
+  Card,
+  Badge,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import api from "../config/axios"; // Import the configured axios instance
 
 const AccessoryDetail = () => {
-  const { id } = useParams(); // Lấy 'id' từ URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]); // Danh sách sản phẩm liên quan
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0); // Quản lý ảnh đang hiển thị trong carousel
-  const [attachedPhotos, setAttachedPhotos] = useState([]); // Quản lý danh sách ảnh
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [attachedPhotos, setAttachedPhotos] = useState([]);
 
   useEffect(() => {
-    console.log("🔍 ID từ useParams:", id); // Debug giá trị id
-
-    // Kiểm tra nếu ID không hợp lệ
     if (!id || id === "undefined") {
       setError("⚠️ Lỗi: ID sản phẩm không hợp lệ.");
       setLoading(false);
@@ -27,38 +35,27 @@ const AccessoryDetail = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        console.log("📡 Gửi request đến API với ID:", id);
+        const response = await api.get(`/accessories/${id}`);
 
-        const response = await fetch(`http://localhost:3000/accessories/${id}`);
-
-        if (!response.ok) {
-          throw new Error("⚠️ Sản phẩm không tồn tại hoặc lỗi server.");
-        }
-
-        const data = await response.json();
-
-        // Kiểm tra nếu API trả về `accessory: null`
-        if (!data.accessory) {
+        if (!response.data.accessory) {
           throw new Error("⚠️ API không tìm thấy sản phẩm này!");
         }
 
-        setProduct(data.accessory);
+        setProduct(response.data.accessory);
 
-        // Xác định danh sách ảnh
+        // Handle photos
         let photos = [];
-        if (data.accessory?.photo) {
-          if (Array.isArray(data.accessory.photo) && data.accessory.photo.length > 0) {
-            photos = data.accessory.photo;
-          } else if (typeof data.accessory.photo === "string" && data.accessory.photo.length > 0) {
-            photos = [data.accessory.photo];
+        if (response.data.accessory?.photo) {
+          if (Array.isArray(response.data.accessory.photo) && response.data.accessory.photo.length > 0) {
+            photos = response.data.accessory.photo;
+          } else if (typeof response.data.accessory.photo === "string" && response.data.accessory.photo.length > 0) {
+            photos = [response.data.accessory.photo];
           }
         }
         setAttachedPhotos(photos);
-        console.log("📸 Attached photos:", photos); // Debug danh sách ảnh
-
         setError(null);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data || err.message);
       } finally {
         setLoading(false);
       }
@@ -66,14 +63,9 @@ const AccessoryDetail = () => {
 
     const fetchRelatedProducts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/accessories/allAccessories");
-        if (!response.ok) {
-          throw new Error("⚠️ Không thể tải danh sách sản phẩm liên quan.");
-        }
-        const data = await response.json();
-        // Lọc bỏ sản phẩm hiện tại khỏi danh sách liên quan
-        const filteredProducts = data.filter((item) => item._id !== id);
-        setRelatedProducts(filteredProducts.slice(0, 3)); // Lấy tối đa 3 sản phẩm liên quan
+        const response = await api.get("/accessories/allAccessories");
+        const filteredProducts = response.data.filter((item) => item._id !== id);
+        setRelatedProducts(filteredProducts.slice(0, 3));
       } catch (err) {
         console.error("Lỗi khi tải sản phẩm liên quan:", err);
       }
@@ -85,16 +77,16 @@ const AccessoryDetail = () => {
 
   const handleBuyNow = () => {
     if (!product) return;
-    const totalPrice = product?.price * quantity;
+    const totalPrice = product.price * quantity;
     navigate(`/checkout?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
   };
 
   const handleQuantityChange = (value) => {
-    setQuantity((prevQuantity) => Math.max(1, prevQuantity + value)); // Không cho số lượng <1
+    setQuantity((prevQuantity) => Math.max(1, prevQuantity + value));
   };
 
   const handleSelect = (selectedIndex) => {
-    setActiveIndex(selectedIndex); // Cập nhật ảnh đang hiển thị trong carousel
+    setActiveIndex(selectedIndex);
   };
 
   const handleRelatedProductClick = (productId) => {
@@ -121,7 +113,6 @@ const AccessoryDetail = () => {
     <Container className="mt-5">
       <Row>
         <Col md={6}>
-          {/* Carousel để hiển thị ảnh chính và chuyển qua lại */}
           {attachedPhotos.length > 0 ? (
             <Carousel
               activeIndex={activeIndex}
@@ -137,7 +128,7 @@ const AccessoryDetail = () => {
                     className="d-block w-100 rounded"
                     style={{ maxHeight: "500px", objectFit: "contain" }}
                     onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/500"; // Hiển thị ảnh placeholder nếu ảnh không load được
+                      e.target.src = "https://via.placeholder.com/500";
                     }}
                   />
                 </Carousel.Item>
@@ -155,7 +146,6 @@ const AccessoryDetail = () => {
             </div>
           )}
 
-          {/* Các ảnh đính kèm (thumbnails) */}
           {attachedPhotos.length > 1 && (
             <div className="d-flex flex-wrap gap-2 mt-3 justify-content-center">
               {attachedPhotos.map((photo, index) => (
@@ -221,7 +211,6 @@ const AccessoryDetail = () => {
         </Col>
       </Row>
 
-      {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div className="mt-5">
           <h3 className="mb-4">Sản phẩm liên quan</h3>
