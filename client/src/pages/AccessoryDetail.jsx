@@ -14,7 +14,6 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../config/axios"; // Import the configured axios instance
 
-
 const AccessoryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,6 +24,8 @@ const AccessoryDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [attachedPhotos, setAttachedPhotos] = useState([]);
+
+  const userId = sessionStorage.getItem("SWD392_user_id"); // Thay bằng cách lấy userId từ sessionStorage hoặc context
 
   useEffect(() => {
     if (!id || id === "undefined") {
@@ -78,13 +79,91 @@ const AccessoryDetail = () => {
 
   // const handleBuyNow = () => {
   //   if (!product) return;
-  //   const totalPrice = product?.price * quantity;
-  //   navigate(`/billinginfo?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
+  //   const totalPrice = product.price * quantity;
+  //   navigate(`/checkout?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
   // };
+
+  // const handleBuyNow = async () => {
+  //   if (!product) return;
+
+  //   if (!userId) {
+  //     alert("Vui lòng đăng nhập để tiếp tục.");
+  //     navigate("/login");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Gọi API để mua sản phẩm (POST /accessories/:id/purchase)
+  //     const purchaseData = {
+  //       quantity: quantity,
+  //       userID: userId,
+  //     };
+
+  //     const purchaseResponse = await api.post(`/accessories/${id}/purchase`, purchaseData);
+
+  //     if (purchaseResponse.status === 200) {
+  //       // Nếu mua thành công, lấy thông tin giao hàng
+  //       const shippingResponse = await api.post(`/user/${userId}/shippingInfo`);
+
+  //       const shippingInfo = shippingResponse.data;
+
+  //       // Chuyển hướng đến trang billing với thông tin cần thiết
+  //       navigate(`/billinginfo`, {
+  //         state: {
+  //           productId: id,
+  //           quantity,
+  //           totalPrice: product?.price * quantity,
+  //           shippingInfo, // Prefill the shipping form
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi mua hàng:", error.response?.data?.message || error.message);
+  //     alert("Không thể thực hiện mua hàng. Vui lòng thử lại.");
+  //   }
+  // };
+
+
   const handleBuyNow = async () => {
-    if (!product) return;
-    const totalPrice = product.price * quantity;
-    navigate(`/checkout?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
+    if (!product) {
+      console.error("❌ Product is null or undefined.");
+      alert("Sản phẩm không hợp lệ. Vui lòng thử lại.");
+      return;
+    }
+
+    // Lấy userId từ sessionStorage nếu bạn chưa tích hợp useAuth
+    // const userId = sessionStorage.getItem("SWD392_user_id");
+
+    if (!userId) {
+      console.warn("⚠️ User ID is missing.");
+      alert("Vui lòng đăng nhập để tiếp tục.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      console.log(`📡 Fetching shipping info for userId: ${userId}`);
+
+      // Gọi API POST /user/:id/shippingInfo để lấy thông tin giao hàng
+      const response = await api.post(`/user/${userId}/shippingInfo`);
+
+      console.log("✅ Shipping info response:", response.data);
+
+      const shippingInfo = response.data;
+
+      // Chuyển hướng đến trang billing với thông tin cần thiết
+      navigate(`/billinginfo`, {
+        state: {
+          productId: id,
+          quantity,
+          totalPrice: product?.price * quantity,
+          shippingInfo, // Prefill the shipping form
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error fetching shipping info:", error.response?.data?.message || error.message);
+      alert("Không thể lấy thông tin giao hàng. Vui lòng thử lại.");
+    }
   };
 
   const handleQuantityChange = (value) => {
