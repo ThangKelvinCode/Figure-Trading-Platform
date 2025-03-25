@@ -72,41 +72,41 @@ app.use((req, res, next) => {
   next()
 })
 
-// Trở thành error handler cho cả app nên nó nằm cuối app để là điểm tập kết cuối cùng
-app.use(defaultErrorHandler)
+
 
 // Socket.IO logic
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`)
+// Socket.IO logic
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
 
   // Trader tham gia vào một phòng chat (dựa trên tradeId)
-  socket.on('join_trade', (tradeId) => {
-    socket.join(tradeId)
-    console.log(`User ${socket.id} joined trade ${tradeId}`)
-  })
+  socket.on("join_trade", (tradeId) => {
+    socket.join(tradeId);
+    console.log(`User ${socket.id} joined trade ${tradeId}`);
+  });
 
   // Xử lý gửi tin nhắn
-  socket.on('send_message', async (data) => {
-    console.log('Received send_message:', data)
-    try {
-      const { tradeId, senderId, receiverId, message } = data
-      const newMessage = await messagesServices.sendMessage({
-        tradeId,
-        senderId,
-        receiverId,
-        message
-      })
-      console.log('Sending receive_message to trade:', tradeId, newMessage)
-      io.to(tradeId).emit('receive_message', newMessage)
-    } catch (error) {
-      console.error('Error handling send_message:', error)
-    }
-  })
+  socket.on("send_message", (data) => {
+    console.log("Received send_message:", data);
+    const { tradeId, senderId, receiverId, message, createdAt } = data;
 
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`)
-  })
-})
+    // Gửi tin nhắn đến phòng tương ứng với tradeId
+    io.to(tradeId).emit("receive_message", {
+      tradeId,
+      senderId,
+      receiverId,
+      message,
+      createdAt,
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
+
+// Trở thành error handler cho cả app nên nó nằm cuối app để là điểm tập kết cuối cùng
+app.use(defaultErrorHandler)
 
 // Khởi động server
 server.listen(port, () => {

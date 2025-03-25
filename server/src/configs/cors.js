@@ -1,7 +1,7 @@
 import HTTP_STATUS from '../constants/httpStatus.js'
 
 const WHITELIST_DOMAINS = [ 
-  'http://localhost:5174',
+  'http://localhost:5176',
   //add more domains after deployed
   'http://localhost:3000' // Add this to allow Swagger UI
 ]
