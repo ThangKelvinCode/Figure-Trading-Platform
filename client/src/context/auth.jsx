@@ -122,6 +122,20 @@ export const AuthProvider = ({ children }) => {
     return allTrades.filter((trade) => trade.owner === currentUser);
   };
 
+  const fetchUserTrades = (currentUser) => {
+    const allTrades = JSON.parse(localStorage.getItem("SWD392_trades") || "[]");
+    console.log("All trades in localStorage:", allTrades); // Kiểm tra dữ liệu gốc
+    const outgoingTrades = allTrades.filter(
+      (trade) => trade.sender === currentUser
+    );
+    const incomingTrades = allTrades.filter(
+      (trade) => trade.owner === currentUser
+    );
+    console.log("Outgoing trades:", outgoingTrades); // Kiểm tra outgoing trades
+    console.log("Incoming trades:", incomingTrades); // Kiểm tra incoming trades
+    return { outgoingTrades, incomingTrades };
+  };
+
   const createTrade = (tradeData) => {
     // Modified to accept full trade object
     const existingTrades = JSON.parse(
@@ -149,9 +163,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   // New functions for items
-  const updateItems = (currentUser) => {
+  const updateItems = () => {
     const allItems = JSON.parse(localStorage.getItem("SWD392_items") || "[]");
-    return allItems.filter((item) => item.owner === currentUser);
+    return allItems;
   };
 
   const createItem = (itemData) => {
@@ -161,6 +175,17 @@ export const AuthProvider = ({ children }) => {
     const updatedItems = [...existingItems, itemData];
     localStorage.setItem("SWD392_items", JSON.stringify(updatedItems));
     return itemData;
+  };
+
+  // Hàm lấy tất cả các item từ localStorage
+  const fetchAllItems = () => {
+    try {
+      const allItems = JSON.parse(localStorage.getItem("SWD392_items") || "[]");
+      return allItems;
+    } catch (error) {
+      console.error("Error fetching all items from localStorage:", error);
+      return [];
+    }
   };
 
   return (
@@ -177,6 +202,8 @@ export const AuthProvider = ({ children }) => {
         handleDeleteTrade,
         updateItems, // Added
         createItem, // Added
+        fetchAllItems,
+        fetchUserTrades,
       }}
     >
       {children}

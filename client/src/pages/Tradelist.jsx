@@ -5,28 +5,32 @@ import { useAuth } from "../context/auth.jsx";
 const api = {
   getMessages: async (senderId, ownerId) => {
     const response = await fetch(
-      `http://localhost:3000/messages?senderId=${senderId}&ownerId=${ownerId}`,
+      `https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/messages?senderId=${senderId}&ownerId=${ownerId}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Add any authentication headers if required
-          // 'Authorization': `Bearer ${yourToken}`
         },
       }
     );
     return response.json();
   },
   sendMessage: async (senderId, ownerId, text) => {
-    const response = await fetch("http://localhost:3000/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // Add any authentication headers if required
-        // 'Authorization': `Bearer ${yourToken}`
-      },
-      body: JSON.stringify({ senderId, ownerId, text }),
-    });
+    const response = await fetch(
+      "https://67c7faf7c19eb8753e7bae06.mockapi.io/api/huy/messages",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          senderId,
+          ownerId,
+          text,
+          timestamp: new Date().toISOString(),
+        }),
+      }
+    );
     return response.json();
   },
 };
@@ -74,7 +78,7 @@ const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
       <div className="chat-modal">
         <div className="chat-header">
           <h3>
-            Chat between #{senderId} and #{ownerId}
+            Chat between {senderId} and {ownerId}
           </h3>
           <button className="close-btn" onClick={onClose}>
             ×
@@ -119,6 +123,7 @@ const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
   );
 };
 
+// Component TradeBlock (bỏ tradeType vì không cần phân biệt incoming/outgoing)
 const TradeBlock = ({ trade, onTradeDeleted }) => {
   const [showChatPopup, setChatPopup] = useState(false);
   const { handleDeleteTrade } = useAuth();
@@ -158,28 +163,30 @@ const TradeBlock = ({ trade, onTradeDeleted }) => {
       <ChatModal
         isOpen={showChatPopup}
         onClose={() => setChatPopup(false)}
-        senderId={trade.senderId}
-        ownerId={trade.ownerId}
+        senderId={trade.sender}
+        ownerId={trade.owner}
       />
     </div>
   );
 };
 
+// Component chính Tradelist (chỉ hiển thị incoming trades)
 const Tradelist = () => {
-  const { username, updateTrades } = useAuth();
+  const { username, fetchUserTrades } = useAuth();
   const currentUser = username || "guest";
-  const [trades, setTrades] = useState([]);
+  const [incomingTrades, setIncomingTrades] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTrades = async () => {
       try {
-        const fetchedTrades = await updateTrades(currentUser);
-        setTrades(fetchedTrades);
+        const { incomingTrades } = await fetchUserTrades(currentUser);
+        console.log("Fetched incoming trades:", incomingTrades);
+        setIncomingTrades(incomingTrades);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching trades:", error);
-        setTrades([]);
+        setIncomingTrades([]);
         setLoading(false);
       }
     };
@@ -189,10 +196,10 @@ const Tradelist = () => {
     } else {
       setLoading(false);
     }
-  }, [currentUser, updateTrades]);
+  }, [currentUser, fetchUserTrades]);
 
   const handleTradeDeleted = (deletedTradeId) => {
-    setTrades((prevTrades) =>
+    setIncomingTrades((prevTrades) =>
       prevTrades.filter((trade) => trade.id !== deletedTradeId)
     );
   };
@@ -203,11 +210,12 @@ const Tradelist = () => {
 
   return (
     <div className="tradelist_page">
-      <h2>Trade Requests</h2>
-      {trades.length === 0 ? (
-        <p>No pending trades</p>
+      <h2>Trade Requests (Incoming Trades)</h2>
+
+      {incomingTrades.length === 0 ? (
+        <p>No incoming trades</p>
       ) : (
-        trades.map((trade) => (
+        incomingTrades.map((trade) => (
           <TradeBlock
             key={trade.id}
             trade={trade}

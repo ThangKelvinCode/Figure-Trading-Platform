@@ -2,14 +2,8 @@
   height: 100vh;
   overflow-y: scroll;
   position: relative;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-.home::-webkit-scrollbar {
-  display: none;
 }
 
 .add_item_button {

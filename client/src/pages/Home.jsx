@@ -12,7 +12,7 @@ import { fetchUsers } from "./../context/adminauth";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { username, updateItems, createItem } = useAuth();
+  const { username, updateItems, createItem, fetchAllItems } = useAuth();
   const [showItemPopup, setItemPopup] = useState(false);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,27 +39,21 @@ const Home = () => {
     getUsers();
   }, []);
 
-  // Fetch items when username changes or on initial load
+  // Fetch items (for both logged-in and non-logged-in users)
   useEffect(() => {
     const loadItems = () => {
       if (username) {
+        // Nếu người dùng đã đăng nhập, lấy items của họ từ localStorage
         const fetchedItems = updateItems(username);
-        // If no items exist for the user, use default items with the current username
-        setItems(
-          fetchedItems.length > 0
-            ? fetchedItems
-            : defaultItems.map((item) => ({
-                ...item,
-                owner: username,
-              }))
-        );
+        setItems(fetchedItems);
       } else {
-        // If no user is logged in, show default items
-        setItems(defaultItems);
+        // Nếu người dùng chưa đăng nhập, lấy tất cả items từ localStorage
+        const allItems = fetchAllItems();
+        setItems(allItems);
       }
     };
     loadItems();
-  }, [username, updateItems]);
+  }, [username, updateItems, fetchAllItems]);
 
   const handleOffer = (productId) => {
     if (!username) {
@@ -113,14 +107,12 @@ const Home = () => {
         image: downloadURL,
       };
 
-      // Save the new item using createItem
+      // Save the new item using createItem (lưu vào localStorage)
       createItem(newItem);
 
-      // Update the items list
+      // Update the items list (lấy lại items của người dùng hiện tại)
       const updatedItems = updateItems(username);
-      setItems(
-        updatedItems.length > 0 ? updatedItems : [...defaultItems, newItem]
-      );
+      setItems(updatedItems);
 
       // Reset form and close modal
       setImage(null);
@@ -196,10 +188,6 @@ const Home = () => {
           </Button>
         </Container>
       </section>
-      <section className="sect_3">
-        <div>hi</div>
-      </section>
-
       <button className="add_item_button" onClick={() => setItemPopup(true)}>
         <div className="plus_icon">+</div>
       </button>
@@ -212,12 +200,38 @@ const Home = () => {
           <form onSubmit={handleAddItem}>
             <div className="image-upload">
               {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="image-preview"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
+                <div style={{ position: "relative", display: "inline-block" }}>
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="image-preview"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImage(null);
+                      setImagePreview(null);
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: "5px",
+                      right: "5px",
+                      background: "red",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: "24px",
+                      height: "24px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    X
+                  </button>
+                </div>
               ) : (
                 <div className="drop-image">
                   <p>Drop Image Here</p>
