@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 
 // Import Bootstrap Icons (cần cài đặt: npm install bootstrap-icons)
 import "bootstrap-icons/font/bootstrap-icons.css";
+import api from "../config/axios";
 
 // Hàm định dạng giá tiền theo VND
 const formatPriceVND = (price) => {
@@ -55,14 +56,29 @@ const AccessoryManagement = () => {
     fetchAccessories();
   }, []);
 
+  // const fetchAccessories = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.get("http://localhost:3000/accessories/allAccessories");
+  //     if (!response.ok) {
+  //       throw new Error("Không thể tải danh sách phụ kiện.");
+  //     }
+  //     const data = await response.json();
+  //     console.log("Fetched accessories:", data);
+  //     setAccessories(data);
+  //   } catch (error) {
+  //     console.error("Failed to fetch accessories:", error);
+  //     setError("Không thể tải danh sách phụ kiện: " + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const fetchAccessories = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/accessories/allAccessories");
-      if (!response.ok) {
-        throw new Error("Không thể tải danh sách phụ kiện.");
-      }
-      const data = await response.json();
+      const response = await api.get("http://localhost:3000/accessories/allAccessories");
+      const data = response.data; // Use response.data with axios
       console.log("Fetched accessories:", data);
       setAccessories(data);
     } catch (error) {
@@ -154,11 +170,11 @@ const AccessoryManagement = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3000/accessories/postAccessories", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await api.post("http://localhost:3000/accessories/postAccessories", {
+        // method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
         body: JSON.stringify(dataToSend),
       });
 
@@ -240,11 +256,11 @@ const AccessoryManagement = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/accessories/${editId}/edit`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await api.put(`http://localhost:3000/accessories/${editId}/edit`, {
+        // method: "PUT",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
         body: JSON.stringify(dataToSend),
       });
 
@@ -281,8 +297,8 @@ const AccessoryManagement = () => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/accessories/${id}`, {
-          method: "DELETE",
+        const response = await api.delete(`http://localhost:3000/accessories/${id}`, {
+          // method: "DELETE",
         });
 
         if (!response.ok) {

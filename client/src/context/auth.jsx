@@ -296,15 +296,15 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../config/axios.js"; // Đảm bảo bạn đã import axios instance
+import api from "../config/axios.js";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
-  const [userId, setUserId] = useState(null); // Thêm state cho userId
-  const [role, setRole] = useState("user");
+  const [userId, setUserId] = useState(null);
+  const [role, setRole] = useState("user"); // Mặc định là user, sẽ được cập nhật sau khi login
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -312,11 +312,11 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(loggedIn);
     if (loggedIn) {
       const storedUsername = sessionStorage.getItem("SWD392_username") || "";
-      const storedUserId = sessionStorage.getItem("SWD392_user_id") || null; // Lấy userId từ sessionStorage
+      const storedUserId = sessionStorage.getItem("SWD392_user_id") || null;
       const storedRole = sessionStorage.getItem("SWD392_role");
       const roleToSet = storedRole ? storedRole.toLowerCase().trim() : "user";
       setUsername(storedUsername);
-      setUserId(storedUserId); // Cập nhật userId vào state
+      setUserId(storedUserId);
       setRole(roleToSet);
       console.log("Initial state from sessionStorage:", {
         isLoggedIn: loggedIn,
@@ -330,15 +330,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const loginUrl = "http://localhost:3000/user/login";
-      const credentials = {
-        email,
-        password,
-      };
+      const credentials = { email, password };
 
       console.log("Login request body:", credentials);
       const loginResponse = await api.post(loginUrl, credentials);
 
-      const { message, user_id, access_token, refresh_token } = loginResponse.data;
+      const { message, user_id, access_token, refresh_token, role } = loginResponse.data;
 
       if (message === "Login Successfully") {
         const userDetailsUrl = `http://localhost:3000/user/${user_id}`;
@@ -352,7 +349,8 @@ export const AuthProvider = ({ children }) => {
         const username = userDetails.user.name;
 
         // Xác định role dựa trên giá trị từ response
-        const userRole = role === "0" ? "admin" : "user";
+        // const userRole = role === "0" ? "admin" : "user";
+        const userRole = role;
 
         // Lưu vào sessionStorage
         sessionStorage.setItem("token", access_token);
@@ -362,9 +360,10 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.setItem("SWD392_user_id", user_id);
         sessionStorage.setItem("SWD392_role", userRole);
 
+        // Cập nhật state
         setIsLoggedIn(true);
         setUsername(username);
-        setUserId(user_id); // Cập nhật userId vào state
+        setUserId(user_id);
         setRole(userRole);
 
         console.log("State after login:", {
@@ -402,8 +401,6 @@ export const AuthProvider = ({ children }) => {
     navigate("/authpage");
   };
 
-  //cần chỉnh lại 
-  //register rồi yêu cầu login
   const register = async (username, email, password, confirmPassword) => {
     try {
       const apiUrl = "http://localhost:3000/user/register";
@@ -412,7 +409,7 @@ export const AuthProvider = ({ children }) => {
         email,
         password,
         confirmed_password: confirmPassword,
-        date_of_birth: new Date().toISOString(), // API yêu cầu date_of_birth
+        date_of_birth: new Date().toISOString(),
       };
 
       console.log("Request body:", newUser);
@@ -471,7 +468,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         isLoggedIn,
         username,
-        userId, // Cung cấp userId qua context
+        userId,
         role,
         login,
         logout,
@@ -489,4 +486,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-

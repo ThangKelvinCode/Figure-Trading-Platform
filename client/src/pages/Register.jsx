@@ -34,7 +34,7 @@ function Register() {
         confirmPassword
       );
       if (success) {
-        navigate("/"); // Điều hướng đã được xử lý trong auth.jsx, nhưng để đảm bảo
+        navigate("/authpage"); // Điều hướng đã được xử lý trong auth.jsx, nhưng để đảm bảo
       }
     } catch (err) {
       setError(err.message || "Registration failed");

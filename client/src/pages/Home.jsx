@@ -101,7 +101,7 @@ const Home = () => {
         setTradeRequests(filteredTradeRequests);
 
         // Fetch Accessories
-        const accessoryResponse = await axios.get(
+        const accessoryResponse = await api.get(
           "http://localhost:3000/accessories/allAccessories"
         );
         setAccessories(accessoryResponse.data.slice(0, 4)); // Lấy 4 sản phẩm đầu tiên
