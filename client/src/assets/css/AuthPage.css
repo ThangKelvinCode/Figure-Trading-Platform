@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url("../images/wallpaper.jpg");
+  background: url("../images/wallpaper2.webp");
   background-size: cover;
   background-position: center;
   overflow: hidden; /* Khóa scroll chỉ trong trang AuthPage */
