@@ -104,12 +104,7 @@ const updateShipInfo = async (req, res) => {
 const getShipInfo = async (req, res) => {
   try {
     const user = await usersServices.getUserProfile(req.params.id)
-    // console.log('user:', {
-    //   name: user.name,
-    //   email: user.email,
-    //   phoneNumber: user.phone,
-    //   address: user.location
-    // })
+
     res.status(HTTP_STATUS.OK).json({
       message: 'success',
       user: {
