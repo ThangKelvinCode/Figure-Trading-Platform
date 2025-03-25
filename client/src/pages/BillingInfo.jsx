@@ -15,14 +15,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const BillingInfo = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Get location object
-
-  // Parse query params inside the component
-  const queryParams = new URLSearchParams(location.search);
-  const productId = queryParams.get("productId") || "N/A";
-  const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
-  const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000;
-
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,6 +24,15 @@ const BillingInfo = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Lấy query params từ URL
+  const queryParams = new URLSearchParams(location.search);
+  const productId = queryParams.get("productId") || "N/A";
+  const quantity = parseInt(queryParams.get("quantity"), 10) || 1;
+  const totalPrice = parseInt(queryParams.get("totalPrice"), 10) || 10000;
+
+  // Giả sử bạn có userId (lấy từ context, localStorage, hoặc authentication)
+  const userId = "67f645e5df963779af5f84"; // Thay thế bằng userId thực tế
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,21 +43,69 @@ const BillingInfo = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
     try {
-      console.log("Form Submitted:", formData);
+      // Kiểm tra dữ liệu trước khi gửi
+      if (!formData.name || !formData.email || !formData.phone || !formData.address) {
+        throw new Error("Please fill in all required fields.");
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        throw new Error("Invalid email address.");
+      }
+      if (!/^\d{10}$/.test(formData.phone)) {
+        throw new Error("Invalid phone number. Please enter a 10-digit phone number.");
+      }
+      if (!productId || productId === "N/A") {
+        throw new Error("Invalid product ID.");
+      }
+
+      // Chuẩn bị dữ liệu gửi đi
+      const bodyData = {
+        userId: userId,
+        quantity: quantity,
+        totalPrice: totalPrice,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+      };
+
+      // Log dữ liệu gửi đi
+      console.log("Data sent to API:", bodyData);
+
+      // Gửi thông tin đơn hàng đến API /accessories/{id}/purchase
+      const response = await fetch(`http://localhost:3000/accessories/${productId}/purchase`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Request failed with status code ${response.status}`);
+      }
+
+      const data = await response.json();
+      const { id, quantity: returnedQuantity } = data; // Nhận id (orderId) và quantity từ backend
+      console.log("Received from Backend:", { id, quantity: returnedQuantity });
+
+      // Truyền thông tin đơn hàng, id (orderId), và quantity sang Checkout
       const checkoutData = {
         ...formData,
         productID: productId,
-        quantity: quantity,
+        quantity: returnedQuantity,
         totalPrice: totalPrice,
+        orderId: id,
       };
-      // Navigate to /checkout with the data
       navigate("/checkout", { state: checkoutData });
     } catch (err) {
+      console.error("Error in handleSubmit:", err);
       setError("Không thể gửi thông tin: " + err.message);
     } finally {
       setLoading(false);
@@ -106,7 +156,7 @@ const BillingInfo = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="Enter your phone number"
+                    placeholder="Enter your phone number (e.g., 0938239032)"
                     required
                   />
                 </Form.Group>
