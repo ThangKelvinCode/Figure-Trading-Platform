@@ -170,31 +170,6 @@ accessoriesRouter.post(
 )
 
 // Write a new review for an accessory
-accessoriesRouter.post(
-  '/:id/newReview',
-  /*  #swagger.tags = ['Accessories']
-        #swagger.summary = 'Write a review for an accessory'
-        #swagger.description = 'Allows a user to submit a review for an accessory'
-        #swagger.parameters['id'] = { description: "Accessory ID", type: "string", required: true, example: "67bca3f6207e4b98d3665a9f" }
-        #swagger.requestBody = {
-            required: true,
-            content: {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        required: ["rating", "comment"],
-                        properties: {
-                            rating: { type: "number", example: 5 },
-                            comment: { type: "string", example: "Great accessory! Highly recommended." }
-                        }
-                    }
-                }
-            }
-        }
-        #swagger.responses[201] = { description: "Review submitted successfully" }
-        #swagger.responses[400] = { description: "Invalid review submission" }
-    */
-  wrapAsync(accessoriesController.writeReview)
-)
+
 
 export default accessoriesRouter
