@@ -66,7 +66,7 @@ export const Navbar = () => {
           </NavLink>
         </li>
 
-        {isLoggedIn && (role || "1").toLowerCase().trim() === "0" && (
+        {isLoggedIn && role === "admin" && (
           <>
             <li>
               <NavLink
