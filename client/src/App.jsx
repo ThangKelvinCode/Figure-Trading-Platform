@@ -18,6 +18,9 @@ import PaymentProcessing from "./components/PaymentProcessing";
 import TradeRequestDetail from "./pages/TradeRequestDetail";
 import MyOffers from "./pages/MyOffers";
 
+import BillingInfo from "./pages/BillingInfo";
+
+
 function App() {
   const location = useLocation();
 
@@ -40,9 +43,10 @@ function App() {
         <Route path="/my-offers" element={<MyOffers />} />
         <Route path="/trade_request/:requestId" element={<TradeRequestDetail />} />
         <Route path="/authpage" element={<AuthPage hideNavBar={true} />} />
-        <Route path="/payment-succes" element={<PaymentSuccess />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />
         <Route path="/payment-process" element={<PaymentProcessing />} />
+        <Route path="/billinginfo" element={<BillingInfo />} />
       </Routes>
     </div>
   );

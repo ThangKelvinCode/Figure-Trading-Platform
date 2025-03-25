@@ -14,6 +14,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../config/axios"; // Import the configured axios instance
 
+
 const AccessoryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -75,7 +76,12 @@ const AccessoryDetail = () => {
     fetchRelatedProducts();
   }, [id, navigate]);
 
-  const handleBuyNow = () => {
+  // const handleBuyNow = () => {
+  //   if (!product) return;
+  //   const totalPrice = product?.price * quantity;
+  //   navigate(`/billinginfo?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
+  // };
+  const handleBuyNow = async () => {
     if (!product) return;
     const totalPrice = product.price * quantity;
     navigate(`/checkout?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);

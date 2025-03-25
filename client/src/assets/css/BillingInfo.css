@@ -1,0 +1,64 @@
+.billing-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .billing-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #34495e;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #ffffff; /* White background for the field */
+    color: #000000; /* Black text for input */
+    border: 1px solid #dfe6e9;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .form-input:focus {
+    border-color: #0984e3;
+    box-shadow: 0 0 0 2px rgba(9, 132, 227, 0.2);
+    outline: none;
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0984e3;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #0652dd;
+  }
