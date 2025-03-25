@@ -25,6 +25,19 @@ const postAccessories = async (reqBody) => {
   }
 }
 
+const editAccessories = async (accessoryID, reqBody) => {
+  try {
+    const updateData = {
+      ...reqBody,
+      photo: Array.isArray(reqBody.photo) ? reqBody.photo : [] // (condition ? value_if_true : value_if_false)
+    }
+  
+    return await accessoriesRepo.editAccessories(accessoryID, updateData)
+  } catch (error) {
+    throw error
+  }
+}
+
 const getAccessory = async (ID) => {
   try {
     return await accessoriesRepo.getAccessorybyID(ID)
@@ -146,5 +159,6 @@ export const productServices = {
   getAllCategories,
   deleteAccessory,
   getAllReview,
-  buyAccessory
+  buyAccessory,
+  editAccessories
 }

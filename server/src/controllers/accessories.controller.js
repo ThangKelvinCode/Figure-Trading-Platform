@@ -23,6 +23,16 @@ const newCategory = async (req, res) => {
     res.status(HTTP_STATUS.CREATED).json(newCategory)
 }
 
+const editAccessories = async (req, res) => {
+    try {
+        const editProduct = await productServices.editAccessories(req.params.id, req.body)
+        res.status(HTTP_STATUS.OK).json({
+            editProduct
+        })
+    } catch (error) {
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ Error: error.message})
+    }
+}
 const getAllAccessories = async (req, res) => {
     const accessoryList = await productServices.getAllAccessories()
     // console.log('controller: ', accessoryList)
@@ -97,5 +107,6 @@ export const accessoriesController = {
     getAllCategories,
     deleteAccessory,
     getAllReview,
-    buyAccessory
+    buyAccessory,
+    editAccessories
 }

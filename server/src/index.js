@@ -9,9 +9,7 @@ import offersRouter from './routes/offers.routers.js'
 import tradeRequestsRouter from './routes/tradeRequests.routers.js'
 import { initFolder } from './utils/file.js'
 import database from './configs/database.js'
-import YAML from 'yaml' // Chỉ có ở trade-flow, giữ lại
 import swaggerUi from 'swagger-ui-express' // Có ở cả hai, giữ 1 dòng
-import swaggerJsdocOSA from 'swagger-jsdoc' // Chỉ có ở trade-flow, giữ lại (tên biến đổi để tránh nhầm lẫn)
 import messagesRouter from './routes/messages.routes.js' // Chỉ có ở trade-flow, giữ lại
 import { messagesServices } from './services/messages.services.js' // Chỉ có ở trade-flow, giữ lại
 import bodyParser from 'body-parser' // Có ở cả hai, giữ 1 dòng
@@ -33,7 +31,7 @@ const server = createServer(app) // Chỉ có ở trade-flow, giữ lại
 // Tích hợp Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // URL frontend React của bạn (thay đổi nếu cần)
+    origin: 'http://localhost:5173', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true // Nếu dùng cookie hoặc token trong request
@@ -44,6 +42,16 @@ const io = new Server(server, {
 database.connect()
 initFolder()
 
+app.use(express.json()) 
+
+// Enable JSON middleware
+app.use(express.json())
+app.use(bodyParser.json())
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use(express.json()) // Có ở cả hai, giữ 1 dòng
+app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
 app.use(express.json()) // Có ở cả hai, giữ 1 dòng
 app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
@@ -65,7 +73,6 @@ app.use((req, res, next) => {
 // Trở thành error handler cho cả app nên nó nằm cuối app để là điểm tập kết cuối cùng
 app.use(defaultErrorHandler)
 
-// Tạm thời để Socket.IO logic ở đây (sẽ tách sau)
 // Socket.IO logic
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`)
