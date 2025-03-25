@@ -27,11 +27,11 @@ const AccessoriesValidator = validate(
           errorMessage: PRODUCT_MESSAGE.INVALID_PRICE
         }
       },
-      photo: {
-        notEmpty: {
-          errorMessage: PRODUCT_MESSAGE.EMPTY_PHOTO
-        }
-      },
+      // photo: {
+      //   notEmpty: {
+      //     errorMessage: PRODUCT_MESSAGE.EMPTY_PHOTO
+      //   }
+      // },
       owner: {
         notEmpty: {
           errorMessage: PRODUCT_MESSAGE.EMPTY_OWNER
