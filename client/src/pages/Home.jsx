@@ -404,12 +404,32 @@ const Home = () => {
           <form onSubmit={handleCreateTradeRequest}>
             <div className="image-upload">
               {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="image-preview"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
+                <div style={{ position: "relative", display: "inline-block" }}>
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="image-preview"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setImagePreview(null)} // Xóa hình ảnh
+                    style={{
+                      position: "absolute",
+                      top: "0",
+                      right: "0",
+                      background: "red",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: "15px",
+                      height: "30px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    X
+                  </button>
+                </div>
               ) : (
                 <div className="drop-image">
                   <p>Drop Image Here</p>
@@ -484,15 +504,35 @@ const Home = () => {
             <Form.Group className="mb-3">
               <Form.Label>Offer Image</Form.Label>
               {offerImagePreview ? (
-                <img
-                  src={offerImagePreview}
-                  alt="Preview"
-                  style={{
-                    maxWidth: "100%",
-                    height: "auto",
-                    marginBottom: "10px",
-                  }}
-                />
+                <div style={{ position: "relative", display: "inline-block" }}>
+                  <img
+                    src={offerImagePreview}
+                    alt="Preview"
+                    style={{
+                      maxWidth: "100%",
+                      height: "auto",
+                      marginBottom: "10px",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setOfferImagePreview(null)} // Xóa hình ảnh
+                    style={{
+                      position: "absolute",
+                      top: "5px",
+                      right: "5px",
+                      background: "red",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: "20px",
+                      height: "20px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    X
+                  </button>
+                </div>
               ) : (
                 <div>
                   <p>Drop Image Here</p>

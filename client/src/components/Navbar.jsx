@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { Link, NavLink } from "react-router-dom";
 import "../assets/css/Navbar.css";
+import Logo from "../assets/images/Logo.png";
 import { useAuth } from "../context/auth.jsx";
 import { LoginButton } from "./LoginButton";
 import { LogoutButton } from "./LogoutButton";
@@ -22,7 +23,7 @@ export const Navbar = () => {
   return (
     <nav>
       <Link to="/" className="title">
-        Website
+        <img src={Logo} alt="banner" className="full-cover-gif" />
       </Link>
 
       <div className="menu" onClick={() => setMenuOpen(!menuOpen)}>
