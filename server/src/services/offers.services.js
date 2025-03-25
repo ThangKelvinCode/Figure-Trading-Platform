@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 import Offer from '../models/schemas/Offers.schema.js'
-import databaseServices from './database.services.js'
 import offerRepo from '../repositories/offers.repo.js'
+import { OfferStatus } from '../constants/enums.js'
 
 // const createOffer = async (payload) => {
 //   let offerId = new ObjectId()
@@ -27,12 +27,17 @@ import offerRepo from '../repositories/offers.repo.js'
 // };
 
 const createOffer = async (payload) => {
+  const existingOffers = await offerRepo.getAllByRequestId(payload.requestId);
+  const offersByUser = existingOffers.filter(offer => offer.userId.toString() === payload.userId);
+  if (offersByUser.length > 0) {
+    throw new Error('Only one offer per request is allowed per user');
+  } {
   try {
     console.log('Received payload:', payload)
 
     // Ensure that requesterId and requestId are valid ObjectId
-    if (!ObjectId.isValid(payload.requesterId) || !ObjectId.isValid(payload.requestId)) {
-      throw new Error('Invalid ObjectId format for requesterId or requestId')
+    if (!ObjectId.isValid(payload.userId) || !ObjectId.isValid(payload.requestId)) {
+      throw new Error('Invalid User ID or Request ID format');
     }
 
     const newOffer = {
@@ -40,22 +45,23 @@ const createOffer = async (payload) => {
       offerItem: payload.offerItem,
       offerDescription: payload.offerDescription,
       offerImage: payload.offerImage,
-      requesterId: new ObjectId(payload.requesterId), // Expecting valid ObjectId from request
-      requestId: new ObjectId(payload.requestId), // Expecting valid ObjectId from request
-      offerStatus: 'Pending',
+      userId: new ObjectId(payload.userId),
+      requestId: new ObjectId(payload.requestId),
+      offerStatus: OfferStatus.Pending,
       createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    };
 
     console.log('Prepared Offer Object:', newOffer)
 
     // const result = await databaseServices.offers.insertOne(newOffer);
-    const result = await offerRepo.insert(newOffer)
-    return result
+    const result = await offerRepo.insert(newOffer);
+    return newOffer;
   } catch (error) {
-    console.error('Error creating offer:', error)
-    throw error
+    console.error('Error creating offer:', error);
+    throw error;
   }
+}
 }
 
 const getAllOffersByRequestId = async (requestId) => {
@@ -98,6 +104,20 @@ const getOfferByOfferId = async (offerId) => {
   }
 }
 
+// const getRequestByOfferId = async (offerId) => {
+//   try {
+//     const offer = await offerRepo.getByOfferId(offerId); // Get the offer
+//     if (!offer) {
+//       return null; // Offer not found
+//     }
+//     const request = await requestRepo.getByRequestId(offer.requestId); // Get the request
+//     return request;
+//   } catch (error) {
+//     console.error('Error getting request by offer ID:', error);
+//     throw error;
+//   }
+// };
+
 const updateOfferByOfferId = async (offerId, updates) => {
   try {
     const result = await offerRepo.updateByOfferId(offerId, updates)
@@ -108,10 +128,21 @@ const updateOfferByOfferId = async (offerId, updates) => {
   }
 }
 
+const updateOfferStatus = async (offerId, newStatus) => {
+  try {
+    const result = await offerRepo.updateOfferStatus(offerId, newStatus);
+    return result;
+  } catch (error) {
+    console.error('Error updating offer status:', error);
+    throw error;
+  }
+};
+
 export const offersServices = {
   createOffer,
   getAllOffersByRequestId,
   getAllOffers,
   getOfferByOfferId,
-  updateOfferByOfferId
+  updateOfferByOfferId,
+  updateOfferStatus
 }

@@ -23,24 +23,22 @@ const register = async (req, res) => {
 
   const result = await usersServices.register(req.body)
   // console.log(result)
-  res.status(HTTP_STATUS.OK).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: USERS_MESSAGES.REGISTER_SUCCESS, //chỉnh lại thông báo
     id: result
   })
 }
 
 const login = async (req, res) => {
-  //cần lấy email và password để tìm xem user nào đg sở hữu
-  //nếu ko có user nào thì ngừng cuộc chơi
-  //nếu có thì tạo access và refresh token
-  const { email, password } = req.body
-  //usersService.login là hàm nhận vào email và password, rồi vào database tìm user và tạo access token và refresh token trả ra ngoài
-  const id = await usersServices.login(email, password)
+  const { email, password } = req.body;
+  const result = await usersServices.login(email, password);
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
-    id: id
-  })
-}
+    user_id: result.user_id,
+    access_token: result.access_token,
+    refresh_token: result.refresh_token,
+  });
+};
 
 const getUserProfile = async (req, res) => {
   try {

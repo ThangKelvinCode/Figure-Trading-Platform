@@ -32,15 +32,21 @@ class OfferRepo {
   async updateByOfferId(offerId, updates) {
     return await this.db.findOneAndUpdate(
       { _id: new ObjectId(offerId) },
-      {
-        $set: { ...updates, updatedAt: new Date() } // Update updatedAt, keep createdAt unchanged
-      },
-      { returnDocument: 'after' } // Return the updated document
-    )
+      { $set: { ...updates, updatedAt: new Date() } },
+      { returnDocument: 'after' } // Ensure the updated document is returned
+    );
+  }
+  async updateOfferStatus(offerId, newStatus) {
+    return await this.db.findOneAndUpdate(
+      { _id: new ObjectId(offerId) },
+      { $set: { offerStatus: newStatus, updatedAt: new Date() } },
+      { returnDocument: 'after' }
+    );
   }
 
   async insert(offerData) {
-    return (result = await this.db.insertOne(offerData))
+    const result = await this.db.insertOne(offerData); // Assign the result to the variable
+    return result; // Return the result object
   }
 }
 

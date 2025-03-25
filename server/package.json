@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "swagger": "node ./swagger.js"
   },
   "keywords": [],
   "author": "",
@@ -23,14 +24,26 @@
     "prettier": "^3.5.0"
   },
   "dependencies": {
+    "axios": "^1.8.3",
     "be": "file:",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dateformat": "^5.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "formidable": "^3.5.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "moment": "^2.30.1",
     "mongodb": "^6.13.0",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.7.0"
   }
 }
