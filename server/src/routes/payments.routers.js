@@ -7,7 +7,7 @@ const paymentRouter = Router()
 paymentRouter.use(verifyToken);
 
 paymentRouter.post(
-  '/create_momo',
+  '/create_momo/:orderId',
   /*  
     #swagger.tags = ['Payment']
     #swagger.summary = 'Create MOMO payment'

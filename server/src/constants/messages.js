@@ -63,7 +63,8 @@ export const USERS_MESSAGES = {
   USERNAME_IS_INVALID:
     'Username must be a string and length must be 4 - 15, and contain only letters, numbers, and underscores, not only numbers',
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token change Successfully',
+  ADD_ADDRESS_SUCCESS: 'Added address successfully'
 }
 
 export const PRODUCT_MESSAGE = {

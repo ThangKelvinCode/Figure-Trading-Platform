@@ -178,10 +178,23 @@ const getUserProfile = async (userId) => {
   try {
     const user = userRepo.findById(userId)
     if (!user) {
-      return res.status(404).json({ message: 'User not found' })
+      throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
     } else return user
   } catch (error) {
     throw error
+  }
+}
+
+const updateShipInfo = async (userID, phoneNumber, address) => {
+  try {
+    if(!await userRepo.findById(userID)){
+      throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+    }
+    console.log('ser', await userRepo.findById(userID))
+    
+    return userRepo.updateShipInfo(userID,  phoneNumber, address)
+  } catch (error) {
+    throw new Error(error.message)
   }
 }
 
@@ -194,5 +207,6 @@ export const usersServices = {
   register,
   login,
   getUserProfile,
-  findUserById
+  findUserById,
+  updateShipInfo
 }

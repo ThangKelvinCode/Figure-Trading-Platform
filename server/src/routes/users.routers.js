@@ -227,4 +227,9 @@ usersRouter.use(
     */
   orderRoutes
 )
+
+usersRouter.post('/:id/shippingInfo', wrapAsync(userController.getShipInfo))
+
+usersRouter.put('/:id/updateShippingInfo', wrapAsync(userController.updateShipInfo))
+
 export default usersRouter
