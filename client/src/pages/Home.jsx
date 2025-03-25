@@ -255,39 +255,697 @@
 
 // export default Home;
 
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+// import React, { useEffect, useState } from "react";
+// import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
+// import { useNavigate } from "react-router-dom";
+// import { v4 as uuidv4 } from "uuid";
+// import "../assets/css/Home.css";
+// import { storage } from "../config/firebase";
+// import AnimatedGif from "../context/AnimatedGif.jsx";
+// import { useAuth } from "../context/auth.jsx";
+// import { toast } from "react-toastify"; // Import react-toastify
+// import api from "../config/axios.js";
+
+// const Home = () => {
+//   const navigate = useNavigate();
+//   const { username, isLoggedIn } = useAuth(); // Lấy trạng thái đăng nhập và username
+//   const [showTradeRequestPopup, setTradeRequestPopup] = useState(false); // Đổi tên popup
+//   const [loading, setLoading] = useState(true);
+//   const [tradeRequests, setTradeRequests] = useState([]); // State để lưu danh sách trade requests
+
+//   // State cho form tạo trade request
+//   const [image, setImage] = useState(null);
+//   const [imagePreview, setImagePreview] = useState(null);
+//   const [requestItem, setRequestItem] = useState("");
+//   const [requestDescription, setRequestDescription] = useState("");
+//   const [addLoading, setAddLoading] = useState(false);
+
+//   // API để lấy danh sách trade requests
+//   useEffect(() => {
+//     const fetchTradeRequests = async () => {
+//       try {
+//         const response = await api.get("/trade_requests/"); // Sử dụng axios instance
+//         setTradeRequests(response.data); // Dữ liệu trả về từ API
+//         setLoading(false);
+//       } catch (error) {
+//         console.error("Error fetching trade requests:", error.response?.data || error.message);
+//         setLoading(false);
+//       }
+//     };
+//     fetchTradeRequests();
+//   }, []);
+
+//   // Xử lý khi nhấn nút "Create new trade request"
+//   const handleCreateTradeRequestClick = () => {
+//     if (!isLoggedIn) {
+//       toast.error("Please login to create a trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/login");
+//       return;
+//     }
+//     setTradeRequestPopup(true);
+//   };
+
+//   // Xử lý khi nhấn nút "View"
+//   const handleView = (requestId) => {
+//     if (!isLoggedIn) {
+//       toast.error("Please login to view trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/authpage");
+//       return;
+//     }
+//     navigate(`/trade_request/${requestId}`);
+//   };
+
+//   // Xử lý khi nhấn nút "Offer"
+//   const handleOffer = (requestId, owner) => {
+//     if (!isLoggedIn) {
+//       toast.error("Please login to make an offer", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/login");
+//       return;
+//     }
+//     navigate(`/offer?requestId=${requestId}&owner=${owner}`);
+//   };
+
+//   // Xử lý khi chọn hình ảnh
+//   const handleImageChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       setImage(file);
+//       setImagePreview(URL.createObjectURL(file));
+//     }
+//   };
+
+//   // Xử lý khi submit form tạo trade request
+//   const handleCreateTradeRequest = async (e) => {
+//     e.preventDefault();
+//     if (!isLoggedIn) {
+//       toast.error("Please login to create a trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/login");
+//       return;
+//     }
+
+//     if (!image || !requestItem || !requestDescription) {
+//       toast.error("Please fill in all fields and upload an image!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       return;
+//     }
+
+//     setAddLoading(true);
+
+//     try {
+//       // Upload hình ảnh lên Firebase Storage
+//       const imageRef = ref(
+//         storage,
+//         `trade_requests/${username}/${image.name + uuidv4()}`
+//       );
+//       const snapshot = await uploadBytes(imageRef, image);
+//       const downloadURL = await getDownloadURL(snapshot.ref);
+
+//       // Tạo trade request qua API
+//       const tradeRequestData = {
+//         requestItem,
+//         requestDescription,
+//         requestImage: downloadURL,
+//       };
+
+//       const response = await api.post("/trade_requests/", tradeRequestData); // Sử dụng axios instance
+
+//       const newTradeRequest = response.data.result; // Lấy trade request vừa tạo từ response
+//       setTradeRequests((prev) => [...prev, newTradeRequest]); // Cập nhật danh sách trade requests
+
+//       // Reset form và đóng modal
+//       setImage(null);
+//       setImagePreview(null);
+//       setRequestItem("");
+//       setRequestDescription("");
+//       setTradeRequestPopup(false);
+//       toast.success("Trade request created successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error creating trade request:", error.response?.data || error.message);
+//       toast.error("Failed to create trade request: " + (error.response?.data?.message || error.message), {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } finally {
+//       setAddLoading(false);
+//     }
+//   };
+
+//   if (loading) {
+//     return <div>Loading trade requests...</div>;
+//   }
+
+//   return (
+//     <div className="home">
+//       <section className="sect_1">
+//         <div>
+//           <AnimatedGif
+//             src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDluZ2FldHhtOGdnZDgyaDA1MG9jN2JjMG50Z2V1ZmM4MXhkYWltbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EaOW6ssYbMUYxJmr8U/giphy.gif"
+//             alt="gif"
+//             className="full-cover-gif"
+//           />
+//         </div>
+//       </section>
+
+//       <section className="sect_2">
+//         <Container className="text-center my-5">
+//           <h2 className="fw-bold">TRADE REQUESTS</h2>
+//           <Row className="mt-4">
+//             {tradeRequests.length === 0 ? (
+//               <p>No trade requests available.</p>
+//             ) : (
+//               tradeRequests.map((trade) => (
+//                 <Col key={trade._id} md={3} sm={6} xs={12} className="mb-4">
+//                   <Card className="border-0">
+//                     <div className="image-container">
+//                       <Card.Img
+//                         variant="top"
+//                         src={trade.requestImage}
+//                         alt={trade.requestItem}
+//                       />
+//                       <div className="overlay-buttons">
+//                         <Button
+//                           variant="primary"
+//                           className="btn-sm me-2"
+//                           onClick={() => handleView(trade._id)}
+//                         >
+//                           View
+//                         </Button>
+//                         <Button
+//                           variant="secondary"
+//                           className="btn-sm"
+//                           onClick={() => handleOffer(trade._id, trade.userId)}
+//                         >
+//                           Offer
+//                         </Button>
+//                       </div>
+//                     </div>
+
+//                     <Card.Body>
+//                       <h6 className="fw-bold">{trade.requestItem}</h6>
+//                       <p className="fw-bold">Owner: {trade.userId}</p>
+//                     </Card.Body>
+//                   </Card>
+//                 </Col>
+//               ))
+//             )}
+//           </Row>
+//           <Button variant="dark" className="px-4 py-2 mt-3">
+//             XEM TẤT CẢ · TRADE REQUESTS
+//           </Button>
+//         </Container>
+//       </section>
+//       <section className="sect_3">
+//         <div>hi</div>
+//       </section>
+
+//       <button
+//         className="add_item_button"
+//         onClick={handleCreateTradeRequestClick}
+//       >
+//         <div className="plus_icon">+</div>
+//       </button>
+
+//       <Modal
+//         show={showTradeRequestPopup}
+//         onHide={() => setTradeRequestPopup(false)}
+//         centered
+//       >
+//         <Modal.Header closeButton>
+//           <Modal.Title>Create New Trade Request</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           <form onSubmit={handleCreateTradeRequest}>
+//             <div className="image-upload">
+//               {imagePreview ? (
+//                 <img
+//                   src={imagePreview}
+//                   alt="Preview"
+//                   className="image-preview"
+//                   style={{ maxWidth: "100%", height: "auto" }}
+//                 />
+//               ) : (
+//                 <div className="drop-image">
+//                   <p>Drop Image Here</p>
+//                   <input
+//                     type="file"
+//                     accept="image/*"
+//                     onChange={handleImageChange}
+//                     style={{ display: "block", margin: "10px 0" }}
+//                   />
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="form-group">
+//               <label>Request Item</label>
+//               <input
+//                 type="text"
+//                 value={requestItem}
+//                 onChange={(e) => setRequestItem(e.target.value)}
+//                 placeholder="Enter request item"
+//                 className="form-control"
+//                 required
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label>Request Description</label>
+//               <textarea
+//                 value={requestDescription}
+//                 onChange={(e) => setRequestDescription(e.target.value)}
+//                 placeholder="Enter request description"
+//                 className="form-control"
+//                 required
+//               />
+//             </div>
+
+//             <Button type="submit" variant="primary" disabled={addLoading}>
+//               {addLoading ? "Creating..." : "Create Trade Request"}
+//             </Button>
+//           </form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default Home;
+
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+// import React, { useEffect, useState } from "react";
+// import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
+// import { useNavigate } from "react-router-dom";
+// import { v4 as uuidv4 } from "uuid";
+// import "../assets/css/Home.css";
+// import { storage } from "../config/firebase";
+// import AnimatedGif from "../context/AnimatedGif.jsx";
+// import { useAuth } from "../context/auth.jsx";
+// import { toast } from "react-toastify";
+// import api from "../config/axios.js";
+
+// const Home = () => {
+//   const navigate = useNavigate();
+//   const { username, isLoggedIn } = useAuth();
+//   const [showTradeRequestPopup, setTradeRequestPopup] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [tradeRequests, setTradeRequests] = useState([]);
+//   const [users, setUsers] = useState({}); // State để lưu thông tin user
+
+//   const [image, setImage] = useState(null);
+//   const [imagePreview, setImagePreview] = useState(null);
+//   const [requestItem, setRequestItem] = useState("");
+//   const [requestDescription, setRequestDescription] = useState("");
+//   const [addLoading, setAddLoading] = useState(false);
+
+//   // API để lấy danh sách trade requests và thông tin user
+//   useEffect(() => {
+//     const fetchTradeRequests = async () => {
+//       try {
+//         const response = await api.get("/trade_requests/");
+//         const tradeRequestsData = response.data;
+
+//         // Lấy thông tin user cho từng trade request
+//         const userPromises = tradeRequestsData.map(async (trade) => {
+//           try {
+//             const userResponse = await api.get(`/user/${trade.userId}`);
+//             return { userId: trade.userId, user: userResponse.data.user };
+//           } catch (error) {
+//             console.error(`Error fetching user ${trade.userId}:`, error.response?.data || error.message);
+//             return { userId: trade.userId, user: null };
+//           }
+//         });
+
+//         const usersData = await Promise.all(userPromises);
+//         const usersMap = usersData.reduce((acc, { userId, user }) => {
+//           if (user) acc[userId] = user;
+//           return acc;
+//         }, {});
+
+//         setUsers(usersMap);
+//         setTradeRequests(tradeRequestsData);
+//         setLoading(false);
+//       } catch (error) {
+//         console.error("Error fetching trade requests:", error.response?.data || error.message);
+//         setLoading(false);
+//       }
+//     };
+//     fetchTradeRequests();
+//   }, []);
+
+//   const handleCreateTradeRequestClick = () => {
+//     if (!isLoggedIn) {
+//       toast.error("Please login to create a trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/login");
+//       return;
+//     }
+//     setTradeRequestPopup(true);
+//   };
+
+//   const handleView = (requestId) => {
+//     if (!isLoggedIn) {
+//       toast.error("Please login to view trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/authpage");
+//       return;
+//     }
+//     navigate(`/trade_request/${requestId}`);
+//   };
+
+//   const handleOffer = (requestId, owner) => {
+//     if (!isLoggedIn) {
+//       toast.error("Please login to make an offer", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/authpage");
+//       return;
+//     }
+//     navigate(`/offer?requestId=${requestId}&owner=${owner}`);
+//   };
+
+//   const handleImageChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       setImage(file);
+//       setImagePreview(URL.createObjectURL(file));
+//     }
+//   };
+
+//   const handleCreateTradeRequest = async (e) => {
+//     e.preventDefault();
+//     if (!isLoggedIn) {
+//       toast.error("Please login to create a trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/login");
+//       return;
+//     }
+
+//     if (!image || !requestItem || !requestDescription) {
+//       toast.error("Please fill in all fields and upload an image!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       return;
+//     }
+
+//     setAddLoading(true);
+
+//     try {
+//       const imageRef = ref(
+//         storage,
+//         `trade_requests/${username}/${image.name + uuidv4()}`
+//       );
+//       const snapshot = await uploadBytes(imageRef, image);
+//       const downloadURL = await getDownloadURL(snapshot.ref);
+
+//       const tradeRequestData = {
+//         requestItem,
+//         requestDescription,
+//         requestImage: downloadURL,
+//       };
+
+//       const response = await api.post("/trade_requests/", tradeRequestData);
+//       const newTradeRequest = response.data.result;
+//       setTradeRequests((prev) => [...prev, newTradeRequest]);
+
+//       setImage(null);
+//       setImagePreview(null);
+//       setRequestItem("");
+//       setRequestDescription("");
+//       setTradeRequestPopup(false);
+//       toast.success("Trade request created successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error creating trade request:", error.response?.data || error.message);
+//       toast.error("Failed to create trade request: " + (error.response?.data?.message || error.message), {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } finally {
+//       setAddLoading(false);
+//     }
+//   };
+
+//   if (loading) {
+//     return <div>Loading trade requests...</div>;
+//   }
+
+//   return (
+//     <div className="home">
+//       <section className="sect_1">
+//         <div>
+//           <AnimatedGif
+//             src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDluZ2FldHhtOGdnZDgyaDA1MG9jN2JjMG50Z2V1ZmM4MXhkYWltbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EaOW6ssYbMUYxJmr8U/giphy.gif"
+//             alt="gif"
+//             className="full-cover-gif"
+//           />
+//         </div>
+//       </section>
+
+//       <section className="sect_2">
+//         <Container className="text-center my-5">
+//           <h2 className="fw-bold">TRADE REQUESTS</h2>
+//           <Row className="mt-4">
+//             {tradeRequests.length === 0 ? (
+//               <p>No trade requests available.</p>
+//             ) : (
+//               tradeRequests.map((trade) => (
+//                 <Col key={trade._id} md={3} sm={6} xs={12} className="mb-4">
+//                   <Card className="border-0">
+//                     <div className="image-container">
+//                       <Card.Img
+//                         variant="top"
+//                         src={trade.requestImage}
+//                         alt={trade.requestItem}
+//                       />
+//                     </div>
+
+//                     <Card.Body>
+//                       <h6 className="fw-bold">{trade.requestItem}</h6>
+//                       <p className="fw-bold">
+//                         Owner: {users[trade.userId]?.name || trade.userId}
+//                       </p>
+//                       <div className="d-flex justify-content-center gap-2">
+//                         <Button
+//                           variant="primary"
+//                           className="btn-sm"
+//                           onClick={() => handleView(trade._id)}
+//                         >
+//                           View
+//                         </Button>
+//                         <Button
+//                           variant="secondary"
+//                           className="btn-sm"
+//                           onClick={() => handleOffer(trade._id, trade.userId)}
+//                         >
+//                           Offer
+//                         </Button>
+//                       </div>
+//                     </Card.Body>
+//                   </Card>
+//                 </Col>
+//               ))
+//             )}
+//           </Row>
+//           <Button variant="dark" className="px-4 py-2 mt-3">
+//             XEM TẤT CẢ · TRADE REQUESTS
+//           </Button>
+//         </Container>
+//       </section>
+//       {/* <section className="sect_3">
+//         <div>hi</div>
+//       </section> */}
+
+//       <button
+//         className="add_item_button"
+//         onClick={handleCreateTradeRequestClick}
+//       >
+//         <div className="plus_icon">+</div>
+//       </button>
+
+//       <Modal
+//         show={showTradeRequestPopup}
+//         onHide={() => setTradeRequestPopup(false)}
+//         centered
+//       >
+//         <Modal.Header closeButton>
+//           <Modal.Title>Create New Trade Request</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           <form onSubmit={handleCreateTradeRequest}>
+//             <div className="image-upload">
+//               {imagePreview ? (
+//                 <img
+//                   src={imagePreview}
+//                   alt="Preview"
+//                   className="image-preview"
+//                   style={{ maxWidth: "100%", height: "auto" }}
+//                 />
+//               ) : (
+//                 <div className="drop-image">
+//                   <p>Drop Image Here</p>
+//                   <input
+//                     type="file"
+//                     accept="image/*"
+//                     onChange={handleImageChange}
+//                     style={{ display: "block", margin: "10px 0" }}
+//                   />
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="form-group">
+//               <label>Request Item</label>
+//               <input
+//                 type="text"
+//                 value={requestItem}
+//                 onChange={(e) => setRequestItem(e.target.value)}
+//                 placeholder="Enter request item"
+//                 className="form-control"
+//                 required
+//               />
+//             </div>
+
+//             <div className="form-group">
+//               <label>Request Description</label>
+//               <textarea
+//                 value={requestDescription}
+//                 onChange={(e) => setRequestDescription(e.target.value)}
+//                 placeholder="Enter request description"
+//                 className="form-control"
+//                 required
+//               />
+//             </div>
+
+//             <Button type="submit" variant="primary" disabled={addLoading}>
+//               {addLoading ? "Creating..." : "Create Trade Request"}
+//             </Button>
+//           </form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default Home;
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Modal, Row, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "../assets/css/Home.css";
 import { storage } from "../config/firebase";
 import AnimatedGif from "../context/AnimatedGif.jsx";
 import { useAuth } from "../context/auth.jsx";
-import { toast } from "react-toastify"; // Import react-toastify
+import { toast } from "react-toastify";
 import api from "../config/axios.js";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { username, isLoggedIn } = useAuth(); // Lấy trạng thái đăng nhập và username
-  const [showTradeRequestPopup, setTradeRequestPopup] = useState(false); // Đổi tên popup
+  const { username, userId, isLoggedIn } = useAuth();
+  const [showTradeRequestPopup, setTradeRequestPopup] = useState(false);
+  const [showOfferPopup, setShowOfferPopup] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [tradeRequests, setTradeRequests] = useState([]); // State để lưu danh sách trade requests
+  const [tradeRequests, setTradeRequests] = useState([]);
+  const [users, setUsers] = useState({});
+  const [userOffers, setUserOffers] = useState({}); // Lưu danh sách offer của user hiện tại
 
-  // State cho form tạo trade request
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [requestItem, setRequestItem] = useState("");
   const [requestDescription, setRequestDescription] = useState("");
   const [addLoading, setAddLoading] = useState(false);
 
-  // API để lấy danh sách trade requests
+  const [offerImage, setOfferImage] = useState(null);
+  const [offerImagePreview, setOfferImagePreview] = useState(null);
+  const [offerItem, setOfferItem] = useState("");
+  const [offerDescription, setOfferDescription] = useState("");
+  const [offerLoading, setOfferLoading] = useState(false);
+
   useEffect(() => {
     const fetchTradeRequests = async () => {
       try {
-        const response = await api.get("/trade_requests/"); // Sử dụng axios instance
-        setTradeRequests(response.data); // Dữ liệu trả về từ API
+        const response = await api.get("/trade_requests/");
+        const tradeRequestsData = response.data;
+
+        // Lấy thông tin user cho từng trade request
+        const userPromises = tradeRequestsData.map(async (trade) => {
+          try {
+            const userResponse = await api.get(`/user/${trade.userId}`);
+            return { userId: trade.userId, user: userResponse.data.user };
+          } catch (error) {
+            console.error(`Error fetching user ${trade.userId}:`, error.response?.data || error.message);
+            return { userId: trade.userId, user: null };
+          }
+        });
+
+        const usersData = await Promise.all(userPromises);
+        const usersMap = usersData.reduce((acc, { userId, user }) => {
+          if (user) acc[userId] = user;
+          return acc;
+        }, {});
+
+        // Lọc trade request không phải của user hiện tại
+        const filteredTradeRequests = tradeRequestsData.filter(
+          (trade) => trade.userId !== userId
+        );
+
+        // Lấy danh sách offer của user hiện tại để kiểm tra
+        if (isLoggedIn) {
+          const offersPromises = filteredTradeRequests.map(async (trade) => {
+            try {
+              const offersResponse = await api.get(`/offer/request/${trade._id}`);
+              const userOffer = offersResponse.data.find((offer) => offer.userId === userId);
+              return { requestId: trade._id, hasOffer: !!userOffer };
+            } catch (error) {
+              console.error(`Error fetching offers for trade request ${trade._id}:`, error.response?.data || error.message);
+              return { requestId: trade._id, hasOffer: false };
+            }
+          });
+
+          const offersData = await Promise.all(offersPromises);
+          const userOffersMap = offersData.reduce((acc, { requestId, hasOffer }) => {
+            acc[requestId] = hasOffer;
+            return acc;
+          }, {});
+
+          setUserOffers(userOffersMap);
+        }
+
+        setUsers(usersMap);
+        setTradeRequests(filteredTradeRequests);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching trade requests:", error.response?.data || error.message);
@@ -295,9 +953,8 @@ const Home = () => {
       }
     };
     fetchTradeRequests();
-  }, []);
+  }, [userId, isLoggedIn]);
 
-  // Xử lý khi nhấn nút "Create new trade request"
   const handleCreateTradeRequestClick = () => {
     if (!isLoggedIn) {
       toast.error("Please login to create a trade request", {
@@ -310,33 +967,31 @@ const Home = () => {
     setTradeRequestPopup(true);
   };
 
-  // Xử lý khi nhấn nút "View"
   const handleView = (requestId) => {
     if (!isLoggedIn) {
       toast.error("Please login to view trade request", {
         position: "top-right",
         autoClose: 3000,
       });
-      navigate("/authpage");
+      navigate("/login");
       return;
     }
     navigate(`/trade_request/${requestId}`);
   };
 
-  // Xử lý khi nhấn nút "Offer"
-  const handleOffer = (requestId, owner) => {
+  const handleOffer = (requestId) => {
     if (!isLoggedIn) {
       toast.error("Please login to make an offer", {
         position: "top-right",
         autoClose: 3000,
       });
-      navigate("/authpage");
+      navigate("/login");
       return;
     }
-    navigate(`/offer?requestId=${requestId}&owner=${owner}`);
+    setSelectedRequestId(requestId);
+    setShowOfferPopup(true);
   };
 
-  // Xử lý khi chọn hình ảnh
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -345,7 +1000,14 @@ const Home = () => {
     }
   };
 
-  // Xử lý khi submit form tạo trade request
+  const handleOfferImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setOfferImage(file);
+      setOfferImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleCreateTradeRequest = async (e) => {
     e.preventDefault();
     if (!isLoggedIn) {
@@ -368,7 +1030,6 @@ const Home = () => {
     setAddLoading(true);
 
     try {
-      // Upload hình ảnh lên Firebase Storage
       const imageRef = ref(
         storage,
         `trade_requests/${username}/${image.name + uuidv4()}`
@@ -376,19 +1037,16 @@ const Home = () => {
       const snapshot = await uploadBytes(imageRef, image);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // Tạo trade request qua API
       const tradeRequestData = {
         requestItem,
         requestDescription,
         requestImage: downloadURL,
       };
 
-      const response = await api.post("/trade_requests/", tradeRequestData); // Sử dụng axios instance
+      const response = await api.post("/trade_requests/", tradeRequestData);
+      const newTradeRequest = response.data.result;
+      setTradeRequests((prev) => [...prev, newTradeRequest]);
 
-      const newTradeRequest = response.data.result; // Lấy trade request vừa tạo từ response
-      setTradeRequests((prev) => [...prev, newTradeRequest]); // Cập nhật danh sách trade requests
-
-      // Reset form và đóng modal
       setImage(null);
       setImagePreview(null);
       setRequestItem("");
@@ -406,6 +1064,66 @@ const Home = () => {
       });
     } finally {
       setAddLoading(false);
+    }
+  };
+
+  const handleCreateOffer = async (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      toast.error("Please login to make an offer", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/login");
+      return;
+    }
+
+    if (!offerImage || !offerItem || !offerDescription) {
+      toast.error("Please fill in all fields and upload an image!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    setOfferLoading(true);
+
+    try {
+      const imageRef = ref(
+        storage,
+        `offers/${username}/${offerImage.name + uuidv4()}`
+      );
+      const snapshot = await uploadBytes(imageRef, offerImage);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      const offerData = {
+        offerItem,
+        offerDescription,
+        offerImage: downloadURL,
+        requestId: selectedRequestId,
+      };
+
+      await api.post("/offer/", offerData);
+      setUserOffers((prev) => ({ ...prev, [selectedRequestId]: true }));
+      setShowOfferPopup(false);
+      toast.success("Offer created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+
+      setOfferImage(null);
+      setOfferImagePreview(null);
+      setOfferItem("");
+      setOfferDescription("");
+      setSelectedRequestId(null);
+    } catch (error) {
+      console.error("Error creating offer:", error.response?.data || error.message);
+      toast.error("Failed to create offer: " + (error.response?.data?.message || error.message), {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setOfferLoading(false);
     }
   };
 
@@ -441,10 +1159,17 @@ const Home = () => {
                         src={trade.requestImage}
                         alt={trade.requestItem}
                       />
-                      <div className="overlay-buttons">
+                    </div>
+
+                    <Card.Body>
+                      <h6 className="fw-bold">{trade.requestItem}</h6>
+                      <p className="fw-bold">
+                        Owner: {users[trade.userId]?.name || trade.userId}
+                      </p>
+                      <div className="d-flex justify-content-center gap-2">
                         <Button
                           variant="primary"
-                          className="btn-sm me-2"
+                          className="btn-sm"
                           onClick={() => handleView(trade._id)}
                         >
                           View
@@ -452,16 +1177,12 @@ const Home = () => {
                         <Button
                           variant="secondary"
                           className="btn-sm"
-                          onClick={() => handleOffer(trade._id, trade.userId)}
+                          onClick={() => handleOffer(trade._id)}
+                          disabled={userOffers[trade._id]}
                         >
                           Offer
                         </Button>
                       </div>
-                    </div>
-
-                    <Card.Body>
-                      <h6 className="fw-bold">{trade.requestItem}</h6>
-                      <p className="fw-bold">Owner: {trade.userId}</p>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -473,9 +1194,9 @@ const Home = () => {
           </Button>
         </Container>
       </section>
-      <section className="sect_3">
+      {/* <section className="sect_3">
         <div>hi</div>
-      </section>
+      </section> */}
 
       <button
         className="add_item_button"
@@ -542,6 +1263,67 @@ const Home = () => {
               {addLoading ? "Creating..." : "Create Trade Request"}
             </Button>
           </form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showOfferPopup}
+        onHide={() => setShowOfferPopup(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Create New Offer</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleCreateOffer}>
+            <Form.Group className="mb-3">
+              <Form.Label>Offer Item</Form.Label>
+              <Form.Control
+                type="text"
+                value={offerItem}
+                onChange={(e) => setOfferItem(e.target.value)}
+                placeholder="Enter offer item"
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Offer Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={offerDescription}
+                onChange={(e) => setOfferDescription(e.target.value)}
+                placeholder="Enter offer description"
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Offer Image</Form.Label>
+              {offerImagePreview ? (
+                <img
+                  src={offerImagePreview}
+                  alt="Preview"
+                  style={{ maxWidth: "100%", height: "auto", marginBottom: "10px" }}
+                />
+              ) : (
+                <div>
+                  <p>Drop Image Here</p>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={handleOfferImageChange}
+                    required
+                  />
+                </div>
+              )}
+            </Form.Group>
+
+            <Button type="submit" variant="primary" disabled={offerLoading}>
+              {offerLoading ? "Creating..." : "Confirm"}
+            </Button>
+          </Form>
         </Modal.Body>
       </Modal>
     </div>

@@ -56,6 +56,14 @@ export const Navbar = () => {
             Trade
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/my-offers"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            Offer
+          </NavLink>
+        </li>
 
         {isLoggedIn && (role || "user").toLowerCase().trim() === "admin" && (
           <>

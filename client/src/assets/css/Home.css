@@ -2,14 +2,8 @@
   height: 100vh;
   overflow-y: scroll;
   position: relative;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-.home::-webkit-scrollbar {
-  display: none;
 }
 
 .add_item_button {
@@ -74,9 +68,9 @@ section {
 }
 
 .sect_1 {
-  width: 100%; /* Đảm bảo section chiếm toàn bộ chiều ngang */
-  height: 100vh; /* Ví dụ: chiều cao bằng toàn bộ viewport, bạn có thể điều chỉnh */
-  position: relative; /* Để định vị AnimatedGif bên trong */
+  width: 100%; 
+  height: 100vh; 
+  position: relative; 
 }
 
 .sect_1 div {
@@ -87,5 +81,5 @@ section {
 .sect_1 img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Đảm bảo GIF phủ kín mà không bị méo */
+  object-fit: cover; 
 }
