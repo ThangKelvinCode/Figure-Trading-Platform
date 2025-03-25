@@ -1,6 +1,6 @@
 .home {
-  height: 100vh;
-  overflow-y: scroll;
+  min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
+  overflow-y: auto; /* Cho phép scroll nếu nội dung vượt quá */
   position: relative;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -31,30 +31,12 @@
 }
 
 section {
-  scroll-snap-align: start;
   display: flex;
-  height: 100vh;
   width: 100%;
   min-height: 0;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-.advert_image {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-  display: block;
-}
-
-.overlay-buttons {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 5px;
 }
 
 .sect_1 {
@@ -68,8 +50,13 @@ section {
   height: 100%;
 }
 
-.sect_1 img {
+.full-cover-gif {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.sect_2 {
+  flex-direction: column;
+  padding-bottom: 50px; /* Đảm bảo đủ chỗ cho nội dung */
 }

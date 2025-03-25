@@ -1,3 +1,4 @@
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
@@ -16,7 +17,6 @@ import { v4 as uuidv4 } from "uuid";
 import "../assets/css/Home.css";
 import api from "../config/axios.js";
 import { storage } from "../config/firebase";
-import AnimatedGif from "../context/AnimatedGif.jsx";
 import { useAuth } from "../context/auth.jsx";
 
 const Home = () => {
@@ -28,7 +28,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [tradeRequests, setTradeRequests] = useState([]);
   const [users, setUsers] = useState({});
-  const [userOffers, setUserOffers] = useState({}); // Lưu danh sách offer của user hiện tại
+  const [userOffers, setUserOffers] = useState({});
+  const [accessories, setAccessories] = useState([]); // State cho accessories
 
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -43,21 +44,18 @@ const Home = () => {
   const [offerLoading, setOfferLoading] = useState(false);
 
   useEffect(() => {
-    const fetchTradeRequests = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get("/trade_requests/");
-        const tradeRequestsData = response.data;
+        // Fetch Trade Requests
+        const tradeResponse = await api.get("/trade_requests/");
+        const tradeRequestsData = tradeResponse.data;
 
-        // Lấy thông tin user cho từng trade request
         const userPromises = tradeRequestsData.map(async (trade) => {
           try {
             const userResponse = await api.get(`/user/${trade.userId}`);
             return { userId: trade.userId, user: userResponse.data.user };
           } catch (error) {
-            console.error(
-              `Error fetching user ${trade.userId}:`,
-              error.response?.data || error.message
-            );
+            console.error(`Error fetching user ${trade.userId}:`, error);
             return { userId: trade.userId, user: null };
           }
         });
@@ -68,12 +66,10 @@ const Home = () => {
           return acc;
         }, {});
 
-        // Lọc trade request không phải của user hiện tại
         const filteredTradeRequests = tradeRequestsData.filter(
           (trade) => trade.userId !== userId
         );
 
-        // Lấy danh sách offer của user hiện tại để kiểm tra
         if (isLoggedIn) {
           const offersPromises = filteredTradeRequests.map(async (trade) => {
             try {
@@ -85,10 +81,7 @@ const Home = () => {
               );
               return { requestId: trade._id, hasOffer: !!userOffer };
             } catch (error) {
-              console.error(
-                `Error fetching offers for trade request ${trade._id}:`,
-                error.response?.data || error.message
-              );
+              console.error(`Error fetching offers for ${trade._id}:`, error);
               return { requestId: trade._id, hasOffer: false };
             }
           });
@@ -101,22 +94,25 @@ const Home = () => {
             },
             {}
           );
-
           setUserOffers(userOffersMap);
         }
 
         setUsers(usersMap);
         setTradeRequests(filteredTradeRequests);
+
+        // Fetch Accessories
+        const accessoryResponse = await axios.get(
+          "http://localhost:3000/accessories/allAccessories"
+        );
+        setAccessories(accessoryResponse.data.slice(0, 4)); // Lấy 4 sản phẩm đầu tiên
+
         setLoading(false);
       } catch (error) {
-        console.error(
-          "Error fetching trade requests:",
-          error.response?.data || error.message
-        );
+        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
-    fetchTradeRequests();
+    fetchData();
   }, [userId, isLoggedIn]);
 
   const handleCreateTradeRequestClick = () => {
@@ -174,25 +170,16 @@ const Home = () => {
 
   const handleCreateTradeRequest = async (e) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      toast.error("Please login to create a trade request", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      navigate("/login");
-      return;
-    }
-
-    if (!image || !requestItem || !requestDescription) {
+    if (!isLoggedIn || !image || !requestItem || !requestDescription) {
       toast.error("Please fill in all fields and upload an image!", {
         position: "top-right",
         autoClose: 3000,
       });
+      if (!isLoggedIn) navigate("/login");
       return;
     }
 
     setAddLoading(true);
-
     try {
       const imageRef = ref(
         storage,
@@ -208,9 +195,7 @@ const Home = () => {
       };
 
       const response = await api.post("/trade_requests/", tradeRequestData);
-      const newTradeRequest = response.data.result;
-      setTradeRequests((prev) => [...prev, newTradeRequest]);
-
+      setTradeRequests((prev) => [...prev, response.data.result]);
       setImage(null);
       setImagePreview(null);
       setRequestItem("");
@@ -221,18 +206,11 @@ const Home = () => {
         autoClose: 3000,
       });
     } catch (error) {
-      console.error(
-        "Error creating trade request:",
-        error.response?.data || error.message
-      );
-      toast.error(
-        "Failed to create trade request: " +
-          (error.response?.data?.message || error.message),
-        {
-          position: "top-right",
-          autoClose: 3000,
-        }
-      );
+      console.error("Error creating trade request:", error);
+      toast.error("Failed to create trade request!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } finally {
       setAddLoading(false);
     }
@@ -240,25 +218,16 @@ const Home = () => {
 
   const handleCreateOffer = async (e) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      toast.error("Please login to make an offer", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      navigate("/login");
-      return;
-    }
-
-    if (!offerImage || !offerItem || !offerDescription) {
+    if (!isLoggedIn || !offerImage || !offerItem || !offerDescription) {
       toast.error("Please fill in all fields and upload an image!", {
         position: "top-right",
         autoClose: 3000,
       });
+      if (!isLoggedIn) navigate("/login");
       return;
     }
 
     setOfferLoading(true);
-
     try {
       const imageRef = ref(
         storage,
@@ -288,34 +257,27 @@ const Home = () => {
       setOfferDescription("");
       setSelectedRequestId(null);
     } catch (error) {
-      console.error(
-        "Error creating offer:",
-        error.response?.data || error.message
-      );
-      toast.error(
-        "Failed to create offer: " +
-          (error.response?.data?.message || error.message),
-        {
-          position: "top-right",
-          autoClose: 3000,
-        }
-      );
+      console.error("Error creating offer:", error);
+      toast.error("Failed to create offer!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } finally {
       setOfferLoading(false);
     }
   };
 
   if (loading) {
-    return <div>Loading trade requests...</div>;
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="home">
       <section className="sect_1">
         <div>
-          <AnimatedGif
+          <img
             src="https://cdn-global.popmart.com/about-us/web/about-us-en/banner.png?x-oss-process=image/format,webp"
-            alt="gif"
+            alt="banner"
             className="full-cover-gif"
           />
         </div>
@@ -338,7 +300,6 @@ const Home = () => {
                         alt={trade.requestItem}
                       />
                     </div>
-
                     <Card.Body>
                       <h6 className="fw-bold">{trade.requestItem}</h6>
                       <p className="fw-bold">
@@ -367,14 +328,62 @@ const Home = () => {
               ))
             )}
           </Row>
-          <Button variant="dark" className="px-4 py-2 mt-3">
+          <Button
+            variant="dark"
+            className="px-4 py-2 mt-3"
+            onClick={() => navigate("/about")}
+          >
             XEM TẤT CẢ · TRADE REQUESTS
           </Button>
         </Container>
+
+        <Container className="text-center my-5">
+          <h2 className="fw-bold">Accessory</h2>
+          <Row className="mt-4">
+            {accessories.length === 0 ? (
+              <p>No Accessories available.</p>
+            ) : (
+              accessories.map((accessory) => (
+                <Col key={accessory._id} md={3} sm={6} xs={12} className="mb-4">
+                  <Card className="border-0">
+                    <div className="image-container">
+                      <Card.Img
+                        variant="top"
+                        src={
+                          accessory.photo && accessory.photo.length > 0
+                            ? Array.isArray(accessory.photo)
+                              ? accessory.photo[0]
+                              : accessory.photo
+                            : "https://via.placeholder.com/200"
+                        }
+                        alt={accessory.name}
+                      />
+                    </div>
+                    <Card.Body>
+                      <h6 className="fw-bold">{accessory.name}</h6>
+                      <p className="fw-bold">{accessory.price}đ</p>
+                      <Button
+                        variant="primary"
+                        className="btn-sm"
+                        onClick={() => navigate(`/accessory/${accessory._id}`)}
+                      >
+                        View
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
+          </Row>
+          <Button
+            variant="dark"
+            className="px-4 py-2 mt-3"
+            onClick={() => navigate("/accessory")}
+          >
+            XEM TẤT CẢ · ACCESSORY
+          </Button>
+        </Container>
       </section>
-      {/* <section className="sect_3">
-        <div>hi</div>
-      </section> */}
 
       <button
         className="add_item_button"
@@ -389,7 +398,7 @@ const Home = () => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Create New Item </Modal.Title>
+          <Modal.Title>Create New Item</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handleCreateTradeRequest}>
@@ -413,7 +422,6 @@ const Home = () => {
                 </div>
               )}
             </div>
-
             <div className="form-group">
               <label>Item name</label>
               <input
@@ -425,7 +433,6 @@ const Home = () => {
                 required
               />
             </div>
-
             <div className="form-group">
               <label>Item Description</label>
               <textarea
@@ -436,7 +443,6 @@ const Home = () => {
                 required
               />
             </div>
-
             <Button type="submit" variant="primary" disabled={addLoading}>
               {addLoading ? "Creating..." : "Create New Item"}
             </Button>
@@ -464,7 +470,6 @@ const Home = () => {
                 required
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Offer Description</Form.Label>
               <Form.Control
@@ -476,7 +481,6 @@ const Home = () => {
                 required
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Offer Image</Form.Label>
               {offerImagePreview ? (
@@ -501,7 +505,6 @@ const Home = () => {
                 </div>
               )}
             </Form.Group>
-
             <Button type="submit" variant="primary" disabled={offerLoading}>
               {offerLoading ? "Creating..." : "Confirm"}
             </Button>
