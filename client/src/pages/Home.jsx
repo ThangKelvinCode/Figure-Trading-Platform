@@ -314,7 +314,7 @@ const Home = () => {
       <section className="sect_1">
         <div>
           <AnimatedGif
-            src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDluZ2FldHhtOGdnZDgyaDA1MG9jN2JjMG50Z2V1ZmM4MXhkYWltbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EaOW6ssYbMUYxJmr8U/giphy.gif"
+            src="https://cdn-global.popmart.com/about-us/web/about-us-en/banner.png?x-oss-process=image/format,webp"
             alt="gif"
             className="full-cover-gif"
           />
