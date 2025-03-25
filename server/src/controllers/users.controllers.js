@@ -45,22 +45,62 @@ const getUserProfile = async (req, res) => {
     // console.log(req.params.id)
     const user = await usersServices.getUserProfile(req.params.id)
     // console.log(user)
-    return res.status(200).json({
+    res.status(200).json({
       message: 'success',
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        date_of_birth: user.date_of_birth
+        date_of_birth: user.date_of_birth,
+        phoneNumber: user.phone,
+        address: user.location
       }
     })
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error', error: err.message })
+    res.status(500).json({ message: 'Internal server error', error: err.message })
+  }
+}
+
+const updateShipInfo = async (req, res) => {
+  try {
+    const { phoneNumber, address } = req.body
+    const shipInfo = usersServices.updateShipInfo(req.params.id, phoneNumber, address)
+    res.status(HTTP_STATUS.OK).json({
+      message: USERS_MESSAGES.ADD_ADDRESS_SUCCESS,
+      shipInfo
+    })
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({error: error.message})
+  }
+}
+
+const getShipInfo = async (req, res) => {
+  try {
+    const user = await usersServices.getUserProfile(req.params.id)
+    // console.log('user:', {
+    //   name: user.name,
+    //   email: user.email,
+    //   phoneNumber: user.phone,
+    //   address: user.location
+    // })
+    res.status(HTTP_STATUS.OK).json({
+      message: 'success',
+      user: {
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phone,
+        address: user.location
+      }
+    })
+  } catch (err) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message })
   }
 }
 
 export const userController = {
   register,
   login,
-  getUserProfile
+  getUserProfile,
+  updateShipInfo,
+  getShipInfo
 }

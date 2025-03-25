@@ -8,6 +8,14 @@ const getDetailOfOrder = async (orderID) => {
     }
 }
 
+const getDetail = async (detailID) => {
+    try {
+        return await orderDetailsRepo.getOrderDetails(detailID)
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 export const orderDetailsService = {
-    getDetailOfOrder
+    getDetailOfOrder,
+    getDetail
 }

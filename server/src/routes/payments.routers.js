@@ -5,7 +5,7 @@ import { wrapAsync } from '../utils/handler.js'
 const paymentRouter = Router()
 
 paymentRouter.post(
-  '/create_momo',
+  '/create_momo/:orderId',
   /*  
     #swagger.tags = ['Payment']
     #swagger.summary = 'Create MOMO payment'

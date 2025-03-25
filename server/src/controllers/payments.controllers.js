@@ -1,14 +1,25 @@
 import HTTP_STATUS from '../constants/httpStatus.js'
 import { PAYMENT_MESSAGES } from '../constants/messages.js'
+import orders from '../models/schemas/Orders.schema.js'
+import { orderServices } from '../services/orders.services.js'
 import { paymentServices } from '../services/payments.services.js'
 
 const createMomo = async (req, res) => {
-  //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
-  const { amount, orderId } = req.body
+  try {
+    //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
+    const { orderId } = req.params
 
-  const result = await paymentServices.createMomo({ amount, orderId })
+    const orderdata = await orderServices.getOrder(orderId)
 
-  res.status(HTTP_STATUS.CREATED).json(result.data)
+    const result = await paymentServices.createMomo({
+      orderId: orderId, amount: orderdata.total_price
+    })
+
+    res.status(HTTP_STATUS.CREATED).json(result.data)
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message })
+  }
+
 }
 
 const createZaloPay = async (req, res) => {

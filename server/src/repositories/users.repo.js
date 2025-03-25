@@ -37,6 +37,20 @@ class UserRepo {
     const result = await this.db.insertOne(userData)
     return result
   }
+
+  async updateShipInfo(userID, phoneNumber, address) {
+    return await this.db.updateOne(
+      { _id: new ObjectId(userID) },
+      {
+        $set: {
+          phone: phoneNumber,
+          location: address,
+          updated_at: new Date()
+        }
+      }
+    )
+    
+  }
 }
 
 const userRepo = new UserRepo()
