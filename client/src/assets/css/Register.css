@@ -13,4 +13,13 @@
   animation: none; /* Remove the default animation */
 }
 
+input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px;
+  border-radius: 26px;
+  font-size: 1rem;
+  background-color: black;
+}
+
 /* Rest of the styles remain the same */

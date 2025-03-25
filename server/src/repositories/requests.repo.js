@@ -29,6 +29,17 @@ class RequestRepo {
     const result = await this.db.insertOne(requestData)
     return result
   }
+
+  async update(reqId, data) {
+    const result = await this.db.findOneAndUpdate(
+      {
+        _id: new ObjectId(reqId)
+      },
+      [{ $set: { ...data, updatedAt: '$$NOW' } }],
+      { returnDocument: 'after' }
+    )
+    return result
+  }
 }
 
 const requestRepo = new RequestRepo()

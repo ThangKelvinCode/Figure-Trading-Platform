@@ -45,10 +45,41 @@ const getAllOffersByRequestId = async (req, res) => {
 
   const updateOfferByOfferId = async (req, res) => {
     try {
-      const offerId = req.params.offerId; // Get offerId from the URL parameters
+      const offerId = req.params.id; // Get offerId from the URL parameters
+      console.log('offerId from params:', offerId); // Log the offerId
       const updates = req.body; // Get the updates from the request body
       const updatedOffer = await offersServices.updateOfferByOfferId(offerId, updates);
       res.status(200).json(updatedOffer);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // const updateOfferStatus = async (req, res) => {
+  //   try {
+  //     const offerId = req.params.offerId;
+  //     const newStatus = req.body.offerStatus; // Get the new status from the request body
+  //     const updatedOffer = await offersServices.updateOfferStatus(offerId, newStatus);
+  //     if (updatedOffer) {
+  //       res.status(200).json(updatedOffer.value);
+  //     } else {
+  //       res.status(404).json({ message: 'Offer not found' });
+  //     }
+  //   } catch (error) {
+  //     res.status(500).json({ error: error.message });
+  //   }
+  // };
+
+  const updateOfferStatus = async (req, res) => {
+    try {
+      const offerId = req.params.offerId;
+      const newStatus = req.params.offerStatus; // Get the new status from the URL parameters
+      const updatedOffer = await offersServices.updateOfferStatus(offerId, newStatus);
+      if (updatedOffer) {
+        res.status(200).json(updatedOffer.value);
+      } else {
+        res.status(404).json({ message: 'Offer not found' });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -59,5 +90,6 @@ export const offersController = {
   getAllOffersByRequestId,
   getAllOffers,
   getOfferByOfferId,
-  updateOfferByOfferId
+  updateOfferByOfferId,
+  updateOfferStatus
 };

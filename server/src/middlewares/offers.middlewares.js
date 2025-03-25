@@ -1,6 +1,7 @@
 import { checkSchema } from 'express-validator';
 import { validate } from '../utils/validation.js';
 import { OFFER_MESSAGES } from '../constants/messages.js';
+import { OfferStatus } from '../constants/enums.js';
 
 const offerItemSchema = {
   notEmpty: {
@@ -57,6 +58,21 @@ const offerImageSchema = {
 //   },
 // };
 
+// const offerStatusSchema = {
+//   notEmpty: {
+//     errorMessage: OFFER_MESSAGES.OFFER_STATUS_REQUIRED,
+//   },
+//   isIn: {
+//     options: [[
+//       OfferStatus.Pending,
+//       OfferStatus.Accepted,
+//       OfferStatus.Declined,
+//       OfferStatus.Completed
+//     ]],
+//     errorMessage: OFFER_MESSAGES.OFFER_STATUS_INVALID,
+//   },
+// };
+
 export const createOfferValidator = validate(
   checkSchema(
     {
@@ -65,7 +81,7 @@ export const createOfferValidator = validate(
       offerImage: offerImageSchema,
     //   requesterId: requesterIdSchema,
     //   requestId: requestIdSchema,
-    //   offerStatus: offerStatusSchema,
+      // offerStatus: offerStatusSchema,
     },
     ['body']
   )
@@ -77,6 +93,7 @@ export const updateOfferValidator = validate(
       offerItem: offerItemSchema,
       offerDescription: offerDescriptionSchema,
       offerImage: offerImageSchema,
+      // offerStatus: offerStatusSchema,
       // You might want to add validation for other updatable fields here
     },
     ['body']

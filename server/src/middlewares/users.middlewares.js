@@ -82,15 +82,15 @@ const nameSchema = {
   }
 }
 
-const dateOfBirthSchema = {
-  isISO8601: {
-    options: {
-      strict: true,
-      strictSeparator: true
-    },
-    errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_BE_ISO8601
-  }
-}
+// const dateOfBirthSchema = {
+//   isISO8601: {
+//     options: {
+//       strict: true,
+//       strictSeparator: true
+//     },
+//     errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_BE_ISO8601
+//   }
+// }
 
 //PARAMSCHEMA
 
@@ -110,7 +110,7 @@ export const registerValidator = validate(
       },
       password: passwordSchema,
       confirmed_password: confirmPasswordSchema,
-      date_of_birth: dateOfBirthSchema
+      // date_of_birth: dateOfBirthSchema
     },
     ['body']
   )

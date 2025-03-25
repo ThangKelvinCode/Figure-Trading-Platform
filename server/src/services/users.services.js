@@ -1,4 +1,5 @@
 import User from '../models/schemas/User.schema.js'
+import databaseServices from './database.services.js'
 import { hashPassword } from '../utils/crypto.js'
 import { signToken } from '../utils/jwt.js'
 import { ErrorWithStatus } from '../models/Errors.js'
@@ -109,9 +110,33 @@ const register = async (payload) => {
   return result
 }
 
+// const login = async (email, password) => {
+//   //dùng email và password để tìm user
+//   // const user = await databaseServices.users.findOne({
+//   const user = await userRepo.findByEmailAndPassword({
+//     email,
+//     password: hashPassword(password)
+//   })
+//   if (!user) {
+//     throw new ErrorWithStatus({
+//       message: USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT,
+//       status: HTTP_STATUS.UNPROCESSABLE_ENTITY
+//     })
+//   }
+
+//   //nếu có user -> tạo ac và rf token
+//   const user_id = user._id.toString()
+//   // const [access_token, refresh_token] = await Promise.all([
+//   //   signAccessToken(user_id), //
+//   //   signRefreshToken(user_id)
+//   // ])
+//   // const [access_token, refresh_token] = await signAccessAndRefreshToken(user_id)
+
+//   // return { access_token, refresh_token }
+//   return user_id
+// }
+
 const login = async (email, password) => {
-  //dùng email và password để tìm user
-  // const user = await databaseServices.users.findOne({
   const user = await userRepo.findByEmailAndPassword({
     email,
     password: hashPassword(password)
@@ -123,21 +148,14 @@ const login = async (email, password) => {
     })
   }
 
-  //nếu có user -> tạo ac và rf token
   const user_id = user._id.toString()
-  // const [access_token, refresh_token] = await Promise.all([
-  //   signAccessToken(user_id), //
-  //   signRefreshToken(user_id)
-  // ])
-  // const [access_token, refresh_token] = await signAccessAndRefreshToken(user_id)
+  const [access_token, refresh_token] = await Promise.all([signAccessToken(user_id), signRefreshToken(user_id)])
 
-  // return { access_token, refresh_token }
-  return user_id
+  return { user_id, access_token, refresh_token }
 }
 
 const getUserProfile = async (userId) => {
   try {
-    // const user = userModel.getUserProfile(userId)
     const user = userRepo.findById(userId)
     if (!user) {
       return res.status(404).json({ message: 'User not found' })

@@ -49,7 +49,7 @@ class DatabaseServices {
   //   get refresh_tokens() {
   //     return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION)
   //   }
-  get accessories() {
+  get accessories_all() {
     return this.db.collection(process.env.DB_ACCESSORIES_COLLECTION)
   }
 

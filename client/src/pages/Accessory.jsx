@@ -1,77 +1,79 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import {
-  Container,
-  Row,
-  Col,
-  Card,
   Button,
-  Form,
-  Spinner,
-  Pagination,
+  Card,
+  Col,
+  Container,
   Dropdown,
   DropdownButton,
+  Form,
+  Pagination,
+  Row,
+  Spinner,
+  Alert,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+import api from "../config/axios"; // Import the configured axios instance
 
 // Hàm định dạng số kiểu double, giữ nguyên phần thập phân
 const toLocaleDouble = (number) => {
   if (typeof number !== "number") return "0đ";
 
-  // Luôn hiển thị ít nhất 1 chữ số thập phân, khớp với kiểu double của backend
-  return number.toLocaleString("vi-VN", {
-    minimumFractionDigits: 1, // Luôn hiển thị ít nhất 1 chữ số thập phân
-    maximumFractionDigits: 1, // Hiển thị tối đa 1 chữ số thập phân
-  }) + "đ";
+  return (
+    number.toLocaleString("vi-VN", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }) + "đ"
+  );
 };
 
 const Accessory = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [typeIds, setTypeIds] = useState([]); // Danh sách Type ID duy nhất
-  const [selectedTypeId, setSelectedTypeId] = useState(""); // Type ID được chọn
+  const [typeIds, setTypeIds] = useState([]);
+  const [selectedTypeId, setSelectedTypeId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const productsPerPage = 9; // Số sản phẩm mỗi trang
+  const productsPerPage = 9;
   const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`http://localhost:3000/accessories/allAccessories`)
-      .then((response) => {
-        console.log("API Response:", response.data);
-
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/accessories/allAccessories");
+        
         if (!Array.isArray(response.data)) {
           throw new Error("Dữ liệu từ API không hợp lệ!");
         }
 
-        // Lưu danh sách sản phẩm
         setProducts(response.data);
-
-        // Lấy danh sách Type ID duy nhất
+        
+        // Get unique Type IDs
         const uniqueTypeIds = [...new Set(response.data.map((product) => product.type))];
         setTypeIds(uniqueTypeIds);
 
-        // Lọc sản phẩm ban đầu (hiển thị tất cả)
+        // Set initial filtered products
         setFilteredProducts(response.data);
 
-        // Tính tổng số trang
+        // Calculate total pages
         const totalCount = response.data.length;
         setTotalPages(Math.ceil(totalCount / productsPerPage));
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("❌ Lỗi khi tải dữ liệu từ API:", err);
-        setError("Lỗi khi tải dữ liệu!");
+        setError("Lỗi khi tải dữ liệu: " + (err.response?.data || err.message));
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  // Lọc sản phẩm khi Type ID hoặc trang thay đổi
+  // Filter products when Type ID or products change
   useEffect(() => {
     let filtered = products;
     if (selectedTypeId) {
@@ -79,11 +81,9 @@ const Accessory = () => {
     }
 
     setFilteredProducts(filtered);
-
-    // Cập nhật tổng số trang sau khi lọc
     const totalCount = filtered.length;
     setTotalPages(Math.ceil(totalCount / productsPerPage));
-    setCurrentPage(1); // Reset về trang 1 khi lọc
+    setCurrentPage(1);
   }, [selectedTypeId, products]);
 
   const handleProductClick = (product) => {
@@ -91,8 +91,6 @@ const Accessory = () => {
       console.error("🚨 Không thể điều hướng! ID sản phẩm không tồn tại:", product);
       return;
     }
-
-    console.log("🛒 Điều hướng đến sản phẩm với ID:", product._id);
     navigate(`/accessory/${product._id}`);
   };
 
@@ -100,7 +98,7 @@ const Accessory = () => {
     setCurrentPage(page);
   };
 
-  // Tính toán sản phẩm hiển thị trên trang hiện tại
+  // Calculate products for current page
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -109,16 +107,20 @@ const Accessory = () => {
     <Container className="my-5">
       <h2 className="mb-4 text-center">Danh sách phụ kiện</h2>
 
-      {/* Bộ lọc Type ID */}
+      {/* Type ID Filter */}
       <Row className="mb-4">
         <Col md={3}>
           <Form.Group>
-            <Form.Label><strong>Sorted By Category:</strong></Form.Label>
+            <Form.Label>
+              <strong>Sorted By Category:</strong>
+            </Form.Label>
             <DropdownButton
               id="dropdown-type-id"
               title={selectedTypeId || "Tất cả"}
               variant="outline-primary"
-              onSelect={(typeId) => setSelectedTypeId(typeId === "all" ? "" : typeId)}
+              onSelect={(typeId) =>
+                setSelectedTypeId(typeId === "all" ? "" : typeId)
+              }
             >
               <Dropdown.Item eventKey="all">Tất cả</Dropdown.Item>
               {typeIds.map((typeId) => (
@@ -131,7 +133,7 @@ const Accessory = () => {
         </Col>
       </Row>
 
-      {/* Hiển thị sản phẩm */}
+      {/* Product Display */}
       {loading ? (
         <div className="text-center my-5">
           <Spinner animation="border" variant="primary" />
@@ -148,16 +150,12 @@ const Accessory = () => {
       ) : (
         <Row>
           {currentProducts.map((product, index) => {
-            console.log(`Rendering Product ${index + 1}:`, product);
-            console.log(`Rendering Photo: ${product.photo}`);
-
-            // Xác định URL ảnh để hiển thị
-            let photoUrl = "https://via.placeholder.com/200"; // Ảnh placeholder mặc định
+            let photoUrl = "https://via.placeholder.com/200";
             if (product.photo) {
               if (Array.isArray(product.photo) && product.photo.length > 0) {
-                photoUrl = product.photo[0]; // Lấy ảnh đầu tiên nếu photo là mảng
+                photoUrl = product.photo[0];
               } else if (typeof product.photo === "string" && product.photo.length > 0) {
-                photoUrl = product.photo; // Sử dụng trực tiếp nếu photo là chuỗi
+                photoUrl = product.photo;
               }
             }
 
@@ -176,7 +174,11 @@ const Accessory = () => {
                       variant="top"
                       src={photoUrl}
                       alt={product.name}
-                      style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                      style={{
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                        objectFit: "contain",
+                      }}
                       onError={(e) => {
                         e.target.src = "https://via.placeholder.com/200";
                       }}
@@ -198,7 +200,7 @@ const Accessory = () => {
         </Row>
       )}
 
-      {/* Phân trang */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4">
           <Pagination>

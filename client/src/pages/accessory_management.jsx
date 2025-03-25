@@ -14,9 +14,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../config/firebase";
 import { Link } from "react-router-dom";
-
-// Import Bootstrap Icons (cần cài đặt: npm install bootstrap-icons)
 import "bootstrap-icons/font/bootstrap-icons.css";
+import api from "../config/axios";
 
 // Hàm định dạng giá tiền theo VND
 const formatPriceVND = (price) => {
@@ -45,7 +44,7 @@ const AccessoryManagement = () => {
   });
 
   const [accessories, setAccessories] = useState([]);
-  const [showModal, setShowModal] = useState(false); // Sử dụng Modal thay vì showForm
+  const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -58,16 +57,12 @@ const AccessoryManagement = () => {
   const fetchAccessories = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/accessories/allAccessories");
-      if (!response.ok) {
-        throw new Error("Không thể tải danh sách phụ kiện.");
-      }
-      const data = await response.json();
-      console.log("Fetched accessories:", data);
-      setAccessories(data);
+      const response = await api.get("/accessories/allAccessories");
+      setAccessories(response.data);
+      console.log("Fetched accessories:", response.data);
     } catch (error) {
       console.error("Failed to fetch accessories:", error);
-      setError("Không thể tải danh sách phụ kiện: " + error.message);
+      setError("Không thể tải danh sách phụ kiện: " + (error.response?.data || error.message));
     } finally {
       setLoading(false);
     }
@@ -81,11 +76,10 @@ const AccessoryManagement = () => {
     try {
       const storageRef = ref(storage, `accessories/${Date.now()}-${file.name}`);
       const uploadResult = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(uploadResult.ref);
-      return downloadURL;
+      return await getDownloadURL(uploadResult.ref);
     } catch (error) {
       console.error("Lỗi khi upload ảnh:", error);
-      throw new Error("Không thể upload ảnh. Vui lòng thử lại: " + error.message);
+      throw new Error("Không thể upload ảnh: " + error.message);
     }
   };
 
@@ -98,22 +92,14 @@ const AccessoryManagement = () => {
 
     setLoading(true);
     setError(null);
-    const uploadedUrls = [];
-
     try {
-      for (const file of files) {
-        const url = await uploadImageToFirebase(file);
-        console.log("Uploaded image URL:", url);
-        uploadedUrls.push(url);
-      }
+      const uploadedUrls = await Promise.all(files.map(file => uploadImageToFirebase(file)));
       setFormData((prev) => ({
         ...prev,
         photo: [...prev.photo, ...uploadedUrls],
       }));
-      console.log("Updated formData.photo:", uploadedUrls);
     } catch (error) {
       setError(error.message);
-      console.error("Upload error:", error);
     } finally {
       setLoading(false);
     }
@@ -143,33 +129,13 @@ const AccessoryManagement = () => {
       return;
     }
 
-    const dataToSend = {
-      ...formData,
-      price: priceAsNumber,
-    };
-
-    console.log("Form data before sending:", dataToSend);
+    const dataToSend = { ...formData, price: priceAsNumber };
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3000/accessories/postAccessories", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || "Không thể thêm phụ kiện.");
-      }
-
-      const result = await response.json();
-      console.log("Response:", result);
-
+      const response = await api.post("/accessories/postAccessories", dataToSend);
       alert("Thêm phụ kiện thành công!");
       setShowModal(false);
       setFormData({
@@ -182,7 +148,7 @@ const AccessoryManagement = () => {
       });
       fetchAccessories();
     } catch (error) {
-      setError("Lỗi kết nối đến server: " + error.message);
+      setError("Lỗi khi thêm phụ kiện: " + (error.response?.data || error.message));
       console.error("Error:", error);
     } finally {
       setLoading(false);
@@ -190,14 +156,8 @@ const AccessoryManagement = () => {
   };
 
   const handleEditAccessory = (accessory) => {
-    let photoArray = [];
-    if (accessory.photo) {
-      if (Array.isArray(accessory.photo)) {
-        photoArray = accessory.photo;
-      } else if (typeof accessory.photo === "string" && accessory.photo.length > 0) {
-        photoArray = [accessory.photo];
-      }
-    }
+    let photoArray = Array.isArray(accessory.photo) ? accessory.photo : 
+                    typeof accessory.photo === "string" ? [accessory.photo] : [];
 
     setFormData({
       name: accessory.name,
@@ -229,33 +189,13 @@ const AccessoryManagement = () => {
       return;
     }
 
-    const dataToSend = {
-      ...formData,
-      price: priceAsNumber,
-    };
-
-    console.log("Form data before updating:", dataToSend);
+    const dataToSend = { ...formData, price: priceAsNumber };
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/accessories/${editId}/edit`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || "Không thể cập nhật phụ kiện. Kiểm tra xem endpoint PUT /accessories/:id/edit có tồn tại không.");
-      }
-
-      const result = await response.json();
-      console.log("Update response:", result);
-
+      const response = await api.put(`/accessories/${editId}/edit`, dataToSend);
       alert("Cập nhật phụ kiện thành công!");
       setShowModal(false);
       setEditMode(false);
@@ -270,7 +210,7 @@ const AccessoryManagement = () => {
       });
       fetchAccessories();
     } catch (error) {
-      setError("Lỗi kết nối đến server: " + error.message);
+      setError("Lỗi khi cập nhật: " + (error.response?.data || error.message));
       console.error("Error:", error);
     } finally {
       setLoading(false);
@@ -279,21 +219,13 @@ const AccessoryManagement = () => {
 
   const handleDeleteAccessory = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
+      setLoading(true);
       try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:3000/accessories/${id}`, {
-          method: "DELETE",
-        });
-
-        if (!response.ok) {
-          const errorData = await response.text();
-          throw new Error(errorData || "Không thể xóa sản phẩm.");
-        }
-
+        await api.delete(`/accessories/${id}`);
         alert("Sản phẩm đã được xóa thành công!");
         fetchAccessories();
       } catch (error) {
-        setError("Lỗi kết nối đến server: " + error.message);
+        setError("Lỗi khi xóa: " + (error.response?.data || error.message));
         console.error("Lỗi:", error);
       } finally {
         setLoading(false);
@@ -316,6 +248,7 @@ const AccessoryManagement = () => {
     setError(null);
   };
 
+  // Rest of the JSX remains the same as in your original code
   return (
     <Container className="my-5">
       <Row className="mb-4 align-items-center">

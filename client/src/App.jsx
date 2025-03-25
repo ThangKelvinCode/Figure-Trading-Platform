@@ -15,7 +15,11 @@ import ViewScreen from "./pages/ViewScreen";
 import PaymentSuccess from "./pages/PaymentSucess";
 import PaymentFailure from "./pages/PaymentFailure";
 import PaymentProcessing from "./components/PaymentProcessing";
+import TradeRequestDetail from "./pages/TradeRequestDetail";
+import MyOffers from "./pages/MyOffers";
+
 import BillingInfo from "./pages/BillingInfo";
+
 
 function App() {
   const location = useLocation();
@@ -36,6 +40,8 @@ function App() {
         <Route path="/product/:id" element={<ViewScreen />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/offer" element={<Offer />} />
+        <Route path="/my-offers" element={<MyOffers />} />
+        <Route path="/trade_request/:requestId" element={<TradeRequestDetail />} />
         <Route path="/authpage" element={<AuthPage hideNavBar={true} />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />
