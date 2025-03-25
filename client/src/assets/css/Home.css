@@ -18,6 +18,7 @@
   border-radius: 50%;
   cursor: pointer;
   bottom: 100px;
+  background-color: black;
 }
 
 .add_item_button:hover {

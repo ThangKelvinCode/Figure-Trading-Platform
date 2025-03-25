@@ -539,104 +539,610 @@
 
 // export default Tradelist;
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import "../assets/css/Tradelist.css";
+// import { useAuth } from "../context/auth.jsx";
+// import io from "socket.io-client";
+// import { toast } from "react-toastify";
+// import api from "../config/axios.js";
+
+// // Kết nối tới Socket.IO server
+// const socket = io("http://localhost:3000", {
+//   withCredentials: true,
+//   extraHeaders: {
+//     "Content-Type": "application/json",
+//   },
+// });
+
+// // const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
+// //   const [messages, setMessages] = useState([]);
+// //   const [newMessage, setNewMessage] = useState("");
+// //   const [loading, setLoading] = useState(false);
+
+// //   useEffect(() => {
+// //     if (isOpen) {
+// //       fetchMessages();
+// //     }
+// //   }, [isOpen, senderId, ownerId]);
+
+// const ChatModal = ({ isOpen, onClose, tradeId, senderId, ownerId }) => {
+//   const [messages, setMessages] = useState([]);
+//   const [newMessage, setNewMessage] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const messagesEndRef = useRef(null);
+
+//   // Cuộn xuống cuối danh sách tin nhắn khi có tin nhắn mới
+//   const scrollToBottom = () => {
+//     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+//   };
+
+//   useEffect(() => {
+//     if (isOpen && tradeId) {
+//       // Tham gia phòng chat dựa trên tradeId
+//       socket.emit("join_trade", tradeId);
+
+//       // Lấy lịch sử tin nhắn
+//       fetchMessages();
+
+//       // Lắng nghe tin nhắn mới từ Socket.IO
+//       socket.on("receive_message", (message) => {
+//         setMessages((prev) => [...prev, message]);
+//       });
+
+//       // Dọn dẹp khi component unmount
+//       return () => {
+//         socket.off("receive_message");
+//       };
+//     }
+//   }, [isOpen, tradeId]);
+
+//   useEffect(() => {
+//     scrollToBottom();
+//   }, [messages]);
+
+//   // const fetchMessages = async () => {
+//   //   setLoading(true);
+//   //   try {
+//   //     const fetchedMessages = await api.get(`/messages?senderId=${senderId}&ownerId=${ownerId}`);
+//   //     setMessages(fetchedMessages.data);
+//   //   } catch (error) {
+//   //     console.error("Error fetching messages:", error.response?.data || error.message);
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // };
+
+//   const fetchMessages = async () => {
+//     setLoading(true);
+//     try {
+//       const fetchedMessages = await api.get(`/messages/${tradeId}`);
+//       setMessages(fetchedMessages.data);
+//     } catch (error) {
+//       console.error("Error fetching messages:", error.response?.data || error.message);
+//       toast.error("Failed to load messages", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // const handleSendMessage = async (e) => {
+//   //   e.preventDefault();
+//   //   if (!newMessage.trim()) return;
+
+//   //   try {
+//   //     const sentMessage = await api.post("/messages", {
+//   //       senderId,
+//   //       ownerId,
+//   //       text: newMessage,
+//   //     });
+//   //     setMessages([...messages, sentMessage.data]);
+//   //     setNewMessage("");
+//   //   } catch (error) {
+//   //     console.error("Error sending message:", error.response?.data || error.message);
+//   //   }
+//   // };
+
+//   const handleSendMessage = async (e) => {
+//     e.preventDefault();
+//     if (!newMessage.trim()) return;
+
+//     try {
+//       const messageData = {
+//         tradeId,
+//         senderId,
+//         receiverId: senderId === ownerId ? ownerId : senderId, // Đảm bảo gửi đúng người nhận
+//         message: newMessage,
+//       };
+
+//       // Gửi tin nhắn qua API để lưu vào database
+//       const sentMessage = await api.post("/messages", messageData);
+
+//       // Gửi tin nhắn qua Socket.IO để hiển thị thời gian thực
+//       socket.emit("send_message", {
+//         tradeId,
+//         senderId,
+//         receiverId: senderId === ownerId ? ownerId : senderId,
+//         message: newMessage,
+//         createdAt: new Date().toISOString(),
+//       });
+
+//       setNewMessage("");
+//     } catch (error) {
+//       console.error("Error sending message:", error.response?.data || error.message);
+//       toast.error("Failed to send message", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   if (!isOpen) return null;
+
+// //   return (
+// //     <div className="modal-overlay">
+// //       <div className="chat-modal">
+// //         <div className="chat-header">
+// //           <h3>
+// //             Chat between #{senderId} and #{ownerId}
+// //           </h3>
+// //           <button className="close-btn" onClick={onClose}>
+// //             ×
+// //           </button>
+// //         </div>
+// //         <div className="chat-messages">
+// //           {loading ? (
+// //             <p>Loading messages...</p>
+// //           ) : messages.length === 0 ? (
+// //             <p>No messages yet</p>
+// //           ) : (
+// //             messages.map((msg) => (
+// //               <div
+// //                 key={msg._id}
+// //                 className={`message ${
+// //                   msg.senderId === ownerId ? "sent" : "received"
+// //                 }`}
+// //               >
+// //                 <p>{msg.text}</p>
+// //                 <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
+// //               </div>
+// //             ))
+// //           )}
+// //         </div>
+// //         <form className="chat-input" onSubmit={handleSendMessage}>
+// //           <input
+// //             type="text"
+// //             value={newMessage}
+// //             onChange={(e) => setNewMessage(e.target.value)}
+// //             placeholder="Type a message..."
+// //             disabled={loading}
+// //           />
+// //           <button type="submit" disabled={loading}>
+// //             Send
+// //           </button>
+// //           <button onClick={onClose} disabled={loading}>
+// //             Close
+// //           </button>
+// //         </form>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// return (
+//   <div className="modal-overlay">
+//     <div className="chat-modal">
+//       <div className="chat-header">
+//         <h3>Chat for Trade #{tradeId}</h3>
+//         <button className="close-btn" onClick={onClose}>
+//           ×
+//         </button>
+//       </div>
+//       <div className="chat-messages">
+//         {loading ? (
+//           <p>Loading messages...</p>
+//         ) : messages.length === 0 ? (
+//           <p>No messages yet</p>
+//         ) : (
+//           messages.map((msg) => (
+//             <div
+//               key={msg._id}
+//               className={`message ${
+//                 msg.senderId === senderId ? "sent" : "received"
+//               }`}
+//             >
+//               <p>{msg.message}</p>
+//               <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
+//             </div>
+//           ))
+//         )}
+//         <div ref={messagesEndRef} />
+//       </div>
+//       <form className="chat-input" onSubmit={handleSendMessage}>
+//         <input
+//           type="text"
+//           value={newMessage}
+//           onChange={(e) => setNewMessage(e.target.value)}
+//           placeholder="Type a message..."
+//           disabled={loading}
+//         />
+//         <button type="submit" disabled={loading}>
+//           Send
+//         </button>
+//         <button type="button" onClick={onClose} disabled={loading}>
+//           Close
+//         </button>
+//       </form>
+//     </div>
+//   </div>
+// );
+// };
+
+// const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer, onDeclineOffer, onCompleteTrade, onCancelTrade }) => {
+//   const [showChatPopup, setChatPopup] = useState(false);
+//   const [selectedOffer, setSelectedOffer] = useState(null);
+
+//   const handleDelete = async () => {
+//     try {
+//       await api.delete(`/trade_requests/${trade._id}`);
+//       onDeleteTradeRequest(trade._id);
+//       toast.success("Trade request deleted successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error deleting trade request:", error.response?.data || error.message);
+//       toast.error("Failed to delete trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleAcceptOffer = (offer) => {
+//     setSelectedOffer(offer);
+//     setChatPopup(true);
+//     onSelectOffer(trade._id, offer._id);
+//   };
+
+//   const handleDeclineOffer = (offer) => {
+//     onDeclineOffer(trade._id, offer._id);
+//   };
+
+//   const handleCompleteTrade = () => {
+//     onCompleteTrade(trade._id, selectedOffer._id);
+//   };
+
+//   const handleCancelTrade = () => {
+//     onCancelTrade(trade._id, selectedOffer._id);
+//   };
+
+//   const hasAcceptedOffer = offers.some((offer) => offer.offerStatus === "Accepted");
+//   const acceptedOffer = offers.find((offer) => offer.offerStatus === "Accepted");
+
+//   return (
+//     <div className="trade_request" style={{ border: "1px solid #ddd", padding: "15px", marginBottom: "20px", borderRadius: "5px" }}>
+//       <div>
+//         <h3>Trade #{trade._id}</h3>
+//         <p>Requesting: {trade.requestItem}</p>
+//         <p>
+//           My Item:{" "}
+//           <img
+//             src={trade.requestImage}
+//             alt="Requested Item"
+//             style={{ width: "100px", height: "100px" }}
+//           />
+//         </p>
+//         <h4>Offers:</h4>
+//         {offers.length === 0 ? (
+//           <p>No offers yet</p>
+//         ) : (
+//           offers.map((offer) => (
+//             <div key={offer._id} style={{ marginBottom: "10px" }}>
+//               <p>Sender: {users[offer.userId]?.name || offer.userId}</p>
+//               <p>Offering: {offer.offerItem}</p>
+//               <p>
+//                 Offer Item:{" "}
+//                 <img
+//                   src={offer.offerImage}
+//                   alt="Offered Item"
+//                   style={{ width: "80px", height: "80px" }}
+//                 />
+//               </p>
+//               <p>Status: {offer.offerStatus}</p>
+//               {offer.offerStatus === "Pending" && !hasAcceptedOffer && (
+//                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+//                   <button
+//                     onClick={() => handleAcceptOffer(offer)}
+//                     style={{ backgroundColor: "green", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//                   >
+//                     Accept
+//                   </button>
+//                   <button
+//                     onClick={() => handleDeclineOffer(offer)}
+//                     style={{ backgroundColor: "gray", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//                   >
+//                     Decline
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           ))
+//         )}
+//       </div>
+//       <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+//         <button
+//           onClick={handleDelete}
+//           style={{ backgroundColor: "red", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px", alignSelf: "flex-end" }}
+//         >
+//           Delete
+//         </button>
+//         {hasAcceptedOffer && (
+//           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+//             <div style={{ display: "flex", gap: "10px" }}>
+//               <button
+//                 onClick={handleCompleteTrade}
+//                 style={{ backgroundColor: "blue", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//               >
+//                 Complete
+//               </button>
+//               <button
+//                 onClick={handleCancelTrade}
+//                 style={{ backgroundColor: "orange", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//               >
+//                 Cancel
+//               </button>
+//             </div>
+//             <button
+//               onClick={() => {
+//                 setSelectedOffer(acceptedOffer);
+//                 setChatPopup(true);
+//               }}
+//               style={{ backgroundColor: "purple", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//             >
+//               Chat
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//       {selectedOffer && (
+//         <ChatModal
+//           isOpen={showChatPopup}
+//           onClose={() => {
+//             setChatPopup(false);
+//             setSelectedOffer(null);
+//           }}
+//           senderId={selectedOffer.userId}
+//           ownerId={trade.userId}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// const Tradelist = () => {
+//   const { isLoggedIn, userId, username } = useAuth();
+//   const navigate = useNavigate();
+//   const [tradeRequests, setTradeRequests] = useState([]);
+//   const [offers, setOffers] = useState({});
+//   const [users, setUsers] = useState({});
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchTradeRequestsAndOffers = async () => {
+//       if (!isLoggedIn) {
+//         toast.error("Please login to view your trade list", {
+//           position: "top-right",
+//           autoClose: 3000,
+//         });
+//         navigate("/login");
+//         return;
+//       }
+
+//       try {
+//         const tradeRequestsResponse = await api.get(`/trade_requests/user/${userId}`);
+//         const tradeRequestsData = tradeRequestsResponse.data;
+
+//         const offersPromises = tradeRequestsData.map(async (trade) => {
+//           try {
+//             const offersResponse = await api.get(`/offer/request/${trade._id}`);
+//             return { requestId: trade._id, offers: offersResponse.data };
+//           } catch (error) {
+//             console.error(`Error fetching offers for trade request ${trade._id}:`, error.response?.data || error.message);
+//             return { requestId: trade._id, offers: [] };
+//           }
+//         });
+
+//         const offersData = await Promise.all(offersPromises);
+//         const offersMap = offersData.reduce((acc, { requestId, offers }) => {
+//           acc[requestId] = offers;
+//           return acc;
+//         }, {});
+
+//         const userIds = new Set();
+//         Object.values(offersMap).forEach((offerList) => {
+//           offerList.forEach((offer) => userIds.add(offer.userId));
+//         });
+
+//         const userPromises = Array.from(userIds).map(async (userId) => {
+//           try {
+//             const userResponse = await api.get(`/user/${userId}`);
+//             return { userId, user: userResponse.data.user };
+//           } catch (error) {
+//             console.error(`Error fetching user ${userId}:`, error.response?.data || error.message);
+//             return { userId, user: null };
+//           }
+//         });
+
+//         const usersData = await Promise.all(userPromises);
+//         const usersMap = usersData.reduce((acc, { userId, user }) => {
+//           if (user) acc[userId] = user;
+//           return acc;
+//         }, {});
+
+//         setTradeRequests(tradeRequestsData);
+//         setOffers(offersMap);
+//         setUsers(usersMap);
+//         setLoading(false);
+//       } catch (error) {
+//         console.error("Error fetching trade requests:", error.response?.data || error.message);
+//         setLoading(false);
+//       }
+//     };
+//     fetchTradeRequestsAndOffers();
+//   }, [isLoggedIn, userId, navigate]);
+
+//   const handleDeleteTradeRequest = (tradeId) => {
+//     setTradeRequests((prev) => prev.filter((trade) => trade._id !== tradeId));
+//     setOffers((prev) => {
+//       const updatedOffers = { ...prev };
+//       delete updatedOffers[tradeId];
+//       return updatedOffers;
+//     });
+//   };
+
+//   const handleSelectOffer = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/trade_requests/${requestId}/select-offer/${offerId}`);
+//       setOffers((prev) => {
+//         const updatedOffers = { ...prev };
+//         updatedOffers[requestId] = updatedOffers[requestId].map((offer) => {
+//           if (offer._id === offerId) {
+//             return { ...offer, offerStatus: "Accepted" };
+//           }
+//           return { ...offer, offerStatus: "Declined" };
+//         });
+//         return updatedOffers;
+//       });
+//       toast.success("Offer accepted successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error selecting offer:", error.response?.data || error.message);
+//       toast.error("Failed to accept offer", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleDeclineOffer = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/offers/${offerId}/decline`);
+//       setOffers((prev) => {
+//         const updatedOffers = { ...prev };
+//         updatedOffers[requestId] = updatedOffers[requestId].map((offer) => {
+//           if (offer._id === offerId) {
+//             return { ...offer, offerStatus: "Declined" };
+//           }
+//           return offer;
+//         });
+//         return updatedOffers;
+//       });
+//       toast.success("Offer declined successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error declining offer:", error.response?.data || error.message);
+//       toast.error("Failed to decline offer", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleCompleteTrade = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/trade_requests/${requestId}/complete`, { offerId });
+//       setTradeRequests((prev) => prev.filter((trade) => trade._id !== requestId));
+//       setOffers((prev) => {
+//         const updatedOffers = { ...prev };
+//         delete updatedOffers[requestId];
+//         return updatedOffers;
+//       });
+//       toast.success("Trade completed successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error completing trade:", error.response?.data || error.message);
+//       toast.error("Failed to complete trade", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleCancelTrade = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/trade_requests/${requestId}/cancel`, { offerId });
+//       setOffers((prev) => {
+//         const updatedOffers = { ...prev };
+//         updatedOffers[requestId] = updatedOffers[requestId].map((offer) => {
+//           if (offer._id === offerId) {
+//             return { ...offer, offerStatus: "Cancelled" };
+//           }
+//           return offer;
+//         });
+//         return updatedOffers;
+//       });
+//       toast.success("Trade cancelled successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error cancelling trade:", error.response?.data || error.message);
+//       toast.error("Failed to cancel trade", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   if (loading) {
+//     return <div>Loading trades...</div>;
+//   }
+
+//   return (
+//     <div className="tradelist_page">
+//       <h2>Trade Requests</h2>
+//       {tradeRequests.length === 0 ? (
+//         <p>No pending trades</p>
+//       ) : (
+//         tradeRequests.map((trade) => (
+//           <TradeBlock
+//             key={trade._id}
+//             trade={trade}
+//             offers={offers[trade._id] || []}
+//             users={users}
+//             onDeleteTradeRequest={handleDeleteTradeRequest}
+//             onSelectOffer={handleSelectOffer}
+//             onDeclineOffer={handleDeclineOffer}
+//             onCompleteTrade={handleCompleteTrade}
+//             onCancelTrade={handleCancelTrade}
+//           />
+//         ))
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Tradelist;
+// //học
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/Tradelist.css";
 import { useAuth } from "../context/auth.jsx";
 import { toast } from "react-toastify";
 import api from "../config/axios.js";
+import ChatModal from "./ChatModal.jsx";
 
-const ChatModal = ({ isOpen, onClose, senderId, ownerId }) => {
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchMessages();
-    }
-  }, [isOpen, senderId, ownerId]);
-
-  const fetchMessages = async () => {
-    setLoading(true);
-    try {
-      const fetchedMessages = await api.get(`/messages?senderId=${senderId}&ownerId=${ownerId}`);
-      setMessages(fetchedMessages.data);
-    } catch (error) {
-      console.error("Error fetching messages:", error.response?.data || error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    try {
-      const sentMessage = await api.post("/messages", {
-        senderId,
-        ownerId,
-        text: newMessage,
-      });
-      setMessages([...messages, sentMessage.data]);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Error sending message:", error.response?.data || error.message);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="modal-overlay">
-      <div className="chat-modal">
-        <div className="chat-header">
-          <h3>
-            Chat between #{senderId} and #{ownerId}
-          </h3>
-          <button className="close-btn" onClick={onClose}>
-            ×
-          </button>
-        </div>
-        <div className="chat-messages">
-          {loading ? (
-            <p>Loading messages...</p>
-          ) : messages.length === 0 ? (
-            <p>No messages yet</p>
-          ) : (
-            messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`message ${
-                  msg.senderId === ownerId ? "sent" : "received"
-                }`}
-              >
-                <p>{msg.text}</p>
-                <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
-              </div>
-            ))
-          )}
-        </div>
-        <form className="chat-input" onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            disabled={loading}
-          />
-          <button type="submit" disabled={loading}>
-            Send
-          </button>
-          <button onClick={onClose} disabled={loading}>
-            Close
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer, onDeclineOffer, onCompleteTrade, onCancelTrade }) => {
   const [showChatPopup, setChatPopup] = useState(false);
@@ -661,8 +1167,8 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
 
   const handleAcceptOffer = (offer) => {
     setSelectedOffer(offer);
-    setChatPopup(true);
     onSelectOffer(trade._id, offer._id);
+    // Không mở popup chat ở đây
   };
 
   const handleDeclineOffer = (offer) => {
@@ -772,8 +1278,9 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
             setChatPopup(false);
             setSelectedOffer(null);
           }}
-          senderId={selectedOffer.userId}
-          ownerId={trade.userId}
+          tradeId={trade._id}
+          senderId={trade.userId} // Người tạo trade request
+          ownerId={selectedOffer.userId} // Người tạo offer
         />
       )}
     </div>
@@ -990,4 +1497,3 @@ const Tradelist = () => {
 };
 
 export default Tradelist;
-//học
