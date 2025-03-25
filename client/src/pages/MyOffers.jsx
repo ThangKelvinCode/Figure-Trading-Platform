@@ -748,7 +748,7 @@ const MyOffers = () => {
       }
 
       try {
-        const offersResponse = await api.get(`/offers/user/${userId}`);
+        const offersResponse = await api.get(`/offer/user/${userId}`);
         const offersData = offersResponse.data;
 
         const validOffers = [];
