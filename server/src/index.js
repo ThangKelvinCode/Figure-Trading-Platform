@@ -50,11 +50,11 @@ app.use(express.json())
 app.use(express.json())
 app.use(bodyParser.json())
 
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-app.use(express.json()) // Có ở cả hai, giữ 1 dòng
-app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
-app.use(express.json()) // Có ở cả hai, giữ 1 dòng
+// app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+// app.use(express.json()) // Có ở cả hai, giữ 1 dòng
+// app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
+// app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
+// app.use(express.json()) // Có ở cả hai, giữ 1 dòng
 app.use(bodyParser.json()) // Có ở cả hai, giữ 1 dòng
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile)) // Có ở cả hai, giữ 1 dòng
 

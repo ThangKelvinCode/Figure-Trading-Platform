@@ -7,7 +7,15 @@ import { USER_ROLE } from '../constants/enums.js';
 import { restrictTo, verifyToken } from '../middlewares/auth.middlewares.js';
 
 const tradeRequestsRouter = Router();
-tradeRequestsRouter.use(verifyToken, restrictTo(USER_ROLE.User));
+// tradeRequestsRouter.use(verifyToken, restrictTo(USER_ROLE.User));
+
+// Áp dụng middleware verifyToken và restrictTo cho tất cả các route, trừ GET /trade_requests/
+tradeRequestsRouter.use((req, res, next) => {
+  if (req.method === 'GET' && req.path === '/') {
+    return next(); // Bỏ qua middleware cho GET /trade_requests/
+  }
+  return verifyToken(req, res, () => restrictTo(USER_ROLE.User)(req, res, next));
+});
 
 // tradeRequestsRouter.post('/', createTradeRequestValidator, wrapAsync(tradeRequestsController.createTradeRequest));
 // tradeRequestsRouter.get('/', wrapAsync(tradeRequestsController.getAllTradeRequests));
@@ -92,7 +100,6 @@ tradeRequestsRouter.get(
   '/',
   /*  #swagger.tags = ['Trade Requests']
       #swagger.description = 'Get all trade requests'
-      #swagger.security = [{ "BearerAuth": [] }]
       #swagger.responses[200] = {
         description: "List of all trade requests retrieved successfully",
         content: {

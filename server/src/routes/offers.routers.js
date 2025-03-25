@@ -396,6 +396,8 @@ offersRouter.post(
     */
     wrapAsync(offersController.updateOfferStatus)
   );
+
+  offersRouter.get('/user/:userId', verifyToken, offersController.getOffersByUser);
   
 
 

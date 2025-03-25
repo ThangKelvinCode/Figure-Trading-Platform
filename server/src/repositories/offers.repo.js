@@ -44,6 +44,10 @@ class OfferRepo {
     );
   }
 
+  async getOffersByUser(userId) {
+    return await this.db.find({ userId: new ObjectId(userId) }).toArray();
+  }
+
   async insert(offerData) {
     const result = await this.db.insertOne(offerData); // Assign the result to the variable
     return result; // Return the result object

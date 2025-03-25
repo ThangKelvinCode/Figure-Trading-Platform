@@ -2,9 +2,36 @@ import { offersServices } from '../services/offers.services.js';
 import { OFFER_MESSAGES } from '../constants/messages.js';
 import HTTP_STATUS from '../constants/httpStatus.js';
 
+// const createOffer = async (req, res) => {
+//   try {
+//     const result = await offersServices.createOffer(req.body);
+//     res.status(HTTP_STATUS.CREATED).json({
+//       message: OFFER_MESSAGES.CREATE_OFFER_SUCCESS,
+//       result,
+//     });
+//   } catch (error) {
+//     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+//   }
+// };
+
+const getOffersByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const offers = await offersServices.getOffersByUser(userId);
+    res.status(HTTP_STATUS.OK).json(offers);
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 const createOffer = async (req, res) => {
   try {
-    const result = await offersServices.createOffer(req.body);
+    const userId = req.user.user_id; // Lấy userId từ token
+    const offerData = {
+      ...req.body,
+      userId, // Thêm userId vào dữ liệu offer
+    };
+    const result = await offersServices.createOffer(offerData);
     res.status(HTTP_STATUS.CREATED).json({
       message: OFFER_MESSAGES.CREATE_OFFER_SUCCESS,
       result,
@@ -91,5 +118,6 @@ export const offersController = {
   getAllOffers,
   getOfferByOfferId,
   updateOfferByOfferId,
-  updateOfferStatus
+  updateOfferStatus,
+  getOffersByUser
 };

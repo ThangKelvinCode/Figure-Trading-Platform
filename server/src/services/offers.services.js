@@ -26,6 +26,16 @@ import { OfferStatus } from '../constants/enums.js'
 //   }
 // };
 
+const getOffersByUser = async (userId) => {
+  try {
+    const offers = await offerRepo.getOffersByUser(userId);
+    return offers;
+  } catch (error) {
+    console.error('Error getting offers by user:', error);
+    throw error;
+  }
+};
+
 const createOffer = async (payload) => {
   const existingOffers = await offerRepo.getAllByRequestId(payload.requestId);
   const offersByUser = existingOffers.filter(offer => offer.userId.toString() === payload.userId);
@@ -144,5 +154,6 @@ export const offersServices = {
   getAllOffers,
   getOfferByOfferId,
   updateOfferByOfferId,
-  updateOfferStatus
+  updateOfferStatus,
+  getOffersByUser
 }
