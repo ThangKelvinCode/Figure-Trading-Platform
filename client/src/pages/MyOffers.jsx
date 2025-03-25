@@ -1198,7 +1198,7 @@ const MyOffers = () => {
           position: "top-right",
           autoClose: 3000,
         });
-        navigate("/login");
+        navigate("/authpage");
         return;
       }
 
