@@ -137,22 +137,42 @@ const register = async (payload) => {
 // }
 
 const login = async (email, password) => {
-  const user = await userRepo.findByEmailAndPassword({
-    email,
-    password: hashPassword(password)
-  })
-  if (!user) {
-    throw new ErrorWithStatus({
-      message: USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT,
-      status: HTTP_STATUS.UNPROCESSABLE_ENTITY
-    })
+  try {
+    const user = await userRepo.findByEmailAndPassword({
+      email,
+      password: hashPassword(password),
+    });
+    if (!user) {
+      return {
+        error: {
+          message: USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT,
+          status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+        },
+      };
+    }
+
+    const user_id = user._id.toString();
+    const [access_token, refresh_token] = await Promise.all([
+      signAccessToken(user_id),
+      signRefreshToken(user_id),
+    ]);
+
+    return {
+      user_id,
+      access_token,
+      refresh_token,
+      role: user.role, // Thêm role vào response
+    };
+  } catch (error) {
+    console.error("Error during login:", error);
+    return {
+      error: {
+        message: USERS_MESSAGES.SERVER_ERROR,
+        status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      },
+    };
   }
-
-  const user_id = user._id.toString()
-  const [access_token, refresh_token] = await Promise.all([signAccessToken(user_id), signRefreshToken(user_id)])
-
-  return { user_id, access_token, refresh_token }
-}
+};
 
 const getUserProfile = async (userId) => {
   try {

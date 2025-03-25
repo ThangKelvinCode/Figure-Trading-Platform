@@ -1,8 +1,10 @@
 import { Router } from 'express'
 import { paymentController } from '../controllers/payments.controllers.js'
 import { wrapAsync } from '../utils/handler.js'
+import { verifyToken } from '../middlewares/auth.middlewares.js';
 
 const paymentRouter = Router()
+paymentRouter.use(verifyToken);
 
 paymentRouter.post(
   '/create_momo',

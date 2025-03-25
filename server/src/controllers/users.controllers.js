@@ -29,15 +29,42 @@ const register = async (req, res) => {
   })
 }
 
+// const login = async (req, res) => {
+//   const { email, password } = req.body;
+//   const result = await usersServices.login(email, password);
+//   res.status(HTTP_STATUS.OK).json({
+//     message: USERS_MESSAGES.LOGIN_SUCCESS,
+//     user_id: result.user_id,
+//     access_token: result.access_token,
+//     refresh_token: result.refresh_token,
+//   });
+// };
+
+
 const login = async (req, res) => {
-  const { email, password } = req.body;
-  const result = await usersServices.login(email, password);
-  res.status(HTTP_STATUS.OK).json({
-    message: USERS_MESSAGES.LOGIN_SUCCESS,
-    user_id: result.user_id,
-    access_token: result.access_token,
-    refresh_token: result.refresh_token,
-  });
+  try {
+    const { email, password } = req.body;
+    const result = await usersServices.login(email, password);
+
+    if (result.error) {
+      return res.status(result.error.status).json({
+        message: result.error.message,
+      });
+    }
+
+    return res.status(HTTP_STATUS.OK).json({
+      message: USERS_MESSAGES.LOGIN_SUCCESS,
+      user_id: result.user_id,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
+      role: result.role, // Thêm role vào response
+    });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: USERS_MESSAGES.SERVER_ERROR,
+      error: error.message,
+    });
+  }
 };
 
 const getUserProfile = async (req, res) => {

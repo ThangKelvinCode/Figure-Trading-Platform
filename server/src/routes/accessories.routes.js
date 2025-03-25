@@ -2,8 +2,10 @@ import { Router } from 'express'
 import { accessoriesController } from '../controllers/accessories.controller.js'
 import { wrapAsync } from '../utils/handler.js'
 import { productValidator } from '../middlewares/product.middlewares.js'
+import { verifyToken } from '../middlewares/auth.middlewares.js'
 //tạo Router
 const accessoriesRouter = Router()
+accessoriesRouter.use(verifyToken);
 
 accessoriesRouter.post(
   '/postAccessories' /*  #swagger.tags = ['Accessories']

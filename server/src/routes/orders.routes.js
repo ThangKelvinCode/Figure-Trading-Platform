@@ -1,8 +1,10 @@
 import { Router } from "express"
 import { reviewsController } from "../controllers/reviews.controller.js"
 import { ordersController } from "../controllers/orders.controller.js" 
+import { verifyToken } from "../middlewares/auth.middlewares.js";
 
 const orderRoutes = Router({ mergeParams: true })
+orderRoutes.use(verifyToken);
 
 orderRoutes.get(
     '/allOrders',
