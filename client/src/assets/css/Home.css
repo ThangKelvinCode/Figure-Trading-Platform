@@ -61,3 +61,23 @@ section {
   flex-direction: column;
   padding-bottom: 50px; /* Đảm bảo đủ chỗ cho nội dung */
 }
+
+/* Add custom style for yellow button */
+.btn-yellow {
+  background-color: #ffc107 !important; /* Bootstrap's yellow color */
+  border-color: #ffc107 !important;
+  color: #000 !important; /* Black text for better contrast */
+}
+
+.btn-yellow:hover,
+.btn-yellow:focus,
+.btn-yellow:active {
+  background-color: #e0a800 !important; /* Slightly darker yellow on hover */
+  border-color: #e0a800 !important;
+}
+
+.btn-yellow:disabled {
+  background-color: #ffda6a !important; /* Lighter yellow when disabled */
+  border-color: #ffda6a !important;
+  opacity: 0.65;
+}

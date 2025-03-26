@@ -10,6 +10,7 @@ const TradeBlock = ({
   trade,
   offers,
   users,
+  onDeleteTradeRequest,
   onSelectOffer,
   onDeclineOffer,
   onCompleteTrade,
@@ -17,6 +18,26 @@ const TradeBlock = ({
 }) => {
   const [showChatPopup, setChatPopup] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
+
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/trade_requests/${trade._id}`);
+      onDeleteTradeRequest(trade._id);
+      toast.success("Trade request deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error(
+        "Error deleting trade request:",
+        error.response?.data || error.message
+      );
+      toast.error("Failed to delete trade request", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
 
   const handleAcceptOffer = (offer) => {
     setSelectedOffer(offer);
@@ -28,11 +49,31 @@ const TradeBlock = ({
   };
 
   const handleCompleteTrade = () => {
-    onCompleteTrade(trade._id, selectedOffer._id);
+    const acceptedOffer = offers.find(
+      (offer) => offer.offerStatus === "Accepted"
+    );
+    if (acceptedOffer) {
+      onCompleteTrade(trade._id, acceptedOffer._id);
+    } else {
+      toast.error("No accepted offer found to complete the trade.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   const handleCancelTrade = () => {
-    onCancelTrade(trade._id, selectedOffer._id);
+    const acceptedOffer = offers.find(
+      (offer) => offer.offerStatus === "Accepted"
+    );
+    if (acceptedOffer) {
+      onCancelTrade(trade._id, acceptedOffer._id);
+    } else {
+      toast.error("No accepted offer found to cancel the trade.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   const hasAcceptedOffer = offers.some(
@@ -62,6 +103,9 @@ const TradeBlock = ({
         <div className="global-actions">
           {!isTradeCompleted && (
             <>
+              <button className="delete-btn" onClick={handleDelete}>
+                Delete
+              </button>
               {hasAcceptedOffer && (
                 <div className="trade-actions">
                   <button
@@ -257,6 +301,15 @@ const Tradelist = () => {
     fetchTradeRequestsAndOffers();
   }, [isLoggedIn, userId, navigate, loading]);
 
+  const handleDeleteTradeRequest = (tradeId) => {
+    setTradeRequests((prev) => prev.filter((trade) => trade._id !== tradeId));
+    setOffers((prev) => {
+      const updatedOffers = { ...prev };
+      delete updatedOffers[tradeId];
+      return updatedOffers;
+    });
+  };
+
   const handleSelectOffer = async (requestId, offerId) => {
     try {
       await api.post(`/trade_requests/${requestId}/select-offer/${offerId}`);
@@ -264,7 +317,6 @@ const Tradelist = () => {
         position: "top-right",
         autoClose: 3000,
       });
-      // Làm mới dữ liệu sau khi Accept
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error(
@@ -285,7 +337,6 @@ const Tradelist = () => {
         position: "top-right",
         autoClose: 3000,
       });
-      // Làm mới dữ liệu sau khi Decline
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error(
@@ -320,7 +371,6 @@ const Tradelist = () => {
           }
         );
       }
-      // Làm mới dữ liệu sau khi Complete
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error(
@@ -341,7 +391,6 @@ const Tradelist = () => {
         position: "top-right",
         autoClose: 3000,
       });
-      // Làm mới dữ liệu sau khi Cancel
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error(
@@ -375,6 +424,7 @@ const Tradelist = () => {
             trade={trade}
             offers={offers[trade._id] || []}
             users={users}
+            onDeleteTradeRequest={handleDeleteTradeRequest}
             onSelectOffer={handleSelectOffer}
             onDeclineOffer={handleDeclineOffer}
             onCompleteTrade={handleCompleteTrade}

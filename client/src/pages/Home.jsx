@@ -264,6 +264,49 @@ const Home = () => {
     }
   };
 
+  // Function to determine the button variant and disabled state
+  const getOfferButtonProps = (trade) => {
+    const isOwnTrade = trade.userId === userId;
+    const hasUserOffer = userOffers[trade._id];
+    const isInProcess = trade.requestStatus === "In-process";
+    const isCompleted = trade.requestStatus === "Completed";
+    const isPending = trade.requestStatus === "Pending";
+
+    // Case 1: Trade request belongs to the logged-in user or user has already made an offer
+    if (isOwnTrade || hasUserOffer) {
+      return {
+        variant: "warning",
+        className: "btn-sm btn-yellow",
+        disabled: true,
+      };
+    }
+
+    // Case 2: Trade request is "In-process" or "Completed"
+    if (isInProcess || isCompleted) {
+      return {
+        variant: "warning",
+        className: "btn-sm",
+        disabled: true,
+      };
+    }
+
+    // Case 3: Trade request is "Pending"
+    if (isPending) {
+      return {
+        variant: "success",
+        className: "btn-sm",
+        disabled: false,
+      };
+    }
+
+    // Default case (shouldn't happen, but just in case)
+    return {
+      variant: "secondary",
+      className: "btn-sm",
+      disabled: true,
+    };
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -287,42 +330,43 @@ const Home = () => {
             {tradeRequests.length === 0 ? (
               <p>No Items available.</p>
             ) : (
-              tradeRequests.map((trade) => (
-                <Col key={trade._id} md={3} sm={6} xs={12} className="mb-4">
-                  <Card className="border-0">
-                    <div className="image-container">
-                      <Card.Img
-                        variant="top"
-                        src={trade.requestImage}
-                        alt={trade.requestItem}
-                      />
-                    </div>
-                    <Card.Body>
-                      <h6 className="fw-bold">{trade.requestItem}</h6>
-                      <p className="fw-bold">
-                        Owner: {users[trade.userId]?.name || trade.userId}
-                      </p>
-                      <div className="d-flex justify-content-center gap-2">
-                        <Button
-                          variant="primary"
-                          className="btn-sm"
-                          onClick={() => handleView(trade._id)}
-                        >
-                          View
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          className="btn-sm"
-                          onClick={() => handleOffer(trade._id)}
-                          disabled={userOffers[trade._id] || trade.userId === userId}
-                        >
-                          Offer
-                        </Button>
+              tradeRequests.map((trade) => {
+                const buttonProps = getOfferButtonProps(trade);
+                return (
+                  <Col key={trade._id} md={3} sm={6} xs={12} className="mb-4">
+                    <Card className="border-0">
+                      <div className="image-container">
+                        <Card.Img
+                          variant="top"
+                          src={trade.requestImage}
+                          alt={trade.requestItem}
+                        />
                       </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))
+                      <Card.Body>
+                        <h6 className="fw-bold">{trade.requestItem}</h6>
+                        <p className="fw-bold">
+                          Owner: {users[trade.userId]?.name || trade.userId}
+                        </p>
+                        <div className="d-flex justify-content-center gap-2">
+                          <Button
+                            variant="primary"
+                            className="btn-sm"
+                            onClick={() => handleView(trade._id)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            {...buttonProps}
+                            onClick={() => handleOffer(trade._id)}
+                          >
+                            Offer
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                );
+              })
             )}
           </Row>
           <Button variant="dark" className="px-4 py-2 mt-3">
