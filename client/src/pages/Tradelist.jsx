@@ -2597,6 +2597,415 @@
 
 // export default Tradelist;
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import io from "socket.io-client";
+// import "../assets/css/Tradelist.css";
+// import { useAuth } from "../context/auth.jsx";
+// import { toast } from "react-toastify";
+// import api from "../config/axios.js";
+// import ChatModal from "./ChatModal.jsx";
+
+// // Kết nối tới Socket.IO server
+// const socket = io("http://localhost:3000", {
+//   withCredentials: true,
+//   extraHeaders: {
+//     "Content-Type": "application/json",
+//   },
+// });
+
+// const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer, onDeclineOffer, onCompleteTrade, onCancelTrade }) => {
+//   const [showChatPopup, setChatPopup] = useState(false);
+//   const [selectedOffer, setSelectedOffer] = useState(null);
+
+//   const handleDelete = async () => {
+//     try {
+//       await api.delete(`/trade_requests/${trade._id}`);
+//       onDeleteTradeRequest(trade._id);
+//       toast.success("Trade request deleted successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     } catch (error) {
+//       console.error("Error deleting trade request:", error.response?.data || error.message);
+//       toast.error("Failed to delete trade request", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleAcceptOffer = (offer) => {
+//     setSelectedOffer(offer);
+//     onSelectOffer(trade._id, offer._id);
+//   };
+
+//   const handleDeclineOffer = (offer) => {
+//     onDeclineOffer(trade._id, offer._id);
+//   };
+
+//   const handleCompleteTrade = () => {
+//     onCompleteTrade(trade._id, selectedOffer._id);
+//   };
+
+//   const handleCancelTrade = () => {
+//     onCancelTrade(trade._id, selectedOffer._id);
+//   };
+
+//   const hasAcceptedOffer = offers.some((offer) => offer.offerStatus === "Accepted" || offer.offerStatus === "Completed");
+//   const acceptedOffer = offers.find((offer) => offer.offerStatus === "Accepted" || offer.offerStatus === "Completed");
+//   const isTradeCompleted = trade.requestStatus === "Completed";
+
+//   return (
+//     <div className={`trade_request ${hasAcceptedOffer ? "accepted" : isTradeCompleted ? "completed" : ""}`}>
+//       <div>
+//         <h3>Trade #{trade._id}</h3>
+//         <p>Requesting: {trade.requestItem}</p>
+//         <p>
+//           My Item:{" "}
+//           <img
+//             src={trade.requestImage}
+//             alt="Requested Item"
+//             style={{ width: "100px", height: "100px" }}
+//           />
+//         </p>
+//         <h4>Offers:</h4>
+//         {offers.length === 0 ? (
+//           <p>No offers yet</p>
+//         ) : (
+//           offers.map((offer) => (
+//             <div key={offer._id} style={{ marginBottom: "10px" }}>
+//               <p>Sender: {users[offer.userId]?.name || offer.userId}</p>
+//               <p>Offering: {offer.offerItem}</p>
+//               <p>
+//                 Offer Item:{" "}
+//                 <img
+//                   src={offer.offerImage}
+//                   alt="Offered Item"
+//                   style={{ width: "80px", height: "80px" }}
+//                 />
+//               </p>
+//               <p>Status: {offer.offerStatus}</p>
+//               {offer.offerStatus === "Pending" && !hasAcceptedOffer && (
+//                 <div className="trade_buttons">
+//                   <button
+//                     className="accept"
+//                     onClick={() => handleAcceptOffer(offer)}
+//                   >
+//                     Accept
+//                   </button>
+//                   <button
+//                     className="deny"
+//                     onClick={() => handleDeclineOffer(offer)}
+//                   >
+//                     Decline
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           ))
+//         )}
+//       </div>
+//       <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+//         {!isTradeCompleted && (
+//           <button
+//             onClick={handleDelete}
+//             style={{ backgroundColor: "red", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px", alignSelf: "flex-end" }}
+//           >
+//             Delete
+//           </button>
+//         )}
+//         {hasAcceptedOffer && (
+//           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+//             {!isTradeCompleted && (
+//               <div style={{ display: "flex", gap: "10px" }}>
+//                 <button
+//                   onClick={handleCompleteTrade}
+//                   style={{ backgroundColor: "blue", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//                 >
+//                   Complete
+//                 </button>
+//                 <button
+//                   onClick={handleCancelTrade}
+//                   style={{ backgroundColor: "orange", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//                 >
+//                   Cancel
+//                 </button>
+//               </div>
+//             )}
+//             <button
+//               onClick={() => {
+//                 setSelectedOffer(acceptedOffer);
+//                 setChatPopup(true);
+//               }}
+//               style={{ backgroundColor: "purple", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
+//             >
+//               Chat
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//       {selectedOffer && (
+//         <ChatModal
+//           isOpen={showChatPopup}
+//           onClose={() => {
+//             setChatPopup(false);
+//             setSelectedOffer(null);
+//           }}
+//           tradeId={trade._id}
+//           senderId={trade.userId}
+//           ownerId={selectedOffer.userId}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// const Tradelist = () => {
+//   const { isLoggedIn, userId, username, loading } = useAuth();
+//   const navigate = useNavigate();
+//   const [tradeRequests, setTradeRequests] = useState([]);
+//   const [offers, setOffers] = useState({});
+//   const [users, setUsers] = useState({});
+//   const [dataLoading, setDataLoading] = useState(true);
+
+//   const fetchTradeRequestsAndOffers = async () => {
+//     try {
+//       const tradeRequestsResponse = await api.get(`/trade_requests/user/${userId}`);
+//       const tradeRequestsData = tradeRequestsResponse.data;
+
+//       const offersPromises = tradeRequestsData.map(async (trade) => {
+//         try {
+//           const offersResponse = await api.get(`/offer/request/${trade._id}`);
+//           return { requestId: trade._id, offers: offersResponse.data };
+//         } catch (error) {
+//           console.error(`Error fetching offers for trade request ${trade._id}:`, error.response?.data || error.message);
+//           return { requestId: trade._id, offers: [] };
+//         }
+//       });
+
+//       const offersData = await Promise.all(offersPromises);
+//       const offersMap = offersData.reduce((acc, { requestId, offers }) => {
+//         acc[requestId] = offers;
+//         return acc;
+//       }, {});
+
+//       const userIds = new Set();
+//       Object.values(offersMap).forEach((offerList) => {
+//         offerList.forEach((offer) => userIds.add(offer.userId));
+//       });
+
+//       const userPromises = Array.from(userIds).map(async (userId) => {
+//         try {
+//           const userResponse = await api.get(`/user/${userId}`);
+//           return { userId, user: userResponse.data.user };
+//         } catch (error) {
+//           console.error(`Error fetching user ${userId}:`, error.response?.data || error.message);
+//           return { userId, user: null };
+//         }
+//       });
+
+//       const usersData = await Promise.all(userPromises);
+//       const usersMap = usersData.reduce((acc, { userId, user }) => {
+//         if (user) acc[userId] = user;
+//         return acc;
+//       }, {});
+
+//       setTradeRequests(tradeRequestsData);
+//       setOffers(offersMap);
+//       setUsers(usersMap);
+//       setDataLoading(false);
+//     } catch (error) {
+//       console.error("Error fetching trade requests:", error.response?.data || error.message);
+//       setDataLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (loading) return;
+
+//     if (!isLoggedIn) {
+//       toast.error("Please login to view your trade list", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       navigate("/authpage");
+//       return;
+//     }
+
+//     fetchTradeRequestsAndOffers();
+
+//     // Tham gia phòng cho từng trade request của user
+//     tradeRequests.forEach((trade) => {
+//       socket.emit("join_trade", trade._id);
+//     });
+
+//      // Lắng nghe sự kiện new_offer
+//     socket.on("new_offer", (newOffer) => {
+//     fetchTradeRequestsAndOffers(); // Làm mới danh sách offers
+//     toast.info("A new offer has been made for one of your trade requests!", {
+//       position: "top-right",
+//       autoClose: 3000,
+//     });
+//   });
+
+//     // Lắng nghe các sự kiện từ server
+//     socket.on("offer_accepted", (data) => {
+//       fetchTradeRequestsAndOffers();
+//     });
+
+//     socket.on("offer_declined", (data) => {
+//       fetchTradeRequestsAndOffers();
+//     });
+
+//     socket.on("trade_cancelled", (data) => {
+//       fetchTradeRequestsAndOffers();
+//     });
+
+//     socket.on("trade_completed", (data) => {
+//       fetchTradeRequestsAndOffers();
+//       if (data.message === "Trade completed successfully") {
+//         toast.success("Trade completed successfully!", {
+//           position: "top-right",
+//           autoClose: 3000,
+//         });
+//       } else {
+//         toast.info("The other party has confirmed the trade completion.", {
+//           position: "top-right",
+//           autoClose: 3000,
+//         });
+//       }
+//     });
+
+//     return () => {
+//       socket.off("new_offer");
+//       socket.off("offer_accepted");
+//       socket.off("offer_declined");
+//       socket.off("trade_cancelled");
+//       socket.off("trade_completed");
+//     };
+//   }, [isLoggedIn, userId, navigate, loading, tradeRequests]);
+
+//   const handleDeleteTradeRequest = (tradeId) => {
+//     setTradeRequests((prev) => prev.filter((trade) => trade._id !== tradeId));
+//     setOffers((prev) => {
+//       const updatedOffers = { ...prev };
+//       delete updatedOffers[tradeId];
+//       return updatedOffers;
+//     });
+//   };
+
+//   const handleSelectOffer = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/trade_requests/${requestId}/select-offer/${offerId}`);
+//       toast.success("Offer accepted successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       await fetchTradeRequestsAndOffers();
+//     } catch (error) {
+//       console.error("Error selecting offer:", error.response?.data || error.message);
+//       toast.error("Failed to accept offer", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleDeclineOffer = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/trade_requests/${requestId}/decline-offer/${offerId}`);
+//       toast.success("Offer declined successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       await fetchTradeRequestsAndOffers();
+//     } catch (error) {
+//       console.error("Error declining offer:", error.response?.data || error.message);
+//       toast.error("Failed to decline offer", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleCompleteTrade = async (requestId, offerId) => {
+//     try {
+//       const response = await api.post(`/trade_requests/${requestId}/finish-trade`);
+//       const message = response.data.message;
+
+//       if (message === "Trade completed successfully") {
+//         toast.success("Trade completed successfully!", {
+//           position: "top-right",
+//           autoClose: 3000,
+//         });
+//       } else {
+//         toast.info("Waiting for the other party to confirm the trade completion.", {
+//           position: "top-right",
+//           autoClose: 3000,
+//         });
+//       }
+//       await fetchTradeRequestsAndOffers();
+//     } catch (error) {
+//       console.error("Error completing trade:", error.response?.data || error.message);
+//       toast.error("Failed to complete trade", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   const handleCancelTrade = async (requestId, offerId) => {
+//     try {
+//       await api.post(`/trade_requests/${requestId}/cancel-trade`);
+//       toast.success("Trade cancelled successfully!", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//       await fetchTradeRequestsAndOffers();
+//     } catch (error) {
+//       console.error("Error cancelling trade:", error.response?.data || error.message);
+//       toast.error("Failed to cancel trade", {
+//         position: "top-right",
+//         autoClose: 3000,
+//       });
+//     }
+//   };
+
+//   if (loading) {
+//     return <div>Loading authentication...</div>;
+//   }
+
+//   if (dataLoading) {
+//     return <div>Loading trades...</div>;
+//   }
+
+//   return (
+//     <div className="tradelist_page">
+//       <h2>Trade Requests</h2>
+//       {tradeRequests.length === 0 ? (
+//         <p>No pending trades</p>
+//       ) : (
+//         tradeRequests.map((trade) => (
+//           <TradeBlock
+//             key={trade._id}
+//             trade={trade}
+//             offers={offers[trade._id] || []}
+//             users={users}
+//             onDeleteTradeRequest={handleDeleteTradeRequest}
+//             onSelectOffer={handleSelectOffer}
+//             onDeclineOffer={handleDeclineOffer}
+//             onCompleteTrade={handleCompleteTrade}
+//             onCancelTrade={handleCancelTrade}
+//           />
+//         ))
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Tradelist;
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/Tradelist.css";
@@ -2636,15 +3045,29 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
   };
 
   const handleCompleteTrade = () => {
-    onCompleteTrade(trade._id, selectedOffer._id);
+    if (acceptedOffer) {
+      onCompleteTrade(trade._id, acceptedOffer._id);
+    } else {
+      toast.error("No accepted offer found to complete the trade.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   const handleCancelTrade = () => {
-    onCancelTrade(trade._id, selectedOffer._id);
+    if (acceptedOffer) {
+      onCancelTrade(trade._id, acceptedOffer._id);
+    } else {
+      toast.error("No accepted offer found to cancel the trade.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
-  const hasAcceptedOffer = offers.some((offer) => offer.offerStatus === "Accepted");
-  const acceptedOffer = offers.find((offer) => offer.offerStatus === "Accepted");
+  const hasAcceptedOffer = offers.some((offer) => offer.offerStatus === "Accepted" || offer.offerStatus === "Completed");
+  const acceptedOffer = offers.find((offer) => offer.offerStatus === "Accepted" || offer.offerStatus === "Completed");
   const isTradeCompleted = trade.requestStatus === "Completed";
 
   return (
@@ -2706,7 +3129,7 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
             Delete
           </button>
         )}
-        {hasAcceptedOffer && (
+        {hasAcceptedOffer && acceptedOffer && (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {!isTradeCompleted && (
               <div style={{ display: "flex", gap: "10px" }}>
@@ -2843,7 +3266,6 @@ const Tradelist = () => {
         position: "top-right",
         autoClose: 3000,
       });
-      // Làm mới dữ liệu sau khi Accept
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error("Error selecting offer:", error.response?.data || error.message);
@@ -2861,7 +3283,6 @@ const Tradelist = () => {
         position: "top-right",
         autoClose: 3000,
       });
-      // Làm mới dữ liệu sau khi Decline
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error("Error declining offer:", error.response?.data || error.message);
@@ -2888,7 +3309,6 @@ const Tradelist = () => {
           autoClose: 3000,
         });
       }
-      // Làm mới dữ liệu sau khi Complete
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error("Error completing trade:", error.response?.data || error.message);
@@ -2906,7 +3326,6 @@ const Tradelist = () => {
         position: "top-right",
         autoClose: 3000,
       });
-      // Làm mới dữ liệu sau khi Cancel
       await fetchTradeRequestsAndOffers();
     } catch (error) {
       console.error("Error cancelling trade:", error.response?.data || error.message);
