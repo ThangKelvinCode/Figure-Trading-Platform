@@ -1,19 +1,20 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../config/axios"; // Import axios config
-
-useEffect( async () => {
-  const orderID = useParams("orderId")
-  
-  const updateOrderStatus = await api.post(`/${orderID}/updateStatus`, {
-    newStatus: 2
-  })
-  console.log(updateOrderStatus)
-})
+import { useEffect } from "react";
 
 function PaymentFailure() {
   const navigate = useNavigate();
-  
+
+  useEffect(async () => {
+    const orderID = useParams("orderId")
+
+    const updateOrderStatus = await api.post(`/${orderID}/updateStatus`, {
+      newStatus: 2
+    })
+    console.log(updateOrderStatus)
+  })
+
   const handleReturnHome = () => {
     navigate("/"); // Redirect to home page
   };
