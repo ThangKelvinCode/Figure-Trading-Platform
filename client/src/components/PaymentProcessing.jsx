@@ -18,9 +18,9 @@ function PaymentProcessing() {
 
     // Check resultCode and redirect accordingly
     if (resultCode === 0) {
-      navigate(`/payment-success?orderId=${orderId}`);
+      navigate(`/payment-success?orderId=${orderId}`); // thanh toan thanh cong
     } else {
-      navigate(`/payment-failure?orderId=${orderId}`);
+      navigate(`/payment-failure?orderId=${orderId}`); // thanh toan that bai
     }
   }, [location, navigate]);
 

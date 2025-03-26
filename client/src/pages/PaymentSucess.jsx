@@ -1,6 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../config/axios"; // Import axios config
 
+useEffect( async () => {
+  const orderID = useParams("orderId")
+  
+  const updateOrderStatus = await api.post(`/${orderID}/updateStatus`, {
+    newStatus: 6  })
+  console.log(updateOrderStatus)
+})
 function PaymentSuccess() {
   const navigate = useNavigate();
 

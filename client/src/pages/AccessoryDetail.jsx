@@ -77,53 +77,6 @@ const AccessoryDetail = () => {
     fetchRelatedProducts();
   }, [id, navigate]);
 
-  // const handleBuyNow = () => {
-  //   if (!product) return;
-  //   const totalPrice = product.price * quantity;
-  //   navigate(`/checkout?productId=${id}&quantity=${quantity}&totalPrice=${totalPrice}`);
-  // };
-
-  // const handleBuyNow = async () => {
-  //   if (!product) return;
-
-  //   if (!userId) {
-  //     alert("Vui lòng đăng nhập để tiếp tục.");
-  //     navigate("/login");
-  //     return;
-  //   }
-
-  //   try {
-  //     // Gọi API để mua sản phẩm (POST /accessories/:id/purchase)
-  //     const purchaseData = {
-  //       quantity: quantity,
-  //       userID: userId,
-  //     };
-
-  //     const purchaseResponse = await api.post(`/accessories/${id}/purchase`, purchaseData);
-
-  //     if (purchaseResponse.status === 200) {
-  //       // Nếu mua thành công, lấy thông tin giao hàng
-  //       const shippingResponse = await api.post(`/user/${userId}/shippingInfo`);
-
-  //       const shippingInfo = shippingResponse.data;
-
-  //       // Chuyển hướng đến trang billing với thông tin cần thiết
-  //       navigate(`/billinginfo`, {
-  //         state: {
-  //           productId: id,
-  //           quantity,
-  //           totalPrice: product?.price * quantity,
-  //           shippingInfo, // Prefill the shipping form
-  //         },
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi mua hàng:", error.response?.data?.message || error.message);
-  //     alert("Không thể thực hiện mua hàng. Vui lòng thử lại.");
-  //   }
-  // };
-
-
   const handleBuyNow = async () => {
     if (!product) {
       console.error("❌ Product is null or undefined.");
