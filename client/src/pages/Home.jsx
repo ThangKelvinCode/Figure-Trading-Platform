@@ -28,7 +28,7 @@ const Home = () => {
   const [tradeRequests, setTradeRequests] = useState([]);
   const [users, setUsers] = useState({});
   const [userOffers, setUserOffers] = useState({});
-  const [accessories, setAccessories] = useState([]); // State cho accessories
+  const [accessories, setAccessories] = useState([]);
 
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -65,12 +65,11 @@ const Home = () => {
           return acc;
         }, {});
 
-        const filteredTradeRequests = tradeRequestsData.filter(
-          (trade) => trade.userId !== userId
-        );
+        // Bỏ lọc trade requests của user hiện tại
+        setTradeRequests(tradeRequestsData);
 
         if (isLoggedIn) {
-          const offersPromises = filteredTradeRequests.map(async (trade) => {
+          const offersPromises = tradeRequestsData.map(async (trade) => {
             try {
               const offersResponse = await api.get(
                 `/offer/request/${trade._id}`
@@ -97,13 +96,12 @@ const Home = () => {
         }
 
         setUsers(usersMap);
-        setTradeRequests(filteredTradeRequests);
 
         // Fetch Accessories
         const accessoryResponse = await api.get(
           "http://localhost:3000/accessories/allAccessories"
         );
-        setAccessories(accessoryResponse.data.slice(0, 4)); // Lấy 4 sản phẩm đầu tiên
+        setAccessories(accessoryResponse.data.slice(0, 4));
 
         setLoading(false);
       } catch (error) {
@@ -316,7 +314,7 @@ const Home = () => {
                           variant="secondary"
                           className="btn-sm"
                           onClick={() => handleOffer(trade._id)}
-                          disabled={userOffers[trade._id]}
+                          disabled={userOffers[trade._id] || trade.userId === userId}
                         >
                           Offer
                         </Button>
@@ -408,7 +406,7 @@ const Home = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => setImagePreview(null)} // Xóa hình ảnh
+                    onClick={() => setImagePreview(null)}
                     style={{
                       position: "absolute",
                       top: "0",
@@ -511,7 +509,7 @@ const Home = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => setOfferImagePreview(null)} // Xóa hình ảnh
+                    onClick={() => setOfferImagePreview(null)}
                     style={{
                       position: "absolute",
                       top: "5px",

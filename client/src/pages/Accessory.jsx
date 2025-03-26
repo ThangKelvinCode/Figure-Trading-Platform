@@ -45,7 +45,9 @@ const Accessory = () => {
       try {
         setLoading(true);
         const response = await api.get("/accessories/allAccessories");
-        
+        // const response = await fetch("http://localhost:3000/accessories/allCategories", {
+        //   method: "GET"
+        // })
         if (!Array.isArray(response.data)) {
           throw new Error("Dữ liệu từ API không hợp lệ!");
         }

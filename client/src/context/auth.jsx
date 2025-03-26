@@ -112,6 +112,33 @@ export const AuthProvider = ({ children }) => {
     navigate("/authpage");
   };
 
+  // const register = async (username, email, password, confirmPassword) => {
+  //   try {
+  //     const apiUrl = "http://localhost:3000/user/register";
+  //     const newUser = {
+  //       name: username,
+  //       email,
+  //       password,
+  //       confirmed_password: confirmPassword,
+  //       date_of_birth: new Date().toISOString(),
+  //     };
+
+  //     console.log("Request body:", newUser);
+  //     const response = await api.post(apiUrl, newUser);
+
+  //     const createdUser = response.data;
+  //     if (createdUser.message === "Register Successfully") {
+  //       return true;
+  //     } else {
+  //       throw new Error(createdUser.message || "Registration failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during registration:", error.response?.data || error.message);
+  //     throw new Error(error.response?.data?.message || "Registration failed");
+  //   }
+  // };
+
+
   const register = async (username, email, password, confirmPassword) => {
     try {
       const apiUrl = "http://localhost:3000/user/register";
@@ -122,15 +149,40 @@ export const AuthProvider = ({ children }) => {
         confirmed_password: confirmPassword,
         date_of_birth: new Date().toISOString(),
       };
-
+  
       console.log("Request body:", newUser);
       const response = await api.post(apiUrl, newUser);
-
-      const createdUser = response.data;
-      if (createdUser.message === "Register Successfully") {
+  
+      const { message, user_id, access_token, refresh_token, role } = response.data;
+  
+      if (message === "Register Successfully") {
+        const userRole = role === "0" || role === 0 ? "admin" : "user";
+  
+        // Lưu thông tin vào sessionStorage giống login
+        sessionStorage.setItem("token", access_token);
+        sessionStorage.setItem("refresh_token", refresh_token);
+        sessionStorage.setItem("SWD392_isLoggedIn", "true");
+        sessionStorage.setItem("SWD392_username", username); // Dùng username từ form
+        sessionStorage.setItem("SWD392_user_id", user_id);
+        sessionStorage.setItem("SWD392_role", userRole);
+  
+        // Cập nhật state
+        setIsLoggedIn(true);
+        setUsername(username);
+        setUserId(user_id);
+        setRole(userRole);
+  
+        console.log("State after register:", {
+          isLoggedIn: true,
+          username,
+          userId: user_id,
+          role: userRole,
+        });
+  
+        navigate("/"); // Quay về trang home
         return true;
       } else {
-        throw new Error(createdUser.message || "Registration failed");
+        throw new Error(response.data.message || "Registration failed");
       }
     } catch (error) {
       console.error("Error during registration:", error.response?.data || error.message);

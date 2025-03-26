@@ -1,6 +1,6 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form, Modal } from "react-bootstrap";
+import { Button, Container, Form, Modal, Row, Col, Card } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -14,9 +14,10 @@ const TradeRequestDetail = () => {
   const { isLoggedIn, userId, username } = useAuth();
   const [tradeRequest, setTradeRequest] = useState(null);
   const [owner, setOwner] = useState(null);
-  const [hasOffer, setHasOffer] = useState(false); // Kiểm tra user đã tạo offer chưa
+  const [hasOffer, setHasOffer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showOfferModal, setShowOfferModal] = useState(false);
+  const [relatedTrades, setRelatedTrades] = useState([]); // State for related trade items
 
   const [offerImage, setOfferImage] = useState(null);
   const [offerImagePreview, setOfferImagePreview] = useState(null);
@@ -34,21 +35,24 @@ const TradeRequestDetail = () => {
         setOwner(ownerResponse.data.user);
         setTradeRequest(tradeRequestData);
 
-        // Kiểm tra xem user đã tạo offer cho trade request này chưa
         if (isLoggedIn) {
-          const offersResponse = await api.get(`/offers/request/${requestId}`);
+          const offersResponse = await api.get(`/offer/request/${requestId}`);
           const userOffer = offersResponse.data.find(
             (offer) => offer.userId === userId
           );
           setHasOffer(!!userOffer);
         }
 
+        // Fetch related trade items (excluding the current trade request)
+        const relatedTradesResponse = await api.get("/trade_requests/");
+        const filteredTrades = relatedTradesResponse.data
+          .filter((trade) => trade._id !== requestId)
+          .slice(0, 3); // Limit to 3 related trades
+        setRelatedTrades(filteredTrades);
+
         setLoading(false);
       } catch (error) {
-        console.error(
-          "Error fetching trade request:",
-          error.response?.data || error.message
-        );
+        console.error("Error fetching trade request:", error.response?.data || error.message);
         setLoading(false);
       }
     };
@@ -111,8 +115,8 @@ const TradeRequestDetail = () => {
         requestId,
       };
 
-      const response = await api.post("/offers/", offerData);
-      setHasOffer(true); // Cập nhật trạng thái đã tạo offer
+      const response = await api.post("/offer/", offerData);
+      setHasOffer(true);
       setShowOfferModal(false);
       toast.success("Offer created successfully!", {
         position: "top-right",
@@ -124,13 +128,9 @@ const TradeRequestDetail = () => {
       setOfferItem("");
       setOfferDescription("");
     } catch (error) {
-      console.error(
-        "Error creating offer:",
-        error.response?.data || error.message
-      );
+      console.error("Error creating offer:", error.response?.data || error.message);
       toast.error(
-        "Failed to create offer: " +
-          (error.response?.data?.message || error.message),
+        "Failed to create offer: " + (error.response?.data?.message || error.message),
         {
           position: "top-right",
           autoClose: 3000,
@@ -141,52 +141,83 @@ const TradeRequestDetail = () => {
     }
   };
 
+  const handleRelatedTradeClick = (tradeId) => {
+    navigate(`/trade_request/${tradeId}`);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!tradeRequest) return <div>Trade request not found.</div>;
 
   return (
     <Container className="my-5">
-      <h2>Trade Request Details</h2>
-      <div className="mt-4">
-        <h4>{tradeRequest.requestItem}</h4>
-        <img
-          src={tradeRequest.requestImage}
-          alt={tradeRequest.requestItem}
-          style={{ maxWidth: "300px", marginBottom: "20px" }}
-        />
-        <p>
-          <strong>Description:</strong> {tradeRequest.requestDescription}
-        </p>
-        <h5>Owner Information</h5>
-        {owner ? (
-          <>
-            <p>
-              <strong>Name:</strong> {owner.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {owner.email}
-            </p>
-            <p>
-              <strong>Date of Birth:</strong>{" "}
-              {new Date(owner.date_of_birth).toLocaleDateString()}
-            </p>
-          </>
-        ) : (
-          <p>Owner information not available.</p>
-        )}
-        <div className="d-flex gap-2">
-          <Button
-            variant="primary"
-            onClick={handleSendOfferClick}
-            disabled={hasOffer}
-          >
-            Send an Offer
-          </Button>
-          <Button variant="secondary" onClick={() => navigate("/")}>
-            Back to Home
-          </Button>
+      <Row>
+        <Col md={6}>
+          <img
+            src={tradeRequest.requestImage}
+            alt={tradeRequest.requestItem}
+            className="img-fluid rounded shadow-sm"
+            style={{ maxHeight: "400px", objectFit: "contain", width: "100%" }}
+          />
+        </Col>
+        <Col md={6}>
+          <h2 className="mb-3">{tradeRequest.requestItem}</h2>
+          <p className="text-muted">{tradeRequest.requestDescription}</p>
+          <h5 className="mt-4">Owner Information</h5>
+          {owner ? (
+            <div className="bg-light p-3 rounded">
+              <p><strong>Name:</strong> {owner.name}</p>
+              <p><strong>Email:</strong> {owner.email}</p>
+              <p><strong>Date of Birth:</strong> {new Date(owner.date_of_birth).toLocaleDateString()}</p>
+            </div>
+          ) : (
+            <p>Owner information not available.</p>
+          )}
+          <div className="d-flex gap-2 mt-4">
+            <Button
+              variant="primary"
+              onClick={handleSendOfferClick}
+              disabled={hasOffer || tradeRequest.userId === userId}
+            >
+              Send an Offer
+            </Button>
+            <Button variant="secondary" onClick={() => navigate("/")}>
+              Back to Home
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
+      {relatedTrades.length > 0 && (
+        <div className="mt-5">
+          <h3 className="mb-4">Items for Trade</h3>
+          <Row>
+            {relatedTrades.map((trade) => (
+              <Col md={4} key={trade._id} className="mb-4">
+                <Card
+                  className="shadow-sm h-100"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleRelatedTradeClick(trade._id)}
+                >
+                  <Card.Img
+                    variant="top"
+                    src={trade.requestImage}
+                    style={{ height: "200px", objectFit: "contain" }}
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/300";
+                    }}
+                  />
+                  <Card.Body>
+                    <Card.Title className="text-truncate">{trade.requestItem}</Card.Title>
+                    <Card.Text className="text-muted">
+                      Owner: {owner?.name || trade.userId}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </div>
-      </div>
+      )}
 
       <Modal
         show={showOfferModal}
@@ -208,7 +239,6 @@ const TradeRequestDetail = () => {
                 required
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Offer Description</Form.Label>
               <Form.Control
@@ -220,19 +250,41 @@ const TradeRequestDetail = () => {
                 required
               />
             </Form.Group>
-
-            <Form.Group className="mb-3">
+            <Form.Group className = "mb-3">
               <Form.Label>Offer Image</Form.Label>
               {offerImagePreview ? (
-                <img
-                  src={offerImagePreview}
-                  alt="Preview"
-                  style={{
-                    maxWidth: "100%",
-                    height: "auto",
-                    marginBottom: "10px",
-                  }}
-                />
+                <div style={{ position: "relative", display: "inline-block" }}>
+                  <img
+                    src={offerImagePreview}
+                    alt="Preview"
+                    style={{
+                      maxWidth: "100%",
+                      height: "auto",
+                      marginBottom: "10px",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOfferImage(null);
+                      setOfferImagePreview(null);
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: "5px",
+                      right: "5px",
+                      background: "red",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: "20px",
+                      height: "20px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    X
+                  </button>
+                </div>
               ) : (
                 <div>
                   <p>Drop Image Here</p>
@@ -245,7 +297,6 @@ const TradeRequestDetail = () => {
                 </div>
               )}
             </Form.Group>
-
             <Button type="submit" variant="primary" disabled={offerLoading}>
               {offerLoading ? "Creating..." : "Confirm"}
             </Button>
