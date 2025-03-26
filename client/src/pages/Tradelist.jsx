@@ -3018,22 +3018,22 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
   const [showChatPopup, setChatPopup] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
 
-  const handleDelete = async () => {
-    try {
-      await api.delete(`/trade_requests/${trade._id}`);
-      onDeleteTradeRequest(trade._id);
-      toast.success("Trade request deleted successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    } catch (error) {
-      console.error("Error deleting trade request:", error.response?.data || error.message);
-      toast.error("Failed to delete trade request", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    }
-  };
+  // const handleDelete = async () => {
+  //   try {
+  //     await api.delete(`/trade_requests/${trade._id}`);
+  //     onDeleteTradeRequest(trade._id);
+  //     toast.success("Trade request deleted successfully!", {
+  //       position: "top-right",
+  //       autoClose: 3000,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error deleting trade request:", error.response?.data || error.message);
+  //     toast.error("Failed to delete trade request", {
+  //       position: "top-right",
+  //       autoClose: 3000,
+  //     });
+  //   }
+  // };
 
   const handleAcceptOffer = (offer) => {
     setSelectedOffer(offer);
@@ -3121,14 +3121,14 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
         )}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
-        {!isTradeCompleted && (
+        {/* {!isTradeCompleted && (
           <button
             onClick={handleDelete}
             style={{ backgroundColor: "red", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px", alignSelf: "flex-end" }}
           >
             Delete
           </button>
-        )}
+        )} */}
         {hasAcceptedOffer && acceptedOffer && (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {!isTradeCompleted && (
@@ -3250,14 +3250,14 @@ const Tradelist = () => {
     fetchTradeRequestsAndOffers();
   }, [isLoggedIn, userId, navigate, loading]);
 
-  const handleDeleteTradeRequest = (tradeId) => {
-    setTradeRequests((prev) => prev.filter((trade) => trade._id !== tradeId));
-    setOffers((prev) => {
-      const updatedOffers = { ...prev };
-      delete updatedOffers[tradeId];
-      return updatedOffers;
-    });
-  };
+  // const handleDeleteTradeRequest = (tradeId) => {
+  //   setTradeRequests((prev) => prev.filter((trade) => trade._id !== tradeId));
+  //   setOffers((prev) => {
+  //     const updatedOffers = { ...prev };
+  //     delete updatedOffers[tradeId];
+  //     return updatedOffers;
+  //   });
+  // };
 
   const handleSelectOffer = async (requestId, offerId) => {
     try {
@@ -3356,7 +3356,7 @@ const Tradelist = () => {
             trade={trade}
             offers={offers[trade._id] || []}
             users={users}
-            onDeleteTradeRequest={handleDeleteTradeRequest}
+            // onDeleteTradeRequest={handleDeleteTradeRequest}
             onSelectOffer={handleSelectOffer}
             onDeclineOffer={handleDeclineOffer}
             onCompleteTrade={handleCompleteTrade}
