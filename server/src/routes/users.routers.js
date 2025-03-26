@@ -228,8 +228,138 @@ usersRouter.use(
   orderRoutes
 )
 
-usersRouter.post('/:id/shippingInfo', wrapAsync(userController.getShipInfo))
+usersRouter.post(
+  '/:id/shippingInfo',
+  /*  #swagger.tags = ['Users']
+      #swagger.description = 'Get shipping information for a user by ID'
+      #swagger.security = [{ "BearerAuth": [] }]
+      #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'User ID',
+        required: true,
+        type: 'string',
+        example: '67d52b3c60c67cabfd83d7fd'
+      }
+      #swagger.responses[200] = {
+        description: "Shipping information retrieved successfully",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                message: { type: "string", example: "success" },
+                user: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string", example: "mailx2" },
+                    email: { type: "string", example: "mai12435@gmail.com" },
+                    phoneNumber: { type: "string", example: "02156423" },
+                    address: { type: "string", example: "NVH SV,VN" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[401] = {
+        description: "Unauthorized - Access token is required or invalid",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                message: { type: "string", example: "Access token is required" }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[500] = {
+        description: "Internal server error",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                message: { type: "string", example: "Internal server error" }
+              }
+            }
+          }
+        }
+      }
+  */
+  wrapAsync(userController.getShipInfo)
+)
 
-usersRouter.put('/:id/updateShippingInfo', wrapAsync(userController.updateShipInfo))
+usersRouter.put(
+  '/:id/updateShippingInfo',
+  /*  #swagger.tags = ['Users']
+      #swagger.description = 'Update shipping information for a user by ID'
+      #swagger.security = [{ "BearerAuth": [] }]
+      #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'User ID',
+        required: true,
+        type: 'string',
+        example: '67d52b3c60c67cabfd83d7fd'
+      }
+      #swagger.requestBody = {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                phoneNumber: { type: "string", example: "02156423" },
+                address: { type: "string", example: "NVH SV,VN" }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        description: "Shipping information updated successfully",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                message: { type: "string", example: "Added address successfully" },
+                shipInfo: { type: "object", example: {} }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[401] = {
+        description: "Unauthorized - Access token is required or invalid",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                message: { type: "string", example: "Access token is required" }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[500] = {
+        description: "Internal server error",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                message: { type: "string", example: "Internal server error" }
+              }
+            }
+          }
+        }
+      }
+  */
+  wrapAsync(userController.updateShipInfo)
+)
 
 export default usersRouter
