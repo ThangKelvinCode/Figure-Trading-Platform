@@ -5,7 +5,7 @@ import { productValidator } from '../middlewares/product.middlewares.js'
 import { verifyToken } from '../middlewares/auth.middlewares.js'
 //tạo Router
 const accessoriesRouter = Router()
-accessoriesRouter.use(verifyToken);
+
 
 accessoriesRouter.post(
   '/postAccessories' /*  #swagger.tags = ['Accessories']
@@ -39,6 +39,7 @@ accessoriesRouter.post(
         description: "Invalid request"
     }
 */,
+    accessoriesRouter.use(verifyToken),
   productValidator.AccessoriesValidator,
   wrapAsync(accessoriesController.postAccessories)
 )
@@ -87,6 +88,7 @@ accessoriesRouter.put(
           description: "Accessory not found"
       }
   */
+      accessoriesRouter.use(verifyToken),
   wrapAsync(accessoriesController.editAccessories)
 )
 
@@ -115,6 +117,7 @@ accessoriesRouter.post(
         #swagger.responses[201] = { description: "Category created successfully" }
         #swagger.responses[400] = { description: "Invalid request" }
     */
+        accessoriesRouter.use(verifyToken),
   productValidator.CategoriesValidator,
   wrapAsync(accessoriesController.newCategory)
 )
@@ -177,6 +180,7 @@ accessoriesRouter.delete(
         #swagger.responses[200] = { description: "Accessory deleted successfully" }
         #swagger.responses[404] = { description: "Accessory not found" }
     */
+  accessoriesRouter.use(verifyToken),
   wrapAsync(accessoriesController.deleteAccessory)
 )
 
@@ -216,6 +220,7 @@ accessoriesRouter.post(
         #swagger.responses[200] = { description: "Accessory purchased successfully" }
         #swagger.responses[400] = { description: "Invalid purchase request" }
     */
+        accessoriesRouter.use(verifyToken),
   wrapAsync(accessoriesController.buyAccessory)
 )
 
