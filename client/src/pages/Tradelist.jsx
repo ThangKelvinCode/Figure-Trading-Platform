@@ -3121,44 +3121,66 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
         )}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
-        {/* {!isTradeCompleted && (
+  {hasAcceptedOffer && acceptedOffer && (
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      {!isTradeCompleted && (
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
           <button
-            onClick={handleDelete}
-            style={{ backgroundColor: "red", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px", alignSelf: "flex-end" }}
+            onClick={handleCompleteTrade}
+            style={{
+              backgroundColor: "blue",
+              color: "white",
+              padding: "8px 16px",
+              border: "none",
+              borderRadius: "5px",
+              fontSize: "14px",
+              cursor: "pointer",
+              flex: "1",
+              textAlign: "center",
+            }}
           >
-            Delete
+            Complete
           </button>
-        )} */}
-        {hasAcceptedOffer && acceptedOffer && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {!isTradeCompleted && (
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  onClick={handleCompleteTrade}
-                  style={{ backgroundColor: "blue", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
-                >
-                  Complete
-                </button>
-                <button
-                  onClick={handleCancelTrade}
-                  style={{ backgroundColor: "orange", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-            <button
-              onClick={() => {
-                setSelectedOffer(acceptedOffer);
-                setChatPopup(true);
-              }}
-              style={{ backgroundColor: "purple", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
-            >
-              Chat
-            </button>
-          </div>
-        )}
-      </div>
+          <button
+            onClick={handleCancelTrade}
+            style={{
+              backgroundColor: "orange",
+              color: "white",
+              padding: "8px 16px",
+              border: "none",
+              borderRadius: "5px",
+              fontSize: "14px",
+              cursor: "pointer",
+              flex: "1",
+              textAlign: "center",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+      <button
+        onClick={() => {
+          setSelectedOffer(acceptedOffer);
+          setChatPopup(true);
+        }}
+        style={{
+          backgroundColor: "purple",
+          color: "white",
+          padding: "8px 16px",
+          border: "none",
+          borderRadius: "5px",
+          fontSize: "14px",
+          cursor: "pointer",
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
+        Chat
+      </button>
+    </div>
+  )}
+</div>
       {selectedOffer && (
         <ChatModal
           isOpen={showChatPopup}
