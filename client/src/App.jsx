@@ -1,25 +1,23 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import "./assets/css/App.css"; // Fixed import path
 import { Navbar } from "./components/Navbar";
-import About from "./pages/About";
+import PaymentProcessing from "./components/PaymentProcessing";
 import Accessory from "./pages/Accessory";
 import AccessoryManagement from "./pages/accessory_management";
 import AccessoryDetail from "./pages/AccessoryDetail"; // ✅ Thêm lại AccessoryDetail
 import AuthPage from "./pages/AuthPage";
 import Checkout from "./pages/Checkout";
 import Home from "./pages/Home";
+import MyOffers from "./pages/MyOffers";
 import Offer from "./pages/Offer";
+import PaymentFailure from "./pages/PaymentFailure";
+import PaymentSuccess from "./pages/PaymentSucess";
 import Tradelist from "./pages/Tradelist";
+import TradeRequestDetail from "./pages/TradeRequestDetail";
 import UserManagement from "./pages/user_management";
 import ViewScreen from "./pages/ViewScreen";
-import PaymentSuccess from "./pages/PaymentSucess";
-import PaymentFailure from "./pages/PaymentFailure";
-import PaymentProcessing from "./components/PaymentProcessing";
-import TradeRequestDetail from "./pages/TradeRequestDetail";
-import MyOffers from "./pages/MyOffers";
 
 import BillingInfo from "./pages/BillingInfo";
-
 
 function App() {
   const location = useLocation();
@@ -31,7 +29,6 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
         <Route path="/tradelist" element={<Tradelist />} />
         <Route path="/accessory" element={<Accessory />} />
         <Route path="/accessory/:id" element={<AccessoryDetail />} />{" "}
@@ -41,7 +38,10 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/offer" element={<Offer />} />
         <Route path="/my-offers" element={<MyOffers />} />
-        <Route path="/trade_request/:requestId" element={<TradeRequestDetail />} />
+        <Route
+          path="/trade_request/:requestId"
+          element={<TradeRequestDetail />}
+        />
         <Route path="/authpage" element={<AuthPage hideNavBar={true} />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />

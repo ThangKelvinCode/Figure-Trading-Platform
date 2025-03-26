@@ -22,4 +22,8 @@ input {
   background-color: black;
 }
 
+.back_button {
+  color: white;
+}
+
 /* Rest of the styles remain the same */

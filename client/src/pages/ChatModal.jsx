@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
-import io from "socket.io-client";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import io from "socket.io-client";
+import "../assets/css/chatmodal.css";
 import api from "../config/axios.js";
 
 // Kết nối tới Socket.IO server
@@ -52,7 +53,10 @@ const ChatModal = ({ isOpen, onClose, tradeId, senderId, ownerId }) => {
       const fetchedMessages = await api.get(`/messages/${tradeId}`);
       setMessages(fetchedMessages.data);
     } catch (error) {
-      console.error("Error fetching messages:", error.response?.data || error.message);
+      console.error(
+        "Error fetching messages:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to load messages", {
         position: "top-right",
         autoClose: 3000,
@@ -88,7 +92,10 @@ const ChatModal = ({ isOpen, onClose, tradeId, senderId, ownerId }) => {
 
       setNewMessage("");
     } catch (error) {
-      console.error("Error sending message:", error.response?.data || error.message);
+      console.error(
+        "Error sending message:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to send message", {
         position: "top-right",
         autoClose: 3000,
@@ -137,9 +144,6 @@ const ChatModal = ({ isOpen, onClose, tradeId, senderId, ownerId }) => {
           />
           <button type="submit" disabled={loading}>
             Send
-          </button>
-          <button type="button" onClick={onClose} disabled={loading}>
-            Close
           </button>
         </form>
       </div>

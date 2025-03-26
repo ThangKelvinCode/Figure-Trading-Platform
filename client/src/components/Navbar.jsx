@@ -7,7 +7,6 @@ import { useAuth } from "../context/auth.jsx";
 import { LoginButton } from "./LoginButton";
 import { LogoutButton } from "./LogoutButton";
 import Logoutwindow from "./Logoutwindow.jsx";
-import { RegisterButton } from "./RegisterButton";
 
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,14 +32,6 @@ export const Navbar = () => {
       </div>
 
       <ul className={menuOpen ? "open" : ""}>
-        <li>
-          <NavLink
-            to="/about"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            About
-          </NavLink>
-        </li>
         <li>
           <NavLink
             to="/Accessory"
@@ -98,9 +89,6 @@ export const Navbar = () => {
           <>
             <li>
               <LoginButton />
-            </li>
-            <li>
-              <RegisterButton />
             </li>
           </>
         )}

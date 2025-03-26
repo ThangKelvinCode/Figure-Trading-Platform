@@ -1,4 +1,3 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
@@ -328,11 +327,7 @@ const Home = () => {
               ))
             )}
           </Row>
-          <Button
-            variant="dark"
-            className="px-4 py-2 mt-3"
-            onClick={() => navigate("/about")}
-          >
+          <Button variant="dark" className="px-4 py-2 mt-3">
             XEM TẤT CẢ · TRADE REQUESTS
           </Button>
         </Container>

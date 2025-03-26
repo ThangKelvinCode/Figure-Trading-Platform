@@ -1143,7 +1143,6 @@
 // import api from "../config/axios.js";
 // import ChatModal from "./ChatModal.jsx";
 
-
 // const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer, onDeclineOffer, onCompleteTrade, onCancelTrade }) => {
 //   const [showChatPopup, setChatPopup] = useState(false);
 //   const [selectedOffer, setSelectedOffer] = useState(null);
@@ -2599,13 +2598,22 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../assets/css/Tradelist.css";
-import { useAuth } from "../context/auth.jsx";
 import { toast } from "react-toastify";
+import "../assets/css/Tradelist.css";
 import api from "../config/axios.js";
+import { useAuth } from "../context/auth.jsx";
 import ChatModal from "./ChatModal.jsx";
 
-const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer, onDeclineOffer, onCompleteTrade, onCancelTrade }) => {
+const TradeBlock = ({
+  trade,
+  offers,
+  users,
+  onDeleteTradeRequest,
+  onSelectOffer,
+  onDeclineOffer,
+  onCompleteTrade,
+  onCancelTrade,
+}) => {
   const [showChatPopup, setChatPopup] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
 
@@ -2618,7 +2626,10 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
         autoClose: 3000,
       });
     } catch (error) {
-      console.error("Error deleting trade request:", error.response?.data || error.message);
+      console.error(
+        "Error deleting trade request:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to delete trade request", {
         position: "top-right",
         autoClose: 3000,
@@ -2643,99 +2654,129 @@ const TradeBlock = ({ trade, offers, users, onDeleteTradeRequest, onSelectOffer,
     onCancelTrade(trade._id, selectedOffer._id);
   };
 
-  const hasAcceptedOffer = offers.some((offer) => offer.offerStatus === "Accepted");
-  const acceptedOffer = offers.find((offer) => offer.offerStatus === "Accepted");
+  const hasAcceptedOffer = offers.some(
+    (offer) => offer.offerStatus === "Accepted"
+  );
+  const acceptedOffer = offers.find(
+    (offer) => offer.offerStatus === "Accepted"
+  );
   const isTradeCompleted = trade.requestStatus === "Completed";
 
   return (
-    <div className={`trade_request ${hasAcceptedOffer ? "accepted" : isTradeCompleted ? "completed" : ""}`}>
-      <div>
-        <h3>Trade #{trade._id}</h3>
-        <p>Requesting: {trade.requestItem}</p>
-        <p>
-          My Item:{" "}
-          <img
-            src={trade.requestImage}
-            alt="Requested Item"
-            style={{ width: "100px", height: "100px" }}
-          />
-        </p>
-        <h4>Offers:</h4>
-        {offers.length === 0 ? (
-          <p>No offers yet</p>
-        ) : (
-          offers.map((offer) => (
-            <div key={offer._id} style={{ marginBottom: "10px" }}>
-              <p>Sender: {users[offer.userId]?.name || offer.userId}</p>
-              <p>Offering: {offer.offerItem}</p>
-              <p>
-                Offer Item:{" "}
-                <img
-                  src={offer.offerImage}
-                  alt="Offered Item"
-                  style={{ width: "80px", height: "80px" }}
-                />
-              </p>
-              <p>Status: {offer.offerStatus}</p>
-              {offer.offerStatus === "Pending" && !hasAcceptedOffer && (
-                <div className="trade_buttons">
+    <div className="trade-block">
+      {/* Trade Header: Trade Info and Global Actions */}
+      <div className="trade-header">
+        <div className="trade-info">
+          <h3>Trade #{trade._id}</h3>
+          <p>Requesting: {trade.requestItem}</p>
+          <div className="my-item">
+            <span>My Item:</span>
+            <img
+              src={trade.requestImage}
+              alt="Requested Item"
+              className="item-image"
+            />
+          </div>
+        </div>
+        <div className="global-actions">
+          {!isTradeCompleted && (
+            <>
+              <button className="delete-btn" onClick={handleDelete}>
+                Delete
+              </button>
+              {hasAcceptedOffer && (
+                <div className="trade-actions">
                   <button
-                    className="accept"
-                    onClick={() => handleAcceptOffer(offer)}
+                    className="complete-btn"
+                    onClick={handleCompleteTrade}
                   >
-                    Accept
+                    Complete
                   </button>
-                  <button
-                    className="deny"
-                    onClick={() => handleDeclineOffer(offer)}
-                  >
-                    Decline
+                  <button className="cancel-btn" onClick={handleCancelTrade}>
+                    Cancel
                   </button>
                 </div>
               )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Offers Section */}
+      <div className="offers-section">
+        <h4>Offers:</h4>
+        {offers.length === 0 ? (
+          <p className="no-offers">No offers yet</p>
+        ) : (
+          offers.map((offer) => (
+            <div
+              key={offer._id}
+              className={`offer-block ${
+                offer.offerStatus === "Accepted"
+                  ? "accepted-offer"
+                  : offer.offerStatus === "Declined"
+                  ? "declined-offer"
+                  : ""
+              }`}
+            >
+              <div className="offer-details">
+                <p>
+                  <strong>Sender:</strong>{" "}
+                  {users[offer.userId]?.name || offer.userId}
+                </p>
+                <p>
+                  <strong>Offering:</strong> {offer.offerItem}
+                </p>
+                <div className="offer-item">
+                  <span>Offer Item:</span>
+                  <img
+                    src={offer.offerImage}
+                    alt="Offered Item"
+                    className="item-image"
+                  />
+                </div>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span className={`status-${offer.offerStatus.toLowerCase()}`}>
+                    {offer.offerStatus}
+                  </span>
+                </p>
+              </div>
+              <div className="offer-actions">
+                {offer.offerStatus === "Pending" && !hasAcceptedOffer && (
+                  <div className="trade_buttons">
+                    <button
+                      className="accept-btn"
+                      onClick={() => handleAcceptOffer(offer)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="decline-btn"
+                      onClick={() => handleDeclineOffer(offer)}
+                    >
+                      Decline
+                    </button>
+                  </div>
+                )}
+                {offer.offerStatus === "Accepted" && !isTradeCompleted && (
+                  <button
+                    className="chat-btn"
+                    onClick={() => {
+                      setSelectedOffer(offer);
+                      setChatPopup(true);
+                    }}
+                  >
+                    Chat
+                  </button>
+                )}
+              </div>
             </div>
           ))
         )}
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
-        {!isTradeCompleted && (
-          <button
-            onClick={handleDelete}
-            style={{ backgroundColor: "red", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px", alignSelf: "flex-end" }}
-          >
-            Delete
-          </button>
-        )}
-        {hasAcceptedOffer && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {!isTradeCompleted && (
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  onClick={handleCompleteTrade}
-                  style={{ backgroundColor: "blue", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
-                >
-                  Complete
-                </button>
-                <button
-                  onClick={handleCancelTrade}
-                  style={{ backgroundColor: "orange", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-            <button
-              onClick={() => {
-                setSelectedOffer(acceptedOffer);
-                setChatPopup(true);
-              }}
-              style={{ backgroundColor: "purple", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }}
-            >
-              Chat
-            </button>
-          </div>
-        )}
-      </div>
+
+      {/* Chat Modal */}
       {selectedOffer && (
         <ChatModal
           isOpen={showChatPopup}
@@ -2762,7 +2803,9 @@ const Tradelist = () => {
 
   const fetchTradeRequestsAndOffers = async () => {
     try {
-      const tradeRequestsResponse = await api.get(`/trade_requests/user/${userId}`);
+      const tradeRequestsResponse = await api.get(
+        `/trade_requests/user/${userId}`
+      );
       const tradeRequestsData = tradeRequestsResponse.data;
 
       const offersPromises = tradeRequestsData.map(async (trade) => {
@@ -2770,7 +2813,10 @@ const Tradelist = () => {
           const offersResponse = await api.get(`/offer/request/${trade._id}`);
           return { requestId: trade._id, offers: offersResponse.data };
         } catch (error) {
-          console.error(`Error fetching offers for trade request ${trade._id}:`, error.response?.data || error.message);
+          console.error(
+            `Error fetching offers for trade request ${trade._id}:`,
+            error.response?.data || error.message
+          );
           return { requestId: trade._id, offers: [] };
         }
       });
@@ -2791,7 +2837,10 @@ const Tradelist = () => {
           const userResponse = await api.get(`/user/${userId}`);
           return { userId, user: userResponse.data.user };
         } catch (error) {
-          console.error(`Error fetching user ${userId}:`, error.response?.data || error.message);
+          console.error(
+            `Error fetching user ${userId}:`,
+            error.response?.data || error.message
+          );
           return { userId, user: null };
         }
       });
@@ -2807,7 +2856,10 @@ const Tradelist = () => {
       setUsers(usersMap);
       setDataLoading(false);
     } catch (error) {
-      console.error("Error fetching trade requests:", error.response?.data || error.message);
+      console.error(
+        "Error fetching trade requests:",
+        error.response?.data || error.message
+      );
       setDataLoading(false);
     }
   };
@@ -2846,7 +2898,10 @@ const Tradelist = () => {
       // Làm mới dữ liệu sau khi Accept
       await fetchTradeRequestsAndOffers();
     } catch (error) {
-      console.error("Error selecting offer:", error.response?.data || error.message);
+      console.error(
+        "Error selecting offer:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to accept offer", {
         position: "top-right",
         autoClose: 3000,
@@ -2864,7 +2919,10 @@ const Tradelist = () => {
       // Làm mới dữ liệu sau khi Decline
       await fetchTradeRequestsAndOffers();
     } catch (error) {
-      console.error("Error declining offer:", error.response?.data || error.message);
+      console.error(
+        "Error declining offer:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to decline offer", {
         position: "top-right",
         autoClose: 3000,
@@ -2874,7 +2932,9 @@ const Tradelist = () => {
 
   const handleCompleteTrade = async (requestId, offerId) => {
     try {
-      const response = await api.post(`/trade_requests/${requestId}/finish-trade`);
+      const response = await api.post(
+        `/trade_requests/${requestId}/finish-trade`
+      );
       const message = response.data.message;
 
       if (message === "Trade completed successfully") {
@@ -2883,15 +2943,21 @@ const Tradelist = () => {
           autoClose: 3000,
         });
       } else {
-        toast.info("Waiting for the other party to confirm the trade completion.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        toast.info(
+          "Waiting for the other party to confirm the trade completion.",
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
       }
       // Làm mới dữ liệu sau khi Complete
       await fetchTradeRequestsAndOffers();
     } catch (error) {
-      console.error("Error completing trade:", error.response?.data || error.message);
+      console.error(
+        "Error completing trade:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to complete trade", {
         position: "top-right",
         autoClose: 3000,
@@ -2909,7 +2975,10 @@ const Tradelist = () => {
       // Làm mới dữ liệu sau khi Cancel
       await fetchTradeRequestsAndOffers();
     } catch (error) {
-      console.error("Error cancelling trade:", error.response?.data || error.message);
+      console.error(
+        "Error cancelling trade:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to cancel trade", {
         position: "top-right",
         autoClose: 3000,

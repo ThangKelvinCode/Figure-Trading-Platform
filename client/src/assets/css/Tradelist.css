@@ -1,28 +1,192 @@
-.tradelist_page {
+/* Trade Block Container */
+.trade-block {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
   padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  margin-bottom: 25px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.trade_request {
-  background: #f9f9f9;
+/* Trade Header */
+.trade-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.trade-info h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #333;
+}
+
+.trade-info p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.my-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.my-item span {
+  font-weight: bold;
+  color: #333;
+}
+
+.item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
   border: 1px solid #ddd;
+}
+
+/* Global Actions */
+.global-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.trade-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.global-actions button {
+  padding: 8px 16px;
+  border: none;
   border-radius: 5px;
-  padding: 15px;
-  margin: 10px 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.complete-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.complete-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancel-btn {
+  background-color: #ffc107;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #e0a800;
+}
+
+/* Offers Section */
+.offers-section {
+  margin-top: 20px;
+}
+
+.offers-section h4 {
+  margin: 0 0 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.no-offers {
+  color: #888;
+  font-style: italic;
+}
+
+/* Offer Block */
+.offer-block {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.3s ease;
 }
 
-.trade_request.accepted {
-  background: #e6ffe6;
+.offer-block.accepted-offer {
   border-color: #28a745;
+  background-color: #f0fff4;
 }
 
-.trade_request.denied {
-  background: #ffe6e6;
+.offer-block.declined-offer {
   border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.offer-details p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.offer-details p strong {
+  color: #333;
+}
+
+.offer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.offer-item span {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Status Colors */
+.status-pending {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.status-accepted {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-declined {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.status-cancelled {
+  color: #6c757d;
+  font-weight: bold;
+}
+
+/* Offer Actions */
+.offer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .trade_buttons {
@@ -30,59 +194,57 @@
   gap: 10px;
 }
 
-.accept {
-  background-color: #28a745;
-  color: white;
-  padding: 6px 12px;
+.offer-actions button {
+  padding: 8px 16px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease;
 }
 
-.accept:hover:not(:disabled) {
+.accept-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.accept-btn:hover {
   background-color: #218838;
 }
 
-.accept:disabled {
-  background-color: #85e085;
-  cursor: not-allowed;
-}
-
-.deny {
-  background-color: #dc3545;
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.deny:hover:not(:disabled) {
-  background-color: #c82333;
-}
-
-.deny:disabled {
-  background-color: #ff8080;
-  cursor: not-allowed;
-}
-
-.status {
-  width: 100%;
-  cursor: not-allowed;
-}
-
-.status.accepted {
-  background-color: #85e085;
+.decline-btn {
+  background-color: #6c757d;
   color: white;
 }
 
-.status.denied {
-  background-color: #ff8080;
+.decline-btn:hover {
+  background-color: #5a6268;
+}
+
+.chat-btn {
+  background-color: #6f42c1;
   color: white;
 }
 
+.chat-btn:hover {
+  background-color: #5a32a3;
+}
+
+/* Tradelist Page */
+.tradelist_page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tradelist_page h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Existing ChatModal Styles (Preserved) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -97,86 +259,137 @@
 }
 
 .chat-modal {
-  background: white;
-  width: 500px;
-  max-height: 80vh;
-  border-radius: 8px;
+  position: relative;
+  background-color: white;
+  width: 400px;
+  max-width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  z-index: 1000;
+  min-height: 400px;
 }
 
 .chat-header {
-  padding: 10px 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+  background-color: #f5f5f5;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .chat-header h3 {
   margin: 0;
+  font-size: 18px;
+  color: #333;
 }
 
 .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 24px;
   cursor: pointer;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #ff0000;
 }
 
 .chat-messages {
   flex: 1;
-  padding: 20px;
+  padding: 15px;
+  max-height: 300px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .message {
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
   max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  position: relative;
+  word-wrap: break-word;
 }
 
 .message.sent {
-  background-color: #007bff;
+  background-color: #28a745;
   color: white;
+  align-self: flex-end;
   margin-left: auto;
 }
 
 .message.received {
-  background-color: #f1f0f0;
+  background-color: #e9ecef;
+  color: #333;
+  align-self: flex-start;
   margin-right: auto;
 }
 
+.message p {
+  margin: 0;
+  font-size: 14px;
+}
+
 .message span {
-  font-size: 0.8em;
-  opacity: 0.7;
+  display: block;
+  font-size: 12px;
+  color: #ffffff80;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.message.received span {
+  color: #666;
 }
 
 .chat-input {
-  padding: 10px;
-  border-top: 1px solid #eee;
   display: flex;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
   gap: 10px;
+  background-color: #f5f5f5;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 5px;
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+}
+
+.chat-input input:focus {
+  border-color: #28a745;
 }
 
 .chat-input button {
-  padding: 5px 15px;
-  background-color: #007bff;
-  color: white;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: white;
   cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 
 .chat-input button:hover {
-  background-color: #0056b3;
+  background-color: #218838;
+}
+
+.chat-input button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
