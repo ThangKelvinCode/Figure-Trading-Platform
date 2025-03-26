@@ -10,7 +10,6 @@ const TradeBlock = ({
   trade,
   offers,
   users,
-  onDeleteTradeRequest,
   onSelectOffer,
   onDeclineOffer,
   onCompleteTrade,
@@ -18,26 +17,6 @@ const TradeBlock = ({
 }) => {
   const [showChatPopup, setChatPopup] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
-
-  const handleDelete = async () => {
-    try {
-      await api.delete(`/trade_requests/${trade._id}`);
-      onDeleteTradeRequest(trade._id);
-      toast.success("Trade request deleted successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    } catch (error) {
-      console.error(
-        "Error deleting trade request:",
-        error.response?.data || error.message
-      );
-      toast.error("Failed to delete trade request", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    }
-  };
 
   const handleAcceptOffer = (offer) => {
     setSelectedOffer(offer);
@@ -101,25 +80,15 @@ const TradeBlock = ({
           </div>
         </div>
         <div className="global-actions">
-          {!isTradeCompleted && (
-            <>
-              <button className="delete-btn" onClick={handleDelete}>
-                Delete
+          {!isTradeCompleted && hasAcceptedOffer && (
+            <div className="trade-actions">
+              <button className="complete-btn" onClick={handleCompleteTrade}>
+                Complete
               </button>
-              {hasAcceptedOffer && (
-                <div className="trade-actions">
-                  <button
-                    className="complete-btn"
-                    onClick={handleCompleteTrade}
-                  >
-                    Complete
-                  </button>
-                  <button className="cancel-btn" onClick={handleCancelTrade}>
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </>
+              <button className="cancel-btn" onClick={handleCancelTrade}>
+                Cancel
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -301,15 +270,6 @@ const Tradelist = () => {
     fetchTradeRequestsAndOffers();
   }, [isLoggedIn, userId, navigate, loading]);
 
-  const handleDeleteTradeRequest = (tradeId) => {
-    setTradeRequests((prev) => prev.filter((trade) => trade._id !== tradeId));
-    setOffers((prev) => {
-      const updatedOffers = { ...prev };
-      delete updatedOffers[tradeId];
-      return updatedOffers;
-    });
-  };
-
   const handleSelectOffer = async (requestId, offerId) => {
     try {
       await api.post(`/trade_requests/${requestId}/select-offer/${offerId}`);
@@ -424,7 +384,6 @@ const Tradelist = () => {
             trade={trade}
             offers={offers[trade._id] || []}
             users={users}
-            onDeleteTradeRequest={handleDeleteTradeRequest}
             onSelectOffer={handleSelectOffer}
             onDeclineOffer={handleDeclineOffer}
             onCompleteTrade={handleCompleteTrade}
