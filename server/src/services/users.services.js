@@ -223,7 +223,6 @@ const updateShipInfo = async (userID, phoneNumber, address) => {
     if(!await userRepo.findById(userID)){
       throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
     }
-    console.log('ser', await userRepo.findById(userID))
     
     return userRepo.updateShipInfo(userID,  phoneNumber, address)
   } catch (error) {

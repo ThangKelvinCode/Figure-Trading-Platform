@@ -1,5 +1,5 @@
 import { ORDER_MESSAGE } from "../constants/messages.js";
-import ORDER_STATUS from "../constants/orderStatus.js";
+import { ORDER_STATUS } from "../constants/orderStatus.js";
 import reviews from "../models/schemas/Reviews.shema.js";
 import orderDetailsRepo from "../repositories/orderDetail.repo.js";
 import ordersRepo from "../repositories/orders.repo.js";
@@ -19,7 +19,7 @@ const writeReview = async (reqBody, userID, detailID) => {
 
         const order = new orders(await ordersRepo.getOrder(orderDetail.order))
 
-        if (order.status !== ORDER_STATUS.COMPLETED) {
+        if (order.status !== ORDER_STATUS[6]) {
             return null
         }
         const newdata = {

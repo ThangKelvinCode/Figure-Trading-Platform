@@ -31,11 +31,9 @@ const getOrder = async (id) => {
     }
 }
 
-const setStatus = async (newStatus, orderID, adminID) => { // must be Admin
+const setStatus = async (newStatus, orderID) => {
     try {
-        if (await usersServices.checkAdmin(adminID)) {
-            return await ordersRepo.setStatus(newStatus, orderID)
-        } else throw new Error(ORDER_MESSAGE.NO_PERMISSION)
+        return await ordersRepo.setStatus(newStatus, orderID)
     } catch (error) {
         throw new Error(error)
     }

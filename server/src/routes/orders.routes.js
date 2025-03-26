@@ -115,5 +115,5 @@ orderRoutes.get(
       */
     reviewsController.editReview
   )
-  
+  orderRoutes.post('/:id/updateStatus', ordersController.setStatus)
 export default orderRoutes

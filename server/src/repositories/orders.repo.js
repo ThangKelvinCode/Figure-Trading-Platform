@@ -24,7 +24,7 @@ class OrdersRepo {
     async setStatus(newStatus, orderID) {
         return await this.db.updateOne(
             {_id: orderID},
-            {status: newStatus}
+            {$set: {status: newStatus}}
         )
     }
 
