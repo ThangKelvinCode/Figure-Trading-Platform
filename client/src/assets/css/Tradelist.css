@@ -1,20 +1,8 @@
 .tradelist_page {
   padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
-.trade_request {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 15px;
-  margin: 10px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
+/* Remove .trade_request since we're using Bootstrap Card */
 .trade_request.accepted {
   background: #e6ffe6;
   border-color: #28a745;
@@ -25,11 +13,7 @@
   border-color: #dc3545;
 }
 
-.trade_buttons {
-  display: flex;
-  gap: 10px;
-}
-
+/* Remove .trade_buttons since we're using Bootstrap d-flex */
 .accept {
   background-color: #28a745;
   color: white;
@@ -68,21 +52,7 @@
   cursor: not-allowed;
 }
 
-.status {
-  width: 100%;
-  cursor: not-allowed;
-}
-
-.status.accepted {
-  background-color: #85e085;
-  color: white;
-}
-
-.status.denied {
-  background-color: #ff8080;
-  color: white;
-}
-
+/* Chat Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
