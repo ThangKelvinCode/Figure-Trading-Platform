@@ -71,44 +71,77 @@ const findUserById = async (user_id) => {
   return user
 }
 
+// const register = async (payload) => {
+//   // const { email, password } = payload
+//   // let userId = new ObjectId()
+//   // const result = await databaseServices.users.insertOne(
+//   //   new User({
+//   //     _id: userId,
+//   //     ...payload,
+//   //     date_of_birth: new Date(payload.date_of_birth),
+//   //     //vì User.schema.ts có date_of_birth là Date
+//   //     //nhưng mà người dùng gửi lên payload là string
+//   //     password: hashPassword(payload.password)
+//   //   })
+//   // )
+//   const result = await userRepo.createUser(
+//     new User({
+//       ...payload,
+//       password: hashPassword(payload.password),
+//       date_of_birth: new Date(payload.date_of_birth)
+//     })
+//   )
+
+//   // const access_token = await this.signAccessToken(user_id)
+//   // const refresh_token = await this.signRefreshToken(user_id)
+//   //nên viết là thì sẽ giảm thời gian chờ 2 cái này tạo ra
+
+//   // const [access_token, refresh_token] = await Promise.all([
+//   //   this.signAccessToken(user_id),
+//   //   this.signRefreshToken(user_id)
+//   // ]) //đây cũng chính là lý do mình chọn xử lý bất đồng bộ, thay vì chọn xử lý đồng bộ
+
+//   // const [access_token, refresh_token] = await signAccessAndRefreshToken(userId)
+//   //Promise.all giúp nó chạy bất đồng bộ, chạy song song nhau, giảm thời gian
+
+//   // return { access_token, refresh_token }
+//   //ta sẽ return 2 cái này về cho client
+//   //thay vì return user_id về cho client
+//   return result
+// }
+
+
 const register = async (payload) => {
-  // const { email, password } = payload
-  // let userId = new ObjectId()
-  // const result = await databaseServices.users.insertOne(
-  //   new User({
-  //     _id: userId,
-  //     ...payload,
-  //     date_of_birth: new Date(payload.date_of_birth),
-  //     //vì User.schema.ts có date_of_birth là Date
-  //     //nhưng mà người dùng gửi lên payload là string
-  //     password: hashPassword(payload.password)
-  //   })
-  // )
   const result = await userRepo.createUser(
     new User({
       ...payload,
       password: hashPassword(payload.password),
-      date_of_birth: new Date(payload.date_of_birth)
+      date_of_birth: new Date(payload.date_of_birth),
+      role: USER_ROLE.USER
     })
-  )
+  );
 
-  // const access_token = await this.signAccessToken(user_id)
-  // const refresh_token = await this.signRefreshToken(user_id)
-  //nên viết là thì sẽ giảm thời gian chờ 2 cái này tạo ra
+  // Kiểm tra an toàn
+  if (!result || !result._id) {
+    throw new ErrorWithStatus({
+      status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      message: USERS_MESSAGES.SERVER_ERROR
+    });
+  }
 
-  // const [access_token, refresh_token] = await Promise.all([
-  //   this.signAccessToken(user_id),
-  //   this.signRefreshToken(user_id)
-  // ]) //đây cũng chính là lý do mình chọn xử lý bất đồng bộ, thay vì chọn xử lý đồng bộ
+  const user_id = result._id.toString();
+  const [access_token, refresh_token] = await Promise.all([
+    signAccessToken(user_id),
+    signRefreshToken(user_id)
+  ]);
 
-  // const [access_token, refresh_token] = await signAccessAndRefreshToken(userId)
-  //Promise.all giúp nó chạy bất đồng bộ, chạy song song nhau, giảm thời gian
-
-  // return { access_token, refresh_token }
-  //ta sẽ return 2 cái này về cho client
-  //thay vì return user_id về cho client
-  return result
-}
+  return {
+    user_id,
+    access_token,
+    refresh_token,
+    role: result.role
+  };
+};
 
 // const login = async (email, password) => {
 //   //dùng email và password để tìm user

@@ -35,7 +35,8 @@ class UserRepo {
 
   async createUser(userData) {
     const result = await this.db.insertOne(userData)
-    return result
+    const insertedUser = await this.db.findOne({ _id: result.insertedId });
+    return insertedUser;
   }
 
   async updateShipInfo(userID, phoneNumber, address) {

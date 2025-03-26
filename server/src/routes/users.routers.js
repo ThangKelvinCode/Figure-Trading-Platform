@@ -30,7 +30,7 @@ usersRouter.post(
           }
         }
       }
-      #swagger.responses[200] = {
+      #swagger.responses[201] = {
         description: "User registered successfully",
         content: {
           "application/json": {
@@ -38,7 +38,10 @@ usersRouter.post(
               type: "object",
               properties: {
                 message: { type: "string", example: "Register Successfully" },
-                id: { type: "string", example: "67d52b3c60c67cabfd83d7fd" }
+                user_id: { type: "string", example: "67d52b3c60c67cabfd83d7fd" },
+                access_token: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+                refresh_token: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+                role: { type: "string", example: "user" } // Thêm role vào response
               }
             }
           }

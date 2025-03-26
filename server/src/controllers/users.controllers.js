@@ -8,26 +8,52 @@ import { USERS_MESSAGES } from '../constants/messages.js'
 //nhưng trong lúc tạo tài khoản ta dùng insertOne(là 1 promise)
 //nên ta sẽ dùng async await để xử lý bất đồng bộ
 //và rất có thể trong quá trình get data từ database mình sẽ gặp lỗi, nên phải try catch
-const register = async (req, res) => {
-  // lấy email và password từ req.body mà người dùng muốn đăng kí tài khoản
-  const { email } = req.body
 
-  //kiểm tra email đc gửi lên có tồn tại chưa
-  const isDub = await usersServices.checkEmailExist(email)
+// cái cũ giữ lại nếu cần
+// const register = async (req, res) => {
+//   // lấy email và password từ req.body mà người dùng muốn đăng kí tài khoản
+//   const { email } = req.body
+
+//   //kiểm tra email đc gửi lên có tồn tại chưa
+//   const isDub = await usersServices.checkEmailExist(email)
+//   if (isDub) {
+//     throw new ErrorWithStatus({
+//       status: HTTP_STATUS.UNAUTHORIZED, //401
+//       message: USERS_MESSAGES.EMAIL_ALREADY_EXISTS
+//     })
+//   }
+
+//   const result = await usersServices.register(req.body)
+//   // console.log(result)
+//   res.status(HTTP_STATUS.CREATED).json({
+//     message: USERS_MESSAGES.REGISTER_SUCCESS, //chỉnh lại thông báo
+//     id: result
+//   })
+// }
+
+
+const register = async (req, res) => {
+  const { email } = req.body;
+
+  // Kiểm tra email đã tồn tại chưa
+  const isDub = await usersServices.checkEmailExist(email);
   if (isDub) {
     throw new ErrorWithStatus({
-      status: HTTP_STATUS.UNAUTHORIZED, //401
+      status: HTTP_STATUS.UNAUTHORIZED, // 401
       message: USERS_MESSAGES.EMAIL_ALREADY_EXISTS
-    })
+    });
   }
 
-  const result = await usersServices.register(req.body)
-  // console.log(result)
+  const result = await usersServices.register(req.body);
+
   res.status(HTTP_STATUS.CREATED).json({
-    message: USERS_MESSAGES.REGISTER_SUCCESS, //chỉnh lại thông báo
-    id: result
-  })
-}
+    message: USERS_MESSAGES.REGISTER_SUCCESS,
+    user_id: result.user_id,
+    access_token: result.access_token,
+    refresh_token: result.refresh_token,
+    role: result.role // Thêm role vào response
+  });
+};
 
 // const login = async (req, res) => {
 //   const { email, password } = req.body;
