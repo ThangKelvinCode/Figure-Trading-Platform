@@ -2,6 +2,7 @@ import HTTP_STATUS from '../constants/httpStatus.js'
 
 const WHITELIST_DOMAINS = [ 
   'http://localhost:5173',
+  'http://localhost:5174',
   //add more domains after deployed
   'http://localhost:3000' // Add this to allow Swagger UI
 ]
@@ -27,6 +28,6 @@ export const corsOptions = {
   // Some legacy browsers (IE11, various SmartTVs) choke on 204
   optionsSuccessStatus: 200,
 
-  // CORS sẽ cho phép nhận cookies từ request, (Nhá hàng :D | Ở khóa MERN Stack Advance nâng cao học trực tiếp mình sẽ hướng dẫn các bạn đính kèm jwt access token và refresh token vào httpOnly Cookies)
+  // CORS sẽ cho phép nhận cookies từ request
   credentials: true
 }
