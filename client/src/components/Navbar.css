@@ -1,0 +1,45 @@
+/* Navbar.css */
+
+nav {
+    background-color: #333; /* Dark background for the navbar */
+    padding: 10px; /* Padding around the navbar */
+    position: sticky; /* Make the navbar sticky */
+    top: 0; /* Stick to the top of the viewport */
+    width: 100%; /* Full width */
+    z-index: 1000; /* Ensure it stays above other content */
+  }
+  
+  nav .title {
+    color: white; /* White text for the title */
+    font-size: 24px; /* Larger font size for the title */
+    text-decoration: none; /* Remove underline from the title link */
+    margin-right: 20px; /* Space between title and the list */
+  }
+  
+  ul {
+    list-style-type: none; /* Remove default list styling (dots) */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+    display: flex; /* Use flexbox for horizontal layout */
+  }
+  
+  li {
+    margin: 0 15px; /* Space between list items */
+  }
+  
+  li a {
+    color: white; /* White text for links */
+    text-decoration: none; /* Remove underline from links */
+    padding: 8px 16px; /* Padding around the links */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  li a:hover {
+    background-color: #555; /* Change background on hover */
+    border-radius: 4px; /* Rounded corners on hover */
+  }
+  
+  .active {
+    background-color: #555; /* Highlight active link */
+    border-radius: 4px; /* Rounded corners for active link */
+  }
